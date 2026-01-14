@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mindmush</title>
+    <title>MINDMUSH</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -15,14 +15,11 @@
         }
 
         :root {
-            --bg: #050507;
-            --surface: #0a0a0e;
-            --text: #e8e8ec;
-            --text-secondary: #6e6e7a;
-            --text-tertiary: #3a3a44;
-            --accent: #a78bfa;
-            --accent-dim: rgba(167, 139, 250, 0.1);
-            --border: rgba(255,255,255,0.04);
+            --bg: #0a0a0a;
+            --text: #ffffff;
+            --text-mid: rgba(255,255,255,0.7);
+            --text-dim: rgba(255,255,255,0.4);
+            --accent: #5b4fff;
         }
 
         html {
@@ -34,789 +31,523 @@
             background: var(--bg);
             color: var(--text);
             overflow-x: hidden;
-            font-weight: 400;
             -webkit-font-smoothing: antialiased;
-            line-height: 1.6;
         }
 
         ::selection {
             background: var(--accent);
-            color: var(--bg);
+            color: white;
         }
 
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        /* Cursor glow */
-        .cursor-glow {
-            position: fixed;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            transform: translate(-50%, -50%);
-        }
-
-        body:hover .cursor-glow {
-            opacity: 1;
-        }
-
-        /* Navigation */
-        nav {
+        /* Noise Overlay */
+        .noise {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            padding: 2rem 4rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 1000;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
         }
 
-        .logo {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.2rem;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            color: var(--text);
+        /* Grid Lines */
+        .grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
         }
 
-        .nav-contact {
-            font-size: 0.75rem;
-            font-weight: 500;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            padding: 0.75rem 1.5rem;
-            border: 1px solid var(--border);
-            border-radius: 100px;
-            transition: all 0.4s ease;
+        .grid-line {
+            position: absolute;
+            background: rgba(255,255,255,0.03);
         }
 
-        .nav-contact:hover {
-            color: var(--text);
-            border-color: var(--accent);
-            background: var(--accent-dim);
+        .grid-line.v {
+            width: 1px;
+            height: 100%;
         }
 
-        /* Main */
+        /* Gradient Sphere */
+        .sphere {
+            position: fixed;
+            width: 800px;
+            height: 800px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(91, 79, 255, 0.35) 0%, rgba(91, 79, 255, 0.08) 50%, transparent 70%);
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+            top: -200px;
+            right: -150px;
+            animation: sphereFloat 8s ease-in-out infinite;
+        }
+
+        .sphere-2 {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 70% 70%, rgba(139, 92, 246, 0.25) 0%, rgba(139, 92, 246, 0.05) 50%, transparent 70%);
+            filter: blur(60px);
+            pointer-events: none;
+            z-index: 0;
+            bottom: -100px;
+            left: -100px;
+            animation: sphereFloat2 12s ease-in-out infinite;
+        }
+
+        @keyframes sphereFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+            50% { transform: translate(-30px, 20px) scale(1.05); opacity: 0.8; }
+        }
+
+        @keyframes sphereFloat2 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+            50% { transform: translate(20px, -15px) scale(1.03); opacity: 0.7; }
+        }
+
+        /* Layout */
         main {
             position: relative;
-            z-index: 1;
+            z-index: 2;
         }
 
         /* Hero */
         .hero {
             min-height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8rem 2rem;
-            position: relative;
+            flex-direction: column;
+            padding: 48px;
         }
 
-        .hero-content {
-            text-align: center;
-            max-width: 1000px;
-        }
-
-        .hero-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 3rem;
-            font-size: 0.7rem;
-            font-weight: 500;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: var(--text-tertiary);
-        }
-
-        .hero-tag::before,
-        .hero-tag::after {
-            content: '';
-            width: 30px;
-            height: 1px;
-            background: var(--text-tertiary);
-        }
-
-        .hero h1 {
-            font-family: 'Syne', sans-serif;
-            font-size: clamp(3.5rem, 10vw, 8rem);
-            font-weight: 700;
-            letter-spacing: -0.04em;
-            line-height: 0.95;
-            margin-bottom: 2rem;
-        }
-
-        .hero h1 .accent {
-            color: var(--accent);
-        }
-
-        .hero-desc {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            max-width: 500px;
-            margin: 0 auto;
-            line-height: 1.8;
-        }
-
-        /* Floating icons */
-        .floating-icons {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .floating-icon {
-            position: absolute;
-            border-radius: 20px;
-            overflow: hidden;
-            opacity: 0;
-            animation: floatIn 1s ease forwards, float 8s ease-in-out infinite;
-            box-shadow: 0 30px 60px -15px rgba(0,0,0,0.6);
-        }
-
-        .floating-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        @keyframes floatIn {
-            to { opacity: 0.8; }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(2deg); }
-        }
-
-        /* Stats bar */
-        .stats-bar {
-            padding: 6rem 2rem;
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .stats-inner {
-            max-width: 900px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: center;
-            gap: 8rem;
-        }
-
-        .stat {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-family: 'Syne', sans-serif;
-            font-size: 4rem;
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            color: var(--text);
-            line-height: 1;
-        }
-
-        .stat-value .dim {
-            color: var(--text-tertiary);
-        }
-
-        .stat-label {
-            font-size: 0.7rem;
-            font-weight: 500;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            color: var(--text-tertiary);
-            margin-top: 1rem;
-        }
-
-        /* Portfolio section */
-        .portfolio {
-            padding: 10rem 2rem;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 6rem;
-        }
-
-        .section-number {
-            font-family: 'Syne', sans-serif;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--accent);
-            margin-bottom: 1.5rem;
-        }
-
-        .section-title {
-            font-family: 'Syne', sans-serif;
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            font-weight: 700;
-            letter-spacing: -0.03em;
-        }
-
-        /* Apps grid */
-        .apps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 1.5rem;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .app-item {
-            aspect-ratio: 1;
-            border-radius: 24px;
-            overflow: hidden;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        .app-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .app-item::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 50%);
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-
-        .app-item:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 30px 60px -20px rgba(167, 139, 250, 0.3);
-        }
-
-        .app-item:hover img {
-            transform: scale(1.05);
-        }
-
-        .app-item:hover::after {
-            opacity: 1;
-        }
-
-        /* Marquee */
-        .marquee-section {
-            padding: 4rem 0;
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-            overflow: hidden;
-        }
-
-        .marquee {
-            display: flex;
-            animation: marquee 40s linear infinite;
-        }
-
-        .marquee-content {
-            display: flex;
-            align-items: center;
-            gap: 4rem;
-            padding-right: 4rem;
-            white-space: nowrap;
-        }
-
-        .marquee-item {
-            font-family: 'Syne', sans-serif;
-            font-size: 1rem;
-            font-weight: 500;
-            color: var(--text-tertiary);
-            letter-spacing: 0.05em;
-        }
-
-        .marquee-dot {
-            width: 4px;
-            height: 4px;
-            background: var(--accent);
-            border-radius: 50%;
-            opacity: 0.5;
-        }
-
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        /* Collaborate */
-        .collaborate {
-            padding: 10rem 2rem;
-        }
-
-        .collab-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1px;
-            background: var(--border);
-            max-width: 1100px;
-            margin: 0 auto;
-            border: 1px solid var(--border);
-        }
-
-        .collab-item {
-            background: var(--bg);
-            padding: 4rem 3rem;
-            text-align: center;
-            transition: all 0.5s ease;
-            position: relative;
-        }
-
-        .collab-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: var(--accent);
-            transform: scaleX(0);
-            transition: transform 0.5s ease;
-        }
-
-        .collab-item:hover {
-            background: var(--surface);
-        }
-
-        .collab-item:hover::before {
-            transform: scaleX(1);
-        }
-
-        .collab-num {
-            font-family: 'Syne', sans-serif;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--accent);
-            margin-bottom: 2rem;
-        }
-
-        .collab-title {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            letter-spacing: -0.02em;
-        }
-
-        .collab-desc {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            line-height: 1.7;
-        }
-
-        /* Talent */
-        .talent {
-            padding: 12rem 2rem;
-            text-align: center;
-            position: relative;
-        }
-
-        .talent::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%);
-            pointer-events: none;
-        }
-
-        .talent-inner {
-            position: relative;
-            z-index: 1;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .talent-title {
-            font-family: 'Syne', sans-serif;
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            line-height: 1;
-            margin-bottom: 2rem;
-        }
-
-        .talent-title .accent {
-            color: var(--accent);
-        }
-
-        .talent-desc {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            line-height: 1.9;
-            margin-bottom: 3rem;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 0.75rem;
-            font-weight: 500;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            padding: 1.25rem 2.5rem;
-            border: 1px solid var(--text-tertiary);
-            border-radius: 0;
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: var(--accent);
-            transform: translateY(100%);
-            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        .btn span {
-            position: relative;
-            z-index: 1;
-        }
-
-        .btn svg {
-            position: relative;
-            z-index: 1;
-            width: 16px;
-            height: 16px;
-            transition: transform 0.3s ease;
-        }
-
-        .btn:hover {
-            border-color: var(--accent);
-            color: var(--bg);
-        }
-
-        .btn:hover::before {
-            transform: translateY(0);
-        }
-
-        .btn:hover svg {
-            transform: translateX(4px);
-        }
-
-        /* Footer */
-        footer {
-            padding: 4rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .footer-inner {
-            max-width: 1200px;
-            margin: 0 auto;
+        .hero-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .footer-left {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+        .logo {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.25em;
         }
 
-        .footer-logo {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.1rem;
+        .nav-right {
+            font-size: 11px;
+            color: var(--text-dim);
+            letter-spacing: 0.1em;
+        }
+
+        .hero-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 80px 0;
+        }
+
+        .hero-title {
+            font-size: clamp(40px, 7vw, 80px);
+            font-weight: 600;
+            letter-spacing: -0.04em;
+            line-height: 1.05;
+            margin-bottom: 32px;
+            max-width: 900px;
+        }
+
+        .hero-title .dim {
+            color: var(--text-dim);
+        }
+
+        .hero-sub {
+            font-size: 17px;
+            color: var(--text-mid);
+            max-width: 500px;
+            line-height: 1.7;
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 180px 48px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .stats-intro {
+            font-size: 20px;
+            color: var(--text-mid);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .stats-intro strong {
+            color: var(--text);
             font-weight: 600;
         }
 
-        .footer-legal {
-            font-size: 0.75rem;
-            color: var(--text-tertiary);
+        .stats-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(72px, 16vw, 180px);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1;
+            background: linear-gradient(180deg, var(--text) 0%, rgba(255,255,255,0.4) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-variant-numeric: tabular-nums;
         }
 
-        .footer-email {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
+        .stats-label {
+            font-size: 18px;
+            color: var(--text-mid);
+            margin-top: 24px;
+        }
+
+        /* Portfolio Section */
+        .portfolio {
+            padding: 140px 48px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .section-header {
+            margin-bottom: 80px;
+        }
+
+        .section-label {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 16px;
+        }
+
+        /* Launches Table */
+        .launches {
+            max-width: 1000px;
+        }
+
+        .launch {
+            display: grid;
+            grid-template-columns: 1fr 2fr auto;
+            gap: 40px;
+            padding: 40px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .launch:first-child {
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .launch:hover {
+            padding-left: 16px;
+        }
+
+        .launch:hover .launch-name {
+            color: var(--accent);
+        }
+
+        .launch-name {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
             transition: color 0.3s ease;
         }
 
-        .footer-email:hover {
-            color: var(--accent);
+        .launch-desc {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text-dim);
+        }
+
+        .launch-stat {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+            padding: 8px 16px;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 100px;
+            white-space: nowrap;
+        }
+
+        /* CTA */
+        .cta {
+            padding: 160px 48px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: clamp(32px, 5vw, 52px);
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .cta-sub {
+            font-size: 16px;
+            color: var(--text-dim);
+            margin-bottom: 40px;
+            max-width: 400px;
+            line-height: 1.7;
+        }
+
+        .cta-email {
+            display: inline-block;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text);
+            text-decoration: none;
+            padding: 16px 32px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .cta-email:hover {
+            background: var(--text);
+            color: var(--bg);
+            border-color: var(--text);
+        }
+
+        /* Footer */
+        footer {
+            padding: 32px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .footer-text {
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-links a {
+            font-size: 12px;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--text);
         }
 
         /* Responsive */
         @media (max-width: 900px) {
-            nav {
-                padding: 1.5rem 2rem;
+            .hero, .stats, .portfolio, .cta, footer {
+                padding-left: 24px;
+                padding-right: 24px;
             }
-
-            .stats-inner {
-                flex-direction: column;
-                gap: 3rem;
-            }
-
-            .collab-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .apps-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .floating-icon {
-                display: none;
-            }
+            .project { grid-template-columns: 1fr; gap: 16px; }
+            .project-stat { text-align: left; }
+            footer { flex-direction: column; gap: 16px; text-align: center; }
+            .stats-number { font-size: 64px; }
         }
-
-        @media (max-width: 600px) {
-            .apps-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
-            }
-
-            .footer-inner {
-                flex-direction: column;
-                gap: 2rem;
-                text-align: center;
-            }
-        }
-
-        /* Reveal animations */
-        .reveal {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 1s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .delay-1 { transition-delay: 0.1s; }
-        .delay-2 { transition-delay: 0.2s; }
-        .delay-3 { transition-delay: 0.3s; }
     </style>
 </head>
 <body>
-    <div class="cursor-glow" id="cursor-glow"></div>
+    <div class="noise"></div>
+    <div class="sphere"></div>
+    <div class="sphere-2"></div>
 
-    <nav>
-        <div class="logo">mindmush</div>
-        <a href="mailto:contact@mindmush.com" class="nav-contact">Contact</a>
-    </nav>
+    <div class="grid">
+        <div class="grid-line v" style="left: 20%"></div>
+        <div class="grid-line v" style="left: 40%"></div>
+        <div class="grid-line v" style="left: 60%"></div>
+        <div class="grid-line v" style="left: 80%"></div>
+    </div>
 
     <main>
         <section class="hero">
-            <div class="floating-icons">
-                <div class="floating-icon" style="width: 90px; height: 90px; top: 12%; left: 10%; animation-delay: 0s, 0s;">
-                    <img src="icons/icon-01.png" alt="">
-                </div>
-                <div class="floating-icon" style="width: 70px; height: 70px; top: 20%; right: 15%; animation-delay: 0.2s, -2s;">
-                    <img src="icons/icon-03.png" alt="">
-                </div>
-                <div class="floating-icon" style="width: 80px; height: 80px; top: 65%; left: 8%; animation-delay: 0.4s, -4s;">
-                    <img src="icons/icon-06.png" alt="">
-                </div>
-                <div class="floating-icon" style="width: 65px; height: 65px; top: 70%; right: 12%; animation-delay: 0.3s, -1s;">
-                    <img src="icons/icon-11.png" alt="">
-                </div>
-                <div class="floating-icon" style="width: 55px; height: 55px; top: 40%; left: 5%; animation-delay: 0.5s, -3s;">
-                    <img src="icons/icon-08.png" alt="">
-                </div>
-                <div class="floating-icon" style="width: 60px; height: 60px; top: 35%; right: 8%; animation-delay: 0.1s, -5s;">
-                    <img src="icons/icon-05.png" alt="">
-                </div>
-            </div>
+            <nav class="hero-nav">
+                <div class="logo">MINDMUSH</div>
+                <div class="nav-right">Zürich, CH</div>
+            </nav>
 
             <div class="hero-content">
-                <div class="hero-tag reveal">Mobile Games & Apps</div>
-                <h1 class="reveal delay-1">Building what<br><span class="accent">millions</span> play</h1>
-                <p class="hero-desc reveal delay-2">A holding company for consumer applications. We create, acquire, and scale experiences that become part of daily life.</p>
+                <h1 class="hero-title">Creating a profitable <span class="dim">consumer software portfolio.</span></h1>
+                <p class="hero-sub">Mobile app studio based in Switzerland. We launch, validate, and scale consumer apps and mobile games.</p>
+                <div class="scroll-indicator">
+                    <span>SCROLL</span>
+                    <div class="scroll-line"></div>
+                </div>
             </div>
         </section>
 
-        <section class="stats-bar">
-            <div class="stats-inner">
-                <div class="stat reveal">
-                    <div class="stat-value">10<span class="dim">M+</span></div>
-                    <div class="stat-label">Downloads</div>
-                </div>
-                <div class="stat reveal delay-1">
-                    <div class="stat-value">50<span class="dim">+</span></div>
-                    <div class="stat-label">Applications</div>
-                </div>
-            </div>
+        <section class="stats">
+            <p class="stats-intro">We've launched <strong>50+ apps</strong> with exactly:</p>
+            <div class="stats-number" id="counter">10,283,292</div>
+            <p class="stats-label">downloads and counting</p>
         </section>
 
         <section class="portfolio">
-            <div class="section-header reveal">
-                <div class="section-number">01</div>
-                <h2 class="section-title">The Portfolio</h2>
+            <div class="section-header">
+                <p class="section-label">Notable Launches</p>
+                <h2 class="section-title">A few that hit.</h2>
             </div>
-            <div class="apps-grid">
-                <div class="app-item reveal"><img src="icons/icon-01.png" alt=""></div>
-                <div class="app-item reveal delay-1"><img src="icons/icon-02.png" alt=""></div>
-                <div class="app-item reveal delay-2"><img src="icons/icon-03.png" alt=""></div>
-                <div class="app-item reveal delay-3"><img src="icons/icon-04.png" alt=""></div>
-                <div class="app-item reveal"><img src="icons/icon-05.png" alt=""></div>
-                <div class="app-item reveal delay-1"><img src="icons/icon-06.png" alt=""></div>
-                <div class="app-item reveal delay-2"><img src="icons/icon-07.png" alt=""></div>
-                <div class="app-item reveal delay-3"><img src="icons/icon-08.png" alt=""></div>
-                <div class="app-item reveal"><img src="icons/icon-09.png" alt=""></div>
-                <div class="app-item reveal delay-1"><img src="icons/icon-10.png" alt=""></div>
-                <div class="app-item reveal delay-2"><img src="icons/icon-11.png" alt=""></div>
-                <div class="app-item reveal delay-3" style="background: var(--surface); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 1.5rem; color: var(--text-tertiary);">+39</div>
-            </div>
-        </section>
 
-        <section class="marquee-section">
-            <div class="marquee">
-                <div class="marquee-content">
-                    <span class="marquee-item">Hyper Casual</span>
-                    <span class="marquee-dot"></span>
-                    <span class="marquee-item">Puzzle Games</span>
-                    <span class="marquee-dot"></span>
-                    <span class="marquee-item">Consumer Apps</span>
-                    <span class="marquee-dot"></span>
-                    <span class="marquee-item">Simulation</span>
-                    <span class="marquee-dot"></span>
-                    <span class="marquee-item">Arcade</span>
-                    <span class="marquee-dot"></span>
-                    <span class="marquee-item">User Acquisition</span>
-                    <span class="marquee-dot"></span>
-                    <span class="marquee-item">Monetization</span>
-                    <span class="marquee-dot"></span>
-                    <span class="marquee-item">Growth</span>
-                    <span class="marquee-dot"></span>
+            <div class="projects">
+                <div class="project">
+                    <div class="project-header">
+                        <div class="project-info">
+                            <h3 class="project-name">Skibidi War</h3>
+                            <span class="project-meta">Mobile Game</span>
+                        </div>
+                        <span class="project-stat">3M+ downloads</span>
+                    </div>
+                    <p class="project-desc">Official collaboration with the Skibidi Toilet creators. 60M+ social views, 3M downloads in two weeks.</p>
                 </div>
-                <div class="marquee-content">
-                    <span class="marquee-item">Hyper Casual</span>
-                    <span class="marquee-dot"></span>
-                    <span class="marquee-item">Puzzle Games</span>
-                    <span class="marquee-dot"></span>
-                    <span class="marquee-item">Consumer Apps</span>
-                    <span class="marquee-dot"></span>
-                    <span class="marquee-item">Simulation</span>
-                    <span class="marquee-dot"></span>
-                    <span class="marquee-item">Arcade</span>
-                    <span class="marquee-dot"></span>
-                    <span class="marquee-item">User Acquisition</span>
-                    <span class="marquee-dot"></span>
-                    <span class="marquee-item">Monetization</span>
-                    <span class="marquee-dot"></span>
-                    <span class="marquee-item">Growth</span>
-                    <span class="marquee-dot"></span>
-                </div>
-            </div>
-        </section>
 
-        <section class="collaborate">
-            <div class="section-header reveal">
-                <div class="section-number">02</div>
-                <h2 class="section-title">Work With Us</h2>
-            </div>
-            <div class="collab-grid">
-                <div class="collab-item reveal">
-                    <div class="collab-num">01</div>
-                    <h3 class="collab-title">Partner</h3>
-                    <p class="collab-desc">Scale your app with our distribution infrastructure and growth expertise.</p>
+                <div class="project">
+                    <div class="project-header">
+                        <div class="project-info">
+                            <h3 class="project-name">Starry Blitz</h3>
+                            <span class="project-meta">Mobile Game</span>
+                        </div>
+                        <span class="project-stat">Brand deal</span>
+                    </div>
+                    <p class="project-desc">Official collaboration with Pepsi's Starry brand. Promoted nationwide across the US.</p>
                 </div>
-                <div class="collab-item reveal delay-1">
-                    <div class="collab-num">02</div>
-                    <h3 class="collab-title">Acquire</h3>
-                    <p class="collab-desc">Fair valuations and efficient execution for opportunities that fit.</p>
+
+                <div class="project">
+                    <div class="project-header">
+                        <div class="project-info">
+                            <h3 class="project-name">DaGame</h3>
+                            <span class="project-meta">Mobile Game</span>
+                        </div>
+                        <span class="project-stat">#1 App Store</span>
+                    </div>
+                    <p class="project-desc">The DaBaby car meme, turned into a game. Played by 25% of American high schoolers in 2021.</p>
                 </div>
-                <div class="collab-item reveal delay-2">
-                    <div class="collab-num">03</div>
-                    <h3 class="collab-title">Create</h3>
-                    <p class="collab-desc">Co-develop ambitious concepts from vision to millions of users.</p>
+
+                <div class="project">
+                    <div class="project-header">
+                        <div class="project-info">
+                            <h3 class="project-name">Debloat AI</h3>
+                            <span class="project-meta">Consumer App</span>
+                        </div>
+                        <span class="project-stat">Exited</span>
+                    </div>
+                    <p class="project-desc">Beauty app scaled profitably with paid ads and influencer marketing. Sold to AppStack.</p>
+                </div>
+
+                <div class="project">
+                    <div class="project-header">
+                        <div class="project-info">
+                            <h3 class="project-name">Obama Run</h3>
+                            <span class="project-meta">Mobile Game</span>
+                        </div>
+                        <span class="project-stat">Viral</span>
+                    </div>
+                    <p class="project-desc">Viral runner game that spread across YouTube. Played and streamed by major creators.</p>
                 </div>
             </div>
         </section>
 
-        <section class="talent">
-            <div class="talent-inner reveal">
-                <div class="section-number">03</div>
-                <h2 class="talent-title">Seeking the<br><span class="accent">exceptional</span></h2>
-                <p class="talent-desc">We work with those who build remarkable things. No formal process. Your work is your introduction.</p>
-                <a href="mailto:contact@mindmush.com" class="btn">
-                    <span>Get in Touch</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                </a>
-            </div>
+        <section class="cta">
+            <h2 class="cta-title">Build with us.</h2>
+            <p class="cta-sub">Always looking for killers. Developers, designers, growth people. If you ship, we want to hear from you.</p>
+            <a href="mailto:contact@mindmush.com" class="cta-email">contact@mindmush.com</a>
         </section>
     </main>
 
     <footer>
-        <div class="footer-inner">
-            <div class="footer-left">
-                <div class="footer-logo">mindmush</div>
-                <div class="footer-legal">mindmush llc</div>
-            </div>
-            <a href="mailto:contact@mindmush.com" class="footer-email">contact@mindmush.com</a>
+        <div class="footer-text">MINDMUSH LLC — Zürich, Switzerland. Team worldwide.</div>
+        <div class="footer-links">
+            <a href="/privacy">Privacy</a>
+            <a href="/terms">Terms</a>
         </div>
     </footer>
 
     <script>
-        // Cursor glow
-        const glow = document.getElementById('cursor-glow');
-        let glowX = 0, glowY = 0;
-        let currentX = 0, currentY = 0;
-
+        // Parallax spheres
         document.addEventListener('mousemove', (e) => {
-            glowX = e.clientX;
-            glowY = e.clientY;
+            const sphere = document.querySelector('.sphere');
+            const sphere2 = document.querySelector('.sphere-2');
+            const x = (e.clientX / window.innerWidth - 0.5) * 50;
+            const y = (e.clientY / window.innerHeight - 0.5) * 50;
+            sphere.style.transform = `translate(${x}px, ${y}px)`;
+            sphere2.style.transform = `translate(${-x * 0.5}px, ${-y * 0.5}px)`;
         });
 
-        function animateGlow() {
-            currentX += (glowX - currentX) * 0.08;
-            currentY += (glowY - currentY) * 0.08;
-            glow.style.left = currentX + 'px';
-            glow.style.top = currentY + 'px';
-            requestAnimationFrame(animateGlow);
-        }
-        animateGlow();
+        // Counter animation with continuous rise
+        const counter = document.getElementById('counter');
+        const baseTarget = 10283292;
+        let currentValue = 0;
+        let counted = false;
+        let riseInterval;
 
-        // Reveal animations
+        function animateCounter() {
+            const duration = 2500;
+            const start = performance.now();
+
+            function update(now) {
+                const elapsed = now - start;
+                const progress = Math.min(elapsed / duration, 1);
+                const ease = 1 - Math.pow(1 - progress, 4);
+                currentValue = Math.floor(ease * baseTarget);
+                counter.textContent = currentValue.toLocaleString();
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                } else {
+                    // Start continuous rise after initial animation
+                    startContinuousRise();
+                }
+            }
+            requestAnimationFrame(update);
+        }
+
+        function startContinuousRise() {
+            riseInterval = setInterval(() => {
+                currentValue += Math.floor(Math.random() * 3) + 1;
+                counter.textContent = currentValue.toLocaleString();
+            }, 800);
+        }
+
+        // Intersection Observer
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+
+                    if (entry.target.id === 'counter' && !counted) {
+                        counted = true;
+                        animateCounter();
+                    }
                 }
             });
-        }, { threshold: 0.1 });
+        }, { threshold: 0.2 });
 
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-        // Parallax on floating icons
-        document.addEventListener('mousemove', (e) => {
-            const icons = document.querySelectorAll('.floating-icon');
-            const x = (e.clientX / window.innerWidth - 0.5);
-            const y = (e.clientY / window.innerHeight - 0.5);
-
-            icons.forEach((icon, i) => {
-                const factor = (i + 1) * 6;
-                const offsetX = x * factor;
-                const offsetY = y * factor;
-                icon.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-            });
+        document.querySelectorAll('.project, .section-title, .cta-title, .stats-number').forEach((el, i) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(40px)';
+            el.style.transition = `opacity 0.8s ease ${i * 0.08}s, transform 0.8s ease ${i * 0.08}s`;
+            observer.observe(el);
         });
     </script>
 </body>
