@@ -6,7 +6,7 @@
     <title>mindmush</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@200;300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -15,12 +15,14 @@
         }
 
         :root {
-            --bg: #060606;
-            --text: #e5e5e5;
-            --text-subtle: #3a3a3a;
-            --text-muted: #6a6a6a;
-            --gold: #c9a962;
-            --gold-subtle: rgba(201, 169, 98, 0.08);
+            --bg: #050507;
+            --surface: #0a0a0e;
+            --text: #e8e8ec;
+            --text-secondary: #6e6e7a;
+            --text-tertiary: #3a3a44;
+            --accent: #a78bfa;
+            --accent-dim: rgba(167, 139, 250, 0.1);
+            --border: rgba(255,255,255,0.04);
         }
 
         html {
@@ -32,13 +34,13 @@
             background: var(--bg);
             color: var(--text);
             overflow-x: hidden;
-            font-weight: 300;
+            font-weight: 400;
             -webkit-font-smoothing: antialiased;
-            letter-spacing: 0.01em;
+            line-height: 1.6;
         }
 
         ::selection {
-            background: var(--gold);
+            background: var(--accent);
             color: var(--bg);
         }
 
@@ -47,81 +49,22 @@
             text-decoration: none;
         }
 
-        /* Smooth loader */
-        .loader {
+        /* Cursor glow */
+        .cursor-glow {
             position: fixed;
-            inset: 0;
-            background: var(--bg);
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
-        }
-
-        .loader.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-
-        .loader-inner {
-            width: 1px;
-            height: 60px;
-            background: linear-gradient(to bottom, transparent, var(--gold), transparent);
-            animation: loaderPulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes loaderPulse {
-            0%, 100% { opacity: 0.3; transform: scaleY(0.8); }
-            50% { opacity: 1; transform: scaleY(1); }
-        }
-
-        /* Ambient glow */
-        .ambient {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .ambient-orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0;
-            animation: orbFade 3s ease forwards;
-        }
-
-        .ambient-orb-1 {
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, var(--gold-subtle) 0%, transparent 70%);
-            top: -200px;
-            right: -100px;
-            animation-delay: 1s;
-        }
-
-        .ambient-orb-2 {
             width: 500px;
             height: 500px;
-            background: radial-gradient(circle, rgba(255,255,255,0.02) 0%, transparent 70%);
-            bottom: 20%;
-            left: -150px;
-            animation-delay: 1.5s;
+            background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            transform: translate(-50%, -50%);
         }
 
-        @keyframes orbFade {
-            to { opacity: 1; }
-        }
-
-        /* Main */
-        main {
-            position: relative;
-            z-index: 1;
+        body:hover .cursor-glow {
+            opacity: 1;
         }
 
         /* Navigation */
@@ -130,421 +73,356 @@
             top: 0;
             left: 0;
             right: 0;
-            padding: 2.5rem 4rem;
+            padding: 2rem 4rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
-            opacity: 0;
-            animation: fadeIn 1s ease forwards 1.5s;
         }
 
         .logo {
-            font-family: 'Cormorant', serif;
-            font-size: 1.3rem;
-            font-weight: 300;
-            letter-spacing: 0.15em;
-            text-transform: lowercase;
-        }
-
-        .nav-email {
-            font-size: 0.65rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            transition: color 0.5s ease;
-            position: relative;
-        }
-
-        .nav-email::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background: var(--gold);
-            transition: width 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        .nav-email:hover {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
             color: var(--text);
         }
 
-        .nav-email:hover::after {
-            width: 100%;
+        .nav-contact {
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            transition: all 0.4s ease;
+        }
+
+        .nav-contact:hover {
+            color: var(--text);
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        /* Main */
+        main {
+            position: relative;
+            z-index: 1;
         }
 
         /* Hero */
         .hero {
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            padding: 2rem;
+            justify-content: center;
+            padding: 8rem 2rem;
             position: relative;
         }
 
         .hero-content {
             text-align: center;
-            max-width: 1100px;
+            max-width: 1000px;
         }
 
-        .hero-super {
-            font-size: 0.6rem;
-            letter-spacing: 0.5em;
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 3rem;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
             text-transform: uppercase;
-            color: var(--text-subtle);
-            margin-bottom: 4rem;
-            overflow: hidden;
+            color: var(--text-tertiary);
         }
 
-        .hero-super span {
-            display: inline-block;
-            transform: translateY(100%);
-            opacity: 0;
-            animation: slideUpFade 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-            animation-delay: 1.8s;
-        }
-
-        @keyframes slideUpFade {
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        .hero-tag::before,
+        .hero-tag::after {
+            content: '';
+            width: 30px;
+            height: 1px;
+            background: var(--text-tertiary);
         }
 
         .hero h1 {
-            font-family: 'Cormorant', serif;
-            font-size: clamp(4.5rem, 13vw, 11rem);
-            font-weight: 300;
-            letter-spacing: -0.03em;
-            line-height: 0.9;
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(3.5rem, 10vw, 8rem);
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            line-height: 0.95;
+            margin-bottom: 2rem;
         }
 
-        .hero h1 .line {
-            display: block;
+        .hero h1 .accent {
+            color: var(--accent);
+        }
+
+        .hero-desc {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        /* Floating icons */
+        .floating-icons {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
             overflow: hidden;
         }
 
-        .hero h1 .line-inner {
-            display: block;
-            transform: translateY(105%);
-            animation: slideUp 1.4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-        }
-
-        .hero h1 .line:nth-child(1) .line-inner { animation-delay: 1.9s; }
-        .hero h1 .line:nth-child(2) .line-inner { animation-delay: 2s; }
-
-        @keyframes slideUp {
-            to { transform: translateY(0); }
-        }
-
-        .hero h1 em {
-            font-style: italic;
-            color: var(--gold);
-        }
-
-        .hero-sub {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin-top: 4rem;
-            letter-spacing: 0.03em;
+        .floating-icon {
+            position: absolute;
+            border-radius: 20px;
+            overflow: hidden;
             opacity: 0;
-            animation: fadeIn 1s ease forwards 2.5s;
+            animation: floatIn 1s ease forwards, float 8s ease-in-out infinite;
+            box-shadow: 0 30px 60px -15px rgba(0,0,0,0.6);
         }
 
-        .hero-line {
-            width: 1px;
-            height: 0;
-            background: linear-gradient(to bottom, var(--gold), transparent);
-            margin: 5rem auto 0;
-            animation: lineGrow 2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-            animation-delay: 2.8s;
+        .floating-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        @keyframes lineGrow {
-            to { height: 100px; }
+        @keyframes floatIn {
+            to { opacity: 0.8; }
         }
 
-        @keyframes fadeIn {
-            to { opacity: 1; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
         }
 
-        /* Statement */
-        .statement {
-            padding: 12rem 4rem;
-            display: flex;
-            justify-content: center;
+        /* Stats bar */
+        .stats-bar {
+            padding: 6rem 2rem;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
         }
 
-        .statement-inner {
-            max-width: 750px;
-            text-align: center;
-        }
-
-        .statement p {
-            font-family: 'Cormorant', serif;
-            font-size: clamp(1.5rem, 3vw, 2rem);
-            font-weight: 300;
-            line-height: 1.8;
-            color: var(--text-muted);
-        }
-
-        .statement p em {
-            font-style: italic;
-            color: var(--text);
-        }
-
-        .statement p strong {
-            font-weight: 400;
-            color: var(--gold);
-        }
-
-        /* Metrics */
-        .metrics {
-            padding: 8rem 4rem 12rem;
-        }
-
-        .metrics-inner {
-            max-width: 1000px;
+        .stats-inner {
+            max-width: 900px;
             margin: 0 auto;
             display: flex;
             justify-content: center;
-            gap: 12rem;
+            gap: 8rem;
         }
 
-        .metric {
+        .stat {
             text-align: center;
-            position: relative;
         }
 
-        .metric::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, var(--gold-subtle) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 0.8s ease;
-        }
-
-        .metric:hover::before {
-            opacity: 1;
-        }
-
-        .metric-value {
-            font-family: 'Cormorant', serif;
-            font-size: clamp(5rem, 12vw, 9rem);
-            font-weight: 300;
-            line-height: 1;
+        .stat-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 4rem;
+            font-weight: 700;
             letter-spacing: -0.03em;
-            position: relative;
+            color: var(--text);
+            line-height: 1;
         }
 
-        .metric-value .suffix {
-            font-size: 0.4em;
-            color: var(--text-muted);
-            margin-left: 0.05em;
+        .stat-value .dim {
+            color: var(--text-tertiary);
         }
 
-        .metric-label {
-            font-size: 0.6rem;
-            letter-spacing: 0.4em;
+        .stat-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.15em;
             text-transform: uppercase;
-            color: var(--text-subtle);
-            margin-top: 2rem;
+            color: var(--text-tertiary);
+            margin-top: 1rem;
         }
 
-        /* Divider */
-        .divider {
-            display: flex;
-            justify-content: center;
-            padding: 2rem 0;
-        }
-
-        .divider-line {
-            width: 1px;
-            height: 120px;
-            background: linear-gradient(to bottom, transparent, var(--text-subtle), transparent);
-        }
-
-        /* Portfolio */
+        /* Portfolio section */
         .portfolio {
-            padding: 10rem 4rem 8rem;
+            padding: 10rem 2rem;
         }
 
-        .portfolio-header {
+        .section-header {
             text-align: center;
-            margin-bottom: 8rem;
+            margin-bottom: 6rem;
         }
 
-        .section-label {
-            font-size: 0.55rem;
-            letter-spacing: 0.5em;
-            text-transform: uppercase;
-            color: var(--text-subtle);
-            margin-bottom: 2.5rem;
+        .section-number {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
         }
 
         .section-title {
-            font-family: 'Cormorant', serif;
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
-            font-weight: 300;
-            letter-spacing: -0.01em;
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            letter-spacing: -0.03em;
         }
 
-        .section-title em {
-            font-style: italic;
-            color: var(--gold);
-        }
-
-        /* App constellation */
-        .constellation {
-            position: relative;
-            height: 75vh;
-            max-height: 750px;
-            max-width: 1300px;
+        /* Apps grid */
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1.5rem;
+            max-width: 900px;
             margin: 0 auto;
         }
 
-        .app-icon {
+        .app-item {
+            aspect-ratio: 1;
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .app-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .app-item::after {
+            content: '';
             position: absolute;
-            border-radius: 22%;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 50%);
             opacity: 0;
-            transition: all 0.7s cubic-bezier(0.23, 1, 0.32, 1);
-            cursor: default;
+            transition: opacity 0.4s ease;
+        }
+
+        .app-item:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 30px 60px -20px rgba(167, 139, 250, 0.3);
+        }
+
+        .app-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .app-item:hover::after {
+            opacity: 1;
+        }
+
+        /* Marquee */
+        .marquee-section {
+            padding: 4rem 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
             overflow: hidden;
         }
 
-        .app-icon::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
-            opacity: 0;
-            transition: opacity 0.5s ease;
+        .marquee {
+            display: flex;
+            animation: marquee 40s linear infinite;
         }
 
-        .app-icon::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+        .marquee-content {
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+            padding-right: 4rem;
+            white-space: nowrap;
         }
 
-        .app-icon.visible {
-            opacity: 1;
+        .marquee-item {
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            letter-spacing: 0.05em;
         }
 
-        .app-icon:hover {
-            transform: scale(1.08) translateY(-5px);
-            z-index: 10;
+        .marquee-dot {
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0.5;
         }
 
-        .app-icon:hover::before {
-            opacity: 1;
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
         }
 
-        /* Collaboration */
-        .collab {
-            padding: 12rem 4rem 10rem;
-        }
-
-        .collab-inner {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        .collab-header {
-            text-align: center;
-            margin-bottom: 8rem;
-        }
-
-        .collab-title {
-            font-family: 'Cormorant', serif;
-            font-size: clamp(3rem, 7vw, 5.5rem);
-            font-weight: 300;
-            line-height: 1.1;
-            letter-spacing: -0.02em;
-        }
-
-        .collab-title em {
-            font-style: italic;
-            color: var(--gold);
-        }
-
-        .collab-intro {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            max-width: 450px;
-            margin: 3rem auto 0;
-            line-height: 1.9;
-            text-align: center;
+        /* Collaborate */
+        .collaborate {
+            padding: 10rem 2rem;
         }
 
         .collab-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 1px;
-            background: var(--text-subtle);
-            border: 1px solid var(--text-subtle);
-            margin-top: 6rem;
+            background: var(--border);
+            max-width: 1100px;
+            margin: 0 auto;
+            border: 1px solid var(--border);
         }
 
         .collab-item {
             background: var(--bg);
             padding: 4rem 3rem;
             text-align: center;
-            transition: all 0.6s ease;
+            transition: all 0.5s ease;
             position: relative;
         }
 
         .collab-item::before {
             content: '';
             position: absolute;
-            inset: 0;
-            background: linear-gradient(180deg, var(--gold-subtle) 0%, transparent 100%);
-            opacity: 0;
-            transition: opacity 0.6s ease;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transition: transform 0.5s ease;
+        }
+
+        .collab-item:hover {
+            background: var(--surface);
         }
 
         .collab-item:hover::before {
-            opacity: 1;
+            transform: scaleX(1);
         }
 
-        .collab-item-num {
-            font-family: 'Cormorant', serif;
-            font-size: 0.9rem;
-            color: var(--gold);
+        .collab-num {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent);
             margin-bottom: 2rem;
-            font-style: italic;
-            position: relative;
         }
 
-        .collab-item-title {
-            font-family: 'Cormorant', serif;
-            font-size: 1.8rem;
-            font-weight: 400;
-            margin-bottom: 1.5rem;
-            position: relative;
+        .collab-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
         }
 
-        .collab-item-desc {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            line-height: 1.8;
-            position: relative;
+        .collab-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
         }
 
         /* Talent */
         .talent {
-            padding: 15rem 4rem;
+            padding: 12rem 2rem;
             text-align: center;
             position: relative;
         }
@@ -557,60 +435,60 @@
             transform: translate(-50%, -50%);
             width: 600px;
             height: 600px;
-            background: radial-gradient(circle, var(--gold-subtle) 0%, transparent 60%);
+            background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%);
             pointer-events: none;
         }
 
         .talent-inner {
             position: relative;
             z-index: 1;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         .talent-title {
-            font-family: 'Cormorant', serif;
-            font-size: clamp(3.5rem, 9vw, 8rem);
-            font-weight: 300;
-            line-height: 0.95;
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 700;
             letter-spacing: -0.03em;
-            margin-bottom: 3rem;
+            line-height: 1;
+            margin-bottom: 2rem;
         }
 
-        .talent-title em {
-            font-style: italic;
-            color: var(--gold);
+        .talent-title .accent {
+            color: var(--accent);
         }
 
         .talent-desc {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            max-width: 380px;
-            margin: 0 auto 4rem;
+            font-size: 1rem;
+            color: var(--text-secondary);
             line-height: 1.9;
+            margin-bottom: 3rem;
         }
 
         .btn {
-            display: inline-block;
-            font-size: 0.6rem;
-            letter-spacing: 0.35em;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
-            padding: 1.6rem 3.5rem;
-            border: 1px solid var(--text-subtle);
-            background: transparent;
-            color: var(--text);
-            cursor: pointer;
+            padding: 1.25rem 2.5rem;
+            border: 1px solid var(--text-tertiary);
+            border-radius: 0;
+            transition: all 0.4s ease;
             position: relative;
             overflow: hidden;
-            transition: border-color 0.5s ease, color 0.5s ease;
         }
 
         .btn::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: var(--gold);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            background: var(--accent);
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         .btn span {
@@ -618,137 +496,110 @@
             z-index: 1;
         }
 
+        .btn svg {
+            position: relative;
+            z-index: 1;
+            width: 16px;
+            height: 16px;
+            transition: transform 0.3s ease;
+        }
+
         .btn:hover {
-            border-color: var(--gold);
+            border-color: var(--accent);
+            color: var(--bg);
         }
 
         .btn:hover::before {
-            transform: scaleX(1);
+            transform: translateY(0);
         }
 
-        .btn:hover span {
-            color: var(--bg);
+        .btn:hover svg {
+            transform: translateX(4px);
         }
 
         /* Footer */
         footer {
-            padding: 5rem 4rem;
-            border-top: 1px solid rgba(255,255,255,0.03);
+            padding: 4rem;
+            border-top: 1px solid var(--border);
         }
 
         .footer-inner {
-            max-width: 1300px;
+            max-width: 1200px;
             margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: end;
-            gap: 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .footer-brand {
+        .footer-left {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.5rem;
         }
 
         .footer-logo {
-            font-family: 'Cormorant', serif;
-            font-size: 1.8rem;
-            font-weight: 300;
-            letter-spacing: 0.1em;
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
         }
 
         .footer-legal {
-            font-size: 0.6rem;
-            color: var(--text-subtle);
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-        }
-
-        .footer-center {
-            text-align: center;
-        }
-
-        .footer-tagline {
-            font-family: 'Cormorant', serif;
-            font-size: 0.9rem;
-            font-style: italic;
-            color: var(--text-muted);
-        }
-
-        .footer-contact {
-            text-align: right;
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
         }
 
         .footer-email {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            letter-spacing: 0.1em;
-            transition: color 0.4s ease;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
         }
 
         .footer-email:hover {
-            color: var(--gold);
+            color: var(--accent);
         }
 
         /* Responsive */
-        @media (max-width: 1024px) {
-            .metrics-inner {
-                gap: 6rem;
+        @media (max-width: 900px) {
+            nav {
+                padding: 1.5rem 2rem;
+            }
+
+            .stats-inner {
+                flex-direction: column;
+                gap: 3rem;
             }
 
             .collab-grid {
                 grid-template-columns: 1fr;
             }
 
-            .footer-inner {
-                grid-template-columns: 1fr;
-                gap: 3rem;
-                text-align: center;
+            .apps-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
 
-            .footer-contact {
-                text-align: center;
-            }
-        }
-
-        @media (max-width: 768px) {
-            nav {
-                padding: 2rem;
-            }
-
-            .statement,
-            .metrics,
-            .portfolio,
-            .collab,
-            .talent {
-                padding-left: 2rem;
-                padding-right: 2rem;
-            }
-
-            .metrics-inner {
-                flex-direction: column;
-                gap: 5rem;
-            }
-
-            .constellation {
-                height: 55vh;
-            }
-
-            footer {
-                padding: 3rem 2rem;
-            }
-
-            .footer-center {
+            .floating-icon {
                 display: none;
             }
         }
 
-        /* Reveal */
+        @media (max-width: 600px) {
+            .apps-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+                gap: 2rem;
+                text-align: center;
+            }
+        }
+
+        /* Reveal animations */
         .reveal {
             opacity: 0;
-            transform: translateY(40px);
-            transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+            transform: translateY(30px);
+            transition: all 1s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         .reveal.visible {
@@ -756,271 +607,216 @@
             transform: translateY(0);
         }
 
-        .reveal-delay-1 { transition-delay: 0.1s; }
-        .reveal-delay-2 { transition-delay: 0.2s; }
-        .reveal-delay-3 { transition-delay: 0.3s; }
-
-        /* Smooth scroll */
-        @media (prefers-reduced-motion: no-preference) {
-            html {
-                scroll-behavior: smooth;
-            }
-        }
+        .delay-1 { transition-delay: 0.1s; }
+        .delay-2 { transition-delay: 0.2s; }
+        .delay-3 { transition-delay: 0.3s; }
     </style>
 </head>
 <body>
-    <!-- Loader -->
-    <div class="loader" id="loader">
-        <div class="loader-inner"></div>
-    </div>
+    <div class="cursor-glow" id="cursor-glow"></div>
 
-    <!-- Ambient background -->
-    <div class="ambient">
-        <div class="ambient-orb ambient-orb-1"></div>
-        <div class="ambient-orb ambient-orb-2"></div>
-    </div>
+    <nav>
+        <div class="logo">mindmush</div>
+        <a href="mailto:contact@mindmush.com" class="nav-contact">Contact</a>
+    </nav>
 
     <main>
-        <nav>
-            <div class="logo">mindmush</div>
-            <a href="mailto:contact@mindmush.com" class="nav-email">Contact</a>
-        </nav>
-
         <section class="hero">
+            <div class="floating-icons">
+                <div class="floating-icon" style="width: 90px; height: 90px; top: 12%; left: 10%; animation-delay: 0s, 0s;">
+                    <img src="icons/icon-01.png" alt="">
+                </div>
+                <div class="floating-icon" style="width: 70px; height: 70px; top: 20%; right: 15%; animation-delay: 0.2s, -2s;">
+                    <img src="icons/icon-03.png" alt="">
+                </div>
+                <div class="floating-icon" style="width: 80px; height: 80px; top: 65%; left: 8%; animation-delay: 0.4s, -4s;">
+                    <img src="icons/icon-06.png" alt="">
+                </div>
+                <div class="floating-icon" style="width: 65px; height: 65px; top: 70%; right: 12%; animation-delay: 0.3s, -1s;">
+                    <img src="icons/icon-11.png" alt="">
+                </div>
+                <div class="floating-icon" style="width: 55px; height: 55px; top: 40%; left: 5%; animation-delay: 0.5s, -3s;">
+                    <img src="icons/icon-08.png" alt="">
+                </div>
+                <div class="floating-icon" style="width: 60px; height: 60px; top: 35%; right: 8%; animation-delay: 0.1s, -5s;">
+                    <img src="icons/icon-05.png" alt="">
+                </div>
+            </div>
+
             <div class="hero-content">
-                <p class="hero-super"><span>Est. MMXX</span></p>
-                <h1>
-                    <span class="line"><span class="line-inner">Building what</span></span>
-                    <span class="line"><span class="line-inner"><em>endures</em></span></span>
-                </h1>
-                <p class="hero-sub">Consumer applications & mobile games</p>
-                <div class="hero-line"></div>
+                <div class="hero-tag reveal">Mobile Games & Apps</div>
+                <h1 class="reveal delay-1">Building what<br><span class="accent">millions</span> play</h1>
+                <p class="hero-desc reveal delay-2">A holding company for consumer applications. We create, acquire, and scale experiences that become part of daily life.</p>
             </div>
         </section>
 
-        <section class="statement">
-            <div class="statement-inner reveal">
-                <p>A holding company for <em>consumer applications</em> and <em>mobile games</em> that reach <strong>millions</strong>. We build, acquire, and scale products that become part of how people live.</p>
-            </div>
-        </section>
-
-        <section class="metrics">
-            <div class="metrics-inner">
-                <div class="metric reveal">
-                    <div class="metric-value"><span id="downloads">10</span><span class="suffix">M</span></div>
-                    <div class="metric-label">Downloads</div>
+        <section class="stats-bar">
+            <div class="stats-inner">
+                <div class="stat reveal">
+                    <div class="stat-value">10<span class="dim">M+</span></div>
+                    <div class="stat-label">Downloads</div>
                 </div>
-                <div class="metric reveal reveal-delay-1">
-                    <div class="metric-value">50<span class="suffix">+</span></div>
-                    <div class="metric-label">Applications</div>
+                <div class="stat reveal delay-1">
+                    <div class="stat-value">50<span class="dim">+</span></div>
+                    <div class="stat-label">Applications</div>
                 </div>
             </div>
         </section>
-
-        <div class="divider">
-            <div class="divider-line"></div>
-        </div>
 
         <section class="portfolio">
-            <div class="portfolio-header reveal">
-                <p class="section-label">Portfolio</p>
-                <h2 class="section-title">The <em>collection</em></h2>
+            <div class="section-header reveal">
+                <div class="section-number">01</div>
+                <h2 class="section-title">The Portfolio</h2>
             </div>
-            <div class="constellation" id="constellation"></div>
+            <div class="apps-grid">
+                <div class="app-item reveal"><img src="icons/icon-01.png" alt=""></div>
+                <div class="app-item reveal delay-1"><img src="icons/icon-02.png" alt=""></div>
+                <div class="app-item reveal delay-2"><img src="icons/icon-03.png" alt=""></div>
+                <div class="app-item reveal delay-3"><img src="icons/icon-04.png" alt=""></div>
+                <div class="app-item reveal"><img src="icons/icon-05.png" alt=""></div>
+                <div class="app-item reveal delay-1"><img src="icons/icon-06.png" alt=""></div>
+                <div class="app-item reveal delay-2"><img src="icons/icon-07.png" alt=""></div>
+                <div class="app-item reveal delay-3"><img src="icons/icon-08.png" alt=""></div>
+                <div class="app-item reveal"><img src="icons/icon-09.png" alt=""></div>
+                <div class="app-item reveal delay-1"><img src="icons/icon-10.png" alt=""></div>
+                <div class="app-item reveal delay-2"><img src="icons/icon-11.png" alt=""></div>
+                <div class="app-item reveal delay-3" style="background: var(--surface); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 1.5rem; color: var(--text-tertiary);">+39</div>
+            </div>
         </section>
 
-        <section class="collab">
-            <div class="collab-inner">
-                <div class="collab-header reveal">
-                    <p class="section-label">Collaborate</p>
-                    <h2 class="collab-title">Work with <em>us</em></h2>
-                    <p class="collab-intro">We partner with exceptional founders. Whether you're scaling, seeking an exit, or building from scratch.</p>
+        <section class="marquee-section">
+            <div class="marquee">
+                <div class="marquee-content">
+                    <span class="marquee-item">Hyper Casual</span>
+                    <span class="marquee-dot"></span>
+                    <span class="marquee-item">Puzzle Games</span>
+                    <span class="marquee-dot"></span>
+                    <span class="marquee-item">Consumer Apps</span>
+                    <span class="marquee-dot"></span>
+                    <span class="marquee-item">Simulation</span>
+                    <span class="marquee-dot"></span>
+                    <span class="marquee-item">Arcade</span>
+                    <span class="marquee-dot"></span>
+                    <span class="marquee-item">User Acquisition</span>
+                    <span class="marquee-dot"></span>
+                    <span class="marquee-item">Monetization</span>
+                    <span class="marquee-dot"></span>
+                    <span class="marquee-item">Growth</span>
+                    <span class="marquee-dot"></span>
                 </div>
-                <div class="collab-grid">
-                    <div class="collab-item reveal">
-                        <div class="collab-item-num">i</div>
-                        <h3 class="collab-item-title">Partner</h3>
-                        <p class="collab-item-desc">Leverage our distribution and growth infrastructure to reach scale.</p>
-                    </div>
-                    <div class="collab-item reveal reveal-delay-1">
-                        <div class="collab-item-num">ii</div>
-                        <h3 class="collab-item-title">Acquire</h3>
-                        <p class="collab-item-desc">Fair terms and efficient execution for the right opportunities.</p>
-                    </div>
-                    <div class="collab-item reveal reveal-delay-2">
-                        <div class="collab-item-num">iii</div>
-                        <h3 class="collab-item-title">Create</h3>
-                        <p class="collab-item-desc">Co-develop ambitious products from vision to millions of users.</p>
-                    </div>
+                <div class="marquee-content">
+                    <span class="marquee-item">Hyper Casual</span>
+                    <span class="marquee-dot"></span>
+                    <span class="marquee-item">Puzzle Games</span>
+                    <span class="marquee-dot"></span>
+                    <span class="marquee-item">Consumer Apps</span>
+                    <span class="marquee-dot"></span>
+                    <span class="marquee-item">Simulation</span>
+                    <span class="marquee-dot"></span>
+                    <span class="marquee-item">Arcade</span>
+                    <span class="marquee-dot"></span>
+                    <span class="marquee-item">User Acquisition</span>
+                    <span class="marquee-dot"></span>
+                    <span class="marquee-item">Monetization</span>
+                    <span class="marquee-dot"></span>
+                    <span class="marquee-item">Growth</span>
+                    <span class="marquee-dot"></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="collaborate">
+            <div class="section-header reveal">
+                <div class="section-number">02</div>
+                <h2 class="section-title">Work With Us</h2>
+            </div>
+            <div class="collab-grid">
+                <div class="collab-item reveal">
+                    <div class="collab-num">01</div>
+                    <h3 class="collab-title">Partner</h3>
+                    <p class="collab-desc">Scale your app with our distribution infrastructure and growth expertise.</p>
+                </div>
+                <div class="collab-item reveal delay-1">
+                    <div class="collab-num">02</div>
+                    <h3 class="collab-title">Acquire</h3>
+                    <p class="collab-desc">Fair valuations and efficient execution for opportunities that fit.</p>
+                </div>
+                <div class="collab-item reveal delay-2">
+                    <div class="collab-num">03</div>
+                    <h3 class="collab-title">Create</h3>
+                    <p class="collab-desc">Co-develop ambitious concepts from vision to millions of users.</p>
                 </div>
             </div>
         </section>
 
         <section class="talent">
             <div class="talent-inner reveal">
-                <p class="section-label">Careers</p>
-                <h2 class="talent-title">Exceptional<br><em>only</em></h2>
-                <p class="talent-desc">We seek those who build remarkable things. No formal process. Your work speaks.</p>
-                <a href="mailto:contact@mindmush.com" class="btn"><span>Inquire</span></a>
+                <div class="section-number">03</div>
+                <h2 class="talent-title">Seeking the<br><span class="accent">exceptional</span></h2>
+                <p class="talent-desc">We work with those who build remarkable things. No formal process. Your work is your introduction.</p>
+                <a href="mailto:contact@mindmush.com" class="btn">
+                    <span>Get in Touch</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                </a>
             </div>
         </section>
-
-        <footer>
-            <div class="footer-inner">
-                <div class="footer-brand">
-                    <div class="footer-logo">mindmush</div>
-                    <div class="footer-legal">mindmush llc</div>
-                </div>
-                <div class="footer-center">
-                    <p class="footer-tagline">Quietly building what matters</p>
-                </div>
-                <div class="footer-contact">
-                    <a href="mailto:contact@mindmush.com" class="footer-email">contact@mindmush.com</a>
-                </div>
-            </div>
-        </footer>
     </main>
 
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">mindmush</div>
+                <div class="footer-legal">mindmush llc</div>
+            </div>
+            <a href="mailto:contact@mindmush.com" class="footer-email">contact@mindmush.com</a>
+        </div>
+    </footer>
+
     <script>
-        // Loader
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('loader').classList.add('hidden');
-            }, 1200);
+        // Cursor glow
+        const glow = document.getElementById('cursor-glow');
+        let glowX = 0, glowY = 0;
+        let currentX = 0, currentY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            glowX = e.clientX;
+            glowY = e.clientY;
         });
 
-        // App icons with refined dark palettes
-        const palettes = [
-            ['#0f0f12', '#1a1a1f'],
-            ['#12121a', '#1e1e28'],
-            ['#0d1117', '#161b22'],
-            ['#100f14', '#1c1a22'],
-            ['#0e1111', '#1a1d1d'],
-            ['#14121a', '#201d28'],
-            ['#0f1114', '#191c20'],
-            ['#121014', '#1e1a20'],
-            ['#101215', '#1a1d21'],
-            ['#0d0f12', '#16191d'],
-            ['#110f13', '#1d1a1f'],
-            ['#0f1012', '#1a1c1f'],
-            ['#13111a', '#211d2a'],
-            ['#0e1014', '#181a1f'],
-            ['#101014', '#1c1c21'],
-        ];
-
-        function createConstellation() {
-            const container = document.getElementById('constellation');
-            const rect = container.getBoundingClientRect();
-            const isMobile = window.innerWidth < 768;
-            const count = isMobile ? 28 : 50;
-
-            container.innerHTML = '';
-
-            const cols = isMobile ? 5 : 8;
-            const rows = Math.ceil(count / cols);
-            const cellW = rect.width / cols;
-            const cellH = rect.height / rows;
-
-            for (let i = 0; i < count; i++) {
-                const icon = document.createElement('div');
-                icon.className = 'app-icon';
-
-                const size = isMobile ? 38 + Math.random() * 22 : 48 + Math.random() * 40;
-                icon.style.width = size + 'px';
-                icon.style.height = size + 'px';
-
-                const pal = palettes[i % palettes.length];
-                icon.style.background = `linear-gradient(145deg, ${pal[0]} 0%, ${pal[1]} 100%)`;
-
-                const col = i % cols;
-                const row = Math.floor(i / cols);
-                const baseX = col * cellW + cellW / 2 - size / 2;
-                const baseY = row * cellH + cellH / 2 - size / 2;
-                const offX = (Math.random() - 0.5) * cellW * 0.6;
-                const offY = (Math.random() - 0.5) * cellH * 0.6;
-
-                icon.style.left = Math.max(0, Math.min(rect.width - size, baseX + offX)) + 'px';
-                icon.style.top = Math.max(0, Math.min(rect.height - size, baseY + offY)) + 'px';
-                icon.style.transitionDelay = `${i * 0.02}s`;
-
-                container.appendChild(icon);
-            }
+        function animateGlow() {
+            currentX += (glowX - currentX) * 0.08;
+            currentY += (glowY - currentY) * 0.08;
+            glow.style.left = currentX + 'px';
+            glow.style.top = currentY + 'px';
+            requestAnimationFrame(animateGlow);
         }
+        animateGlow();
 
-        function showIcons() {
-            document.querySelectorAll('.app-icon').forEach(el => el.classList.add('visible'));
-        }
-
-        // Intersection Observer
-        const revealObs = new IntersectionObserver((entries) => {
+        // Reveal animations
+        const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
                 }
             });
-        }, { threshold: 0.15 });
-
-        document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
-
-        // Constellation observer
-        const constObs = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    createConstellation();
-                    setTimeout(showIcons, 50);
-                    constObs.unobserve(entry.target);
-                }
-            });
         }, { threshold: 0.1 });
 
-        constObs.observe(document.getElementById('constellation'));
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-        // Counter
-        const countObs = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    animateCount();
-                    countObs.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.5 });
-
-        countObs.observe(document.getElementById('downloads'));
-
-        function animateCount() {
-            const el = document.getElementById('downloads');
-            const dur = 2000;
-            const start = Date.now();
-
-            function tick() {
-                const t = Math.min((Date.now() - start) / dur, 1);
-                const ease = 1 - Math.pow(1 - t, 4);
-                el.textContent = Math.floor(ease * 10);
-                if (t < 1) requestAnimationFrame(tick);
-                else el.textContent = '10';
-            }
-            tick();
-        }
-
-        // Resize
-        let resizeTimer;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => {
-                const c = document.getElementById('constellation');
-                if (c.children.length) {
-                    createConstellation();
-                    showIcons();
-                }
-            }, 250);
-        });
-
-        // Smooth parallax for ambient orbs
+        // Parallax on floating icons
         document.addEventListener('mousemove', (e) => {
-            const x = (e.clientX / window.innerWidth - 0.5) * 20;
-            const y = (e.clientY / window.innerHeight - 0.5) * 20;
-            document.querySelector('.ambient-orb-1').style.transform = `translate(${x}px, ${y}px)`;
-            document.querySelector('.ambient-orb-2').style.transform = `translate(${-x}px, ${-y}px)`;
+            const icons = document.querySelectorAll('.floating-icon');
+            const x = (e.clientX / window.innerWidth - 0.5);
+            const y = (e.clientY / window.innerHeight - 0.5);
+
+            icons.forEach((icon, i) => {
+                const factor = (i + 1) * 6;
+                const offsetX = x * factor;
+                const offsetY = y * factor;
+                icon.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+            });
         });
     </script>
 </body>
