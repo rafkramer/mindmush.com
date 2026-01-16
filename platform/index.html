@@ -75,7 +75,7 @@
                     </div>
                     <div class="nav-item" data-page="expenses">
                         <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"/></svg>
-                        Studio Expenses
+                        Studio
                     </div>
                     <div class="nav-item" data-page="settings">
                         <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -116,7 +116,6 @@
                 <div class="filter-group">
                     <button class="filter-btn active" data-range="7">7 Days</button>
                     <button class="filter-btn" data-range="30">30 Days</button>
-                    <button class="filter-btn" data-range="365">This Year</button>
                     <button class="filter-btn" data-range="all">All Time</button>
                 </div>
                 <div class="filter-info">
@@ -182,8 +181,8 @@
                                     <th>Revenue</th>
                                     <th>Expenses</th>
                                     <th>Profit</th>
-                                    <th>Studio Share</th>
-                                    <th>Studio Revenue</th>
+                                    <th>Studio %</th>
+                                    <th>Studio Rev</th>
                                 </tr>
                             </thead>
                             <tbody id="overviewVenturesTable"></tbody>
@@ -224,9 +223,7 @@
                     <button class="back-btn" onclick="navigateTo('ventures')">
                         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path d="M15 19l-7-7 7-7"/></svg>
                     </button>
-                    <div class="venture-icon-display" id="ventureIconDisplay">
-                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/></svg>
-                    </div>
+                    <div class="venture-icon-display" id="ventureIconDisplay"></div>
                     <div class="detail-title-group">
                         <div class="detail-title-row">
                             <h1 class="page-title" id="ventureDetailName">Venture Name</h1>
@@ -236,7 +233,7 @@
                         <p class="page-subtitle" id="ventureDetailType">Consumer App</p>
                     </div>
                     <div class="detail-actions">
-                        <button class="btn btn-secondary" onclick="syncVentureData()">
+                        <button class="btn btn-secondary" onclick="syncVentureData()" id="syncVentureBtn">
                             <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
                             Sync
                         </button>
@@ -246,6 +243,9 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- API Connection Status -->
+                <div class="api-connection-banner" id="apiConnectionBanner"></div>
 
                 <div class="stats-grid" id="ventureDetailStats"></div>
 
@@ -316,15 +316,15 @@
                     </button>
                 </div>
 
-                <div class="partners-grid" id="partnersGrid"></div>
+                <div class="partners-list" id="partnersList"></div>
             </section>
 
             <!-- STUDIO EXPENSES PAGE -->
             <section class="page-section" id="pageExpenses">
                 <div class="page-header">
                     <div>
-                        <h1 class="page-title">Studio Expenses</h1>
-                        <p class="page-subtitle">Operating costs</p>
+                        <h1 class="page-title">Studio</h1>
+                        <p class="page-subtitle">Operating costs & overhead</p>
                     </div>
                     <button class="btn btn-primary" onclick="openModal('addStudioExpenseModal')">
                         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="16" height="16"><path d="M12 4v16m8-8H4"/></svg>
@@ -338,7 +338,7 @@
                             <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"/></svg>
                         </div>
                         <div class="stat-content">
-                            <div class="stat-label">Total Studio Expenses</div>
+                            <div class="stat-label">Total Studio Costs</div>
                             <div class="stat-value" id="totalStudioExpenses">$0</div>
                         </div>
                     </div>
@@ -379,55 +379,54 @@
                 <div class="page-header">
                     <div>
                         <h1 class="page-title">Settings</h1>
-                        <p class="page-subtitle">API keys & configuration</p>
+                        <p class="page-subtitle">API Configuration</p>
                     </div>
                 </div>
 
-                <div class="settings-grid">
-                    <div class="card settings-card">
-                        <div class="card-header">
-                            <div class="settings-card-icon orange">
-                                <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                <div class="settings-section">
+                    <div class="settings-card-large">
+                        <div class="settings-card-header">
+                            <div class="settings-icon orange">
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                             </div>
-                            <div>
-                                <h3 class="card-title">AppLovin API</h3>
-                                <p class="card-subtitle">For all mobile games (by Bundle ID)</p>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-group">
-                                <label class="form-label">Report Key</label>
-                                <div class="input-with-icon">
-                                    <input type="password" class="form-input" id="applovinApiKey" placeholder="Enter AppLovin Report Key">
-                                    <button class="input-icon-btn" onclick="togglePasswordVisibility('applovinApiKey')">
-                                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                    </button>
-                                </div>
-                                <p class="form-hint">This key is used for all game ventures. Each game uses its Bundle ID to fetch revenue.</p>
+                            <div class="settings-card-info">
+                                <h3>AppLovin MAX</h3>
+                                <p>Global API key for all mobile games. Revenue fetched by Bundle ID.</p>
                             </div>
                             <div class="api-status" id="applovinStatus">
                                 <span class="status-dot"></span>
                                 <span class="status-text">Not configured</span>
                             </div>
                         </div>
-                        <div class="card-footer">
-                            <button class="btn btn-secondary" onclick="testApplovinApi()">Test Connection</button>
-                            <button class="btn btn-primary" onclick="saveApplovinKey()">Save Key</button>
+                        <div class="settings-card-body">
+                            <div class="form-group">
+                                <label class="form-label">Report Key</label>
+                                <div class="input-with-icon">
+                                    <input type="password" class="form-input" id="applovinApiKey" placeholder="Enter your AppLovin Report Key">
+                                    <button class="input-icon-btn" onclick="togglePasswordVisibility('applovinApiKey')">
+                                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="settings-actions">
+                                <button class="btn btn-secondary" onclick="testApplovinApi()">Test Connection</button>
+                                <button class="btn btn-primary" onclick="saveApplovinKey()">Save Key</button>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="card settings-card">
-                        <div class="card-header">
-                            <div class="settings-card-icon purple">
-                                <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM6 10h2v2H6zm0 4h8v2H6zm10 0h2v2h-2zm-6-4h8v2h-8z"/></svg>
+                    <div class="settings-card-large muted">
+                        <div class="settings-card-header">
+                            <div class="settings-icon purple">
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM6 10h2v2H6zm0 4h8v2H6zm10 0h2v2h-2zm-6-4h8v2h-8z"/></svg>
                             </div>
-                            <div>
-                                <h3 class="card-title">Superwall</h3>
-                                <p class="card-subtitle">API keys set per consumer app</p>
+                            <div class="settings-card-info">
+                                <h3>Superwall</h3>
+                                <p>API keys configured per consumer app. Each app has its own key for proceeds tracking.</p>
                             </div>
                         </div>
-                        <div class="card-body">
-                            <p class="settings-info">Superwall API keys are configured individually for each consumer app venture. Edit a venture to add its Superwall API key.</p>
+                        <div class="settings-card-body">
+                            <p class="settings-note">Superwall API keys are set individually when creating or editing a consumer app venture.</p>
                         </div>
                     </div>
                 </div>
@@ -512,7 +511,7 @@
                     <p class="section-desc">Payouts are processed monthly, typically within 45 days after the end of each fiscal month.</p>
                     <div class="next-payout-card" id="nextPayoutCard">
                         <div class="payout-icon">
-                            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z"/></svg>
+                            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
                         </div>
                         <div class="payout-info">
                             <span class="payout-label">Next Expected Payout</span>
@@ -556,9 +555,7 @@
                         <div class="contract-logo">MINDMUSH</div>
                         <div class="contract-title">Partnership Agreement</div>
                     </div>
-                    <div class="contract-body" id="contractBody">
-                        <!-- Populated by JS -->
-                    </div>
+                    <div class="contract-body" id="contractBody"></div>
                 </div>
             </section>
 
@@ -568,9 +565,7 @@
                     <button class="back-btn" onclick="navigateTo('partnerView')">
                         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path d="M15 19l-7-7 7-7"/></svg>
                     </button>
-                    <div class="venture-icon-display" id="partnerVentureIconDisplay">
-                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/></svg>
-                    </div>
+                    <div class="venture-icon-display" id="partnerVentureIconDisplay"></div>
                     <div class="detail-title-group">
                         <h1 class="page-title" id="partnerVentureDetailName">Venture Name</h1>
                         <p class="page-subtitle" id="partnerVentureDetailType">Consumer App</p>
@@ -628,7 +623,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Contract Notes (optional)</label>
-                    <textarea class="form-textarea" id="newPartnerContract" placeholder="Enter contract terms, notes, or agreement details..."></textarea>
+                    <textarea class="form-textarea" id="newPartnerContract" placeholder="Enter contract terms..."></textarea>
                 </div>
             </div>
             <div class="modal-footer">
@@ -665,14 +660,14 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Contract Notes</label>
-                    <textarea class="form-textarea" id="editPartnerContract" placeholder="Enter contract terms, notes, or agreement details..."></textarea>
+                    <textarea class="form-textarea" id="editPartnerContract" placeholder="Enter contract terms..."></textarea>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-danger" onclick="deleteEditingPartner()">Delete Partner</button>
+                <button class="btn btn-danger" onclick="deleteEditingPartner()">Delete</button>
                 <div class="modal-footer-right">
                     <button class="btn btn-ghost" onclick="closeModal('editPartnerModal')">Cancel</button>
-                    <button class="btn btn-primary" onclick="savePartnerChanges()">Save Changes</button>
+                    <button class="btn btn-primary" onclick="savePartnerChanges()">Save</button>
                 </div>
             </div>
         </div>
@@ -688,19 +683,21 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Icon</label>
-                    <div class="icon-upload" id="newVentureIconUpload">
-                        <input type="file" id="newVentureIconInput" accept="image/*" style="display: none;">
-                        <div class="icon-preview" id="newVentureIconPreview" onclick="document.getElementById('newVentureIconInput').click()">
-                            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
-                            <span>Click to upload</span>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Icon</label>
+                        <div class="icon-upload">
+                            <input type="file" id="newVentureIconInput" accept="image/*" style="display: none;">
+                            <div class="icon-preview" id="newVentureIconPreview" onclick="document.getElementById('newVentureIconInput').click()">
+                                <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5z"/></svg>
+                                <span>Upload</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Venture Name</label>
-                    <input type="text" class="form-input" id="newVentureName" placeholder="Enter venture name">
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label">Venture Name</label>
+                        <input type="text" class="form-input" id="newVentureName" placeholder="Enter venture name">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Type</label>
@@ -710,46 +707,49 @@
                             <div class="type-card">
                                 <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>
                                 <span>Consumer App</span>
+                                <small>Superwall</small>
                             </div>
                         </label>
                         <label class="type-option">
                             <input type="radio" name="newVentureType" value="game">
                             <div class="type-card">
-                                <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 01-.657.643 48.39 48.39 0 01-4.163-.3c.186 1.613.293 3.25.315 4.907a.656.656 0 01-.658.663v0c-.355 0-.676-.186-.959-.401a1.647 1.647 0 00-1.003-.349c-1.036 0-1.875 1.007-1.875 2.25s.84 2.25 1.875 2.25c.369 0 .713-.128 1.003-.349.283-.215.604-.401.959-.401v0c.31 0 .555.26.532.57a48.039 48.039 0 01-.642 5.056c1.518.19 3.058.309 4.616.354a.64.64 0 00.657-.643v0c0-.355-.186-.676-.401-.959a1.647 1.647 0 01-.349-1.003c0-1.035 1.008-1.875 2.25-1.875 1.243 0 2.25.84 2.25 1.875 0 .369-.128.713-.349 1.003-.215.283-.4.604-.4.959v0c0 .333.277.599.61.58a48.1 48.1 0 005.427-.63 48.05 48.05 0 00.582-4.717.532.532 0 00-.533-.57v0c-.355 0-.676.186-.959.401-.29.221-.634.349-1.003.349-1.035 0-1.875-1.007-1.875-2.25s.84-2.25 1.875-2.25c.37 0 .713.128 1.003.349.283.215.604.401.96.401v0a.656.656 0 00.658-.663 48.422 48.422 0 00-.37-5.36c-1.886.342-3.81.574-5.766.689a.578.578 0 01-.61-.58v0z"/></svg>
+                                <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959"/></svg>
                                 <span>Mobile Game</span>
+                                <small>AppLovin</small>
                             </div>
                         </label>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">State</label>
-                    <select class="form-select" id="newVentureState">
-                        <option value="building">Building</option>
-                        <option value="live">Live</option>
-                        <option value="scaling">Scaling</option>
-                        <option value="passive">Passive</option>
-                        <option value="killed">Killed</option>
-                    </select>
-                </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">Initial Revenue ($)</label>
-                        <input type="number" class="form-input" id="newVentureRevenue" placeholder="0" value="0">
+                        <label class="form-label">State</label>
+                        <select class="form-select" id="newVentureState">
+                            <option value="building">Building (No API)</option>
+                            <option value="live">Live</option>
+                            <option value="scaling">Scaling</option>
+                            <option value="passive">Passive</option>
+                            <option value="killed">Killed (No API)</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Studio Ownership (%)</label>
                         <input type="number" class="form-input" id="newVentureStudioEquity" placeholder="100" value="100" min="0" max="100">
                     </div>
                 </div>
-                <div class="form-group" id="newVentureBundleIdGroup">
-                    <label class="form-label">Bundle ID (for AppLovin)</label>
-                    <input type="text" class="form-input" id="newVentureBundleId" placeholder="com.company.appname">
-                    <p class="form-hint">Used to fetch revenue from AppLovin for games</p>
+                <div class="form-group">
+                    <label class="form-label">Current Revenue ($)</label>
+                    <input type="number" class="form-input" id="newVentureRevenue" placeholder="0" value="0" min="0">
+                    <p class="form-hint">Enter existing revenue if migrating from another tracking system.</p>
                 </div>
-                <div class="form-group" id="newVentureSuperwallGroup" style="display: none;">
+                <div class="form-group" id="newVentureBundleIdGroup" style="display: none;">
+                    <label class="form-label">Bundle ID</label>
+                    <input type="text" class="form-input" id="newVentureBundleId" placeholder="com.studio.gamename">
+                    <p class="form-hint">Required for AppLovin revenue tracking. Must match exactly.</p>
+                </div>
+                <div class="form-group" id="newVentureSuperwallGroup">
                     <label class="form-label">Superwall API Key</label>
-                    <input type="text" class="form-input" id="newVentureSuperwallKey" placeholder="Enter Superwall API key for this app">
-                    <p class="form-hint">Each consumer app has its own Superwall API key for proceeds</p>
+                    <input type="text" class="form-input" id="newVentureSuperwallKey" placeholder="pk_...">
+                    <p class="form-hint">Required for proceeds tracking. Get this from Superwall dashboard.</p>
                 </div>
             </div>
             <div class="modal-footer">
@@ -769,19 +769,21 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Icon</label>
-                    <div class="icon-upload" id="editVentureIconUpload">
-                        <input type="file" id="editVentureIconInput" accept="image/*" style="display: none;">
-                        <div class="icon-preview" id="editVentureIconPreview" onclick="document.getElementById('editVentureIconInput').click()">
-                            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
-                            <span>Click to upload</span>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Icon</label>
+                        <div class="icon-upload">
+                            <input type="file" id="editVentureIconInput" accept="image/*" style="display: none;">
+                            <div class="icon-preview" id="editVentureIconPreview" onclick="document.getElementById('editVentureIconInput').click()">
+                                <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159"/></svg>
+                                <span>Upload</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Venture Name</label>
-                    <input type="text" class="form-input" id="editVentureName" placeholder="Enter venture name">
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label">Venture Name</label>
+                        <input type="text" class="form-input" id="editVentureName" placeholder="Enter venture name">
+                    </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -804,20 +806,20 @@
                 </div>
                 <div class="form-group" id="editVentureBundleIdGroup">
                     <label class="form-label">Bundle ID (for AppLovin)</label>
-                    <input type="text" class="form-input" id="editVentureBundleId" placeholder="com.company.appname">
+                    <input type="text" class="form-input" id="editVentureBundleId" placeholder="com.studio.gamename">
                 </div>
                 <div class="form-group" id="editVentureSuperwallGroup">
                     <label class="form-label">Superwall API Key</label>
-                    <input type="text" class="form-input" id="editVentureSuperwallKey" placeholder="Enter Superwall API key for this app">
+                    <input type="text" class="form-input" id="editVentureSuperwallKey" placeholder="pk_...">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label">Revenue ($)</label>
-                        <input type="number" class="form-input" id="editVentureRevenue" placeholder="0">
-                    </div>
-                    <div class="form-group">
                         <label class="form-label">Studio Ownership (%)</label>
                         <input type="number" class="form-input" id="editVentureStudioEquity" placeholder="100" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Revenue ($)</label>
+                        <input type="number" class="form-input" id="editVentureRevenue" placeholder="0" min="0">
                     </div>
                 </div>
                 <div class="form-group">
@@ -826,10 +828,10 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-danger" onclick="deleteCurrentVenture()">Delete Venture</button>
+                <button class="btn btn-danger" onclick="deleteCurrentVenture()">Delete</button>
                 <div class="modal-footer-right">
                     <button class="btn btn-ghost" onclick="closeModal('editVentureModal')">Cancel</button>
-                    <button class="btn btn-primary" onclick="saveVentureChanges()">Save Changes</button>
+                    <button class="btn btn-primary" onclick="saveVentureChanges()">Save</button>
                 </div>
             </div>
         </div>
@@ -865,7 +867,7 @@
     <div class="modal-overlay" id="addStudioExpenseModal">
         <div class="modal">
             <div class="modal-header">
-                <h3 class="modal-title">Add Studio Expense</h3>
+                <h3 class="modal-title">Add Studio Cost</h3>
                 <button class="modal-close" onclick="closeModal('addStudioExpenseModal')">
                     <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><path d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>

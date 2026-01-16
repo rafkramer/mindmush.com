@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MINDMUSH</title>
+    <title>MINDMUSH — Swiss App Studio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -375,6 +375,63 @@
             color: var(--text);
         }
 
+        /* Starfield Canvas */
+        .starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Nebula Clouds */
+        .nebula {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .nebula-1 {
+            width: 1000px;
+            height: 800px;
+            background: radial-gradient(ellipse at center,
+                rgba(91, 79, 255, 0.12) 0%,
+                rgba(91, 79, 255, 0.04) 40%,
+                transparent 70%);
+            filter: blur(100px);
+            top: -20%;
+            left: -10%;
+            opacity: 0.7;
+            animation: nebulaFloat 20s ease-in-out infinite;
+        }
+
+        .nebula-2 {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(ellipse at center,
+                rgba(139, 92, 246, 0.1) 0%,
+                rgba(91, 79, 255, 0.03) 50%,
+                transparent 70%);
+            filter: blur(80px);
+            bottom: 10%;
+            right: -5%;
+            opacity: 0.6;
+            animation: nebulaFloat2 25s ease-in-out infinite;
+        }
+
+        @keyframes nebulaFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -20px) scale(1.05); }
+        }
+
+        @keyframes nebulaFloat2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-20px, 15px) scale(1.03); }
+        }
+
         /* Responsive */
         @media (max-width: 900px) {
             .hero, .stats, .portfolio, .cta, footer {
@@ -391,11 +448,16 @@
             }
             footer { flex-direction: column; gap: 16px; text-align: center; }
             .stats-number { font-size: 56px; }
+            .nebula-1 { width: 500px; height: 400px; filter: blur(60px); }
+            .nebula-2 { width: 300px; height: 300px; filter: blur(50px); }
         }
     </style>
 </head>
 <body>
     <div class="noise"></div>
+    <canvas id="starfield" class="starfield"></canvas>
+    <div class="nebula nebula-1"></div>
+    <div class="nebula nebula-2"></div>
     <div class="sphere"></div>
     <div class="sphere-2"></div>
 
@@ -414,13 +476,13 @@
             </nav>
 
             <div class="hero-content">
-                <h1 class="hero-title">We launch, validate <span class="dim">& scale profitable apps.</span></h1>
-                <p class="hero-sub">We are a swiss-based consumer software studio focused on crafting mobile experiences for millions.</p>
+                <h1 class="hero-title">We build apps <span class="dim">that scale to millions.</span></h1>
+                <p class="hero-sub">A Swiss product studio shipping consumer apps. 50+ launches. 10M+ downloads. Zero fluff.</p>
             </div>
         </section>
 
         <section class="stats">
-            <p class="stats-intro">We've launched <strong>50+ apps</strong> with exactly:</p>
+            <p class="stats-intro">Total downloads across <strong>our portfolio</strong>:</p>
             <div class="stats-number" id="counter">10,283,292</div>
             <p class="stats-label">downloads and counting</p>
         </section>
@@ -467,14 +529,14 @@
         </section>
 
         <section class="cta">
-            <h2 class="cta-title">Build with us.</h2>
-            <p class="cta-sub">Always looking for killers. Developers, designers, growth people.</p>
+            <h2 class="cta-title">Join the team.</h2>
+            <p class="cta-sub">We're hiring world-class engineers, designers, and growth marketers.</p>
             <a href="mailto:contact@mindmush.com" class="cta-email">contact@mindmush.com</a>
         </section>
     </main>
 
     <footer>
-        <div class="footer-text">MINDMUSH LLC — Zürich, Switzerland. Team worldwide.</div>
+        <div class="footer-text">MINDMUSH LLC — Based in Zürich. Building globally.</div>
         <div class="footer-links">
             <a href="/privacy.html">Privacy</a>
             <a href="/terms.html">Terms</a>
@@ -483,17 +545,217 @@
     </footer>
 
     <script>
-        // Parallax spheres
+        // ============================================
+        // STARFIELD UNIVERSE EFFECT
+        // ============================================
+        class Starfield {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.stars = [];
+                this.shootingStars = [];
+                this.mouseX = 0;
+                this.mouseY = 0;
+                this.animationId = null;
+                this.isMobile = window.matchMedia('(max-width: 900px)').matches;
+                this.prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+                this.config = {
+                    layers: [
+                        { count: this.isMobile ? 80 : 200, speed: 0.1, sizeRange: [0.3, 0.8], alpha: 0.3 },
+                        { count: this.isMobile ? 40 : 100, speed: 0.3, sizeRange: [0.5, 1.2], alpha: 0.5 },
+                        { count: this.isMobile ? 20 : 50, speed: 0.6, sizeRange: [0.8, 2.0], alpha: 0.7 }
+                    ],
+                    twinkleSpeed: 0.002,
+                    accentColor: { r: 91, g: 79, b: 255 },
+                    accentChance: 0.1,
+                    shootingStarInterval: [8000, 15000]
+                };
+
+                this.lastFrame = 0;
+                this.targetFPS = this.isMobile ? 30 : 60;
+                this.frameInterval = 1000 / this.targetFPS;
+
+                this.init();
+            }
+
+            init() {
+                this.resize();
+                this.createStars();
+                this.bindEvents();
+                if (!this.isMobile) this.scheduleShootingStar();
+                this.animate();
+            }
+
+            resize() {
+                this.width = this.canvas.width = window.innerWidth;
+                this.height = this.canvas.height = window.innerHeight;
+            }
+
+            createStars() {
+                this.stars = [];
+                this.config.layers.forEach((layer, layerIndex) => {
+                    for (let i = 0; i < layer.count; i++) {
+                        this.stars.push({
+                            baseX: Math.random() * this.width,
+                            baseY: Math.random() * this.height,
+                            size: layer.sizeRange[0] + Math.random() * (layer.sizeRange[1] - layer.sizeRange[0]),
+                            alpha: layer.alpha + Math.random() * 0.2,
+                            twinkleOffset: Math.random() * Math.PI * 2,
+                            parallaxFactor: layer.speed,
+                            hasAccent: Math.random() < this.config.accentChance
+                        });
+                    }
+                });
+            }
+
+            scheduleShootingStar() {
+                const [min, max] = this.config.shootingStarInterval;
+                const delay = min + Math.random() * (max - min);
+                setTimeout(() => {
+                    this.createShootingStar();
+                    this.scheduleShootingStar();
+                }, delay);
+            }
+
+            createShootingStar() {
+                const startSide = Math.random() < 0.5 ? 'top' : 'right';
+                let x, y, angle;
+
+                if (startSide === 'top') {
+                    x = Math.random() * this.width * 0.8;
+                    y = -20;
+                    angle = Math.PI / 4 + (Math.random() - 0.5) * 0.4;
+                } else {
+                    x = this.width + 20;
+                    y = Math.random() * this.height * 0.5;
+                    angle = Math.PI * 0.75 + (Math.random() - 0.5) * 0.4;
+                }
+
+                this.shootingStars.push({
+                    x, y,
+                    speed: 18 + Math.random() * 8,
+                    angle,
+                    length: 100 + Math.random() * 80,
+                    opacity: 1,
+                    life: 1
+                });
+            }
+
+            bindEvents() {
+                window.addEventListener('resize', () => {
+                    this.resize();
+                    this.createStars();
+                });
+
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) {
+                        cancelAnimationFrame(this.animationId);
+                    } else {
+                        this.animate();
+                    }
+                });
+            }
+
+            updateMouse(x, y) {
+                this.mouseX = x;
+                this.mouseY = y;
+            }
+
+            animate(timestamp = 0) {
+                this.animationId = requestAnimationFrame((t) => this.animate(t));
+
+                if (timestamp - this.lastFrame < this.frameInterval) return;
+                this.lastFrame = timestamp;
+
+                this.ctx.clearRect(0, 0, this.width, this.height);
+
+                const time = timestamp * this.config.twinkleSpeed;
+
+                // Draw stars
+                this.stars.forEach(star => {
+                    const offsetX = this.mouseX * 30 * star.parallaxFactor;
+                    const offsetY = this.mouseY * 30 * star.parallaxFactor;
+                    const x = star.baseX + offsetX;
+                    const y = star.baseY + offsetY;
+
+                    const twinkle = this.prefersReducedMotion ? 1 : 0.5 + 0.5 * Math.sin(time + star.twinkleOffset);
+                    const currentAlpha = star.alpha * (0.5 + twinkle * 0.5);
+
+                    this.ctx.beginPath();
+                    this.ctx.arc(x, y, star.size, 0, Math.PI * 2);
+
+                    if (star.hasAccent) {
+                        const { r, g, b } = this.config.accentColor;
+                        this.ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${currentAlpha})`;
+                    } else {
+                        this.ctx.fillStyle = `rgba(255, 255, 255, ${currentAlpha})`;
+                    }
+                    this.ctx.fill();
+                });
+
+                // Draw shooting stars
+                this.shootingStars = this.shootingStars.filter(star => {
+                    star.x += Math.cos(star.angle) * star.speed;
+                    star.y += Math.sin(star.angle) * star.speed;
+                    star.life -= 0.015;
+                    star.opacity = star.life;
+
+                    if (star.life <= 0) return false;
+
+                    const tailX = star.x - Math.cos(star.angle) * star.length;
+                    const tailY = star.y - Math.sin(star.angle) * star.length;
+
+                    const gradient = this.ctx.createLinearGradient(tailX, tailY, star.x, star.y);
+                    gradient.addColorStop(0, 'rgba(255, 255, 255, 0)');
+                    gradient.addColorStop(0.6, `rgba(91, 79, 255, ${star.opacity * 0.4})`);
+                    gradient.addColorStop(1, `rgba(255, 255, 255, ${star.opacity})`);
+
+                    this.ctx.beginPath();
+                    this.ctx.strokeStyle = gradient;
+                    this.ctx.lineWidth = 2;
+                    this.ctx.lineCap = 'round';
+                    this.ctx.moveTo(tailX, tailY);
+                    this.ctx.lineTo(star.x, star.y);
+                    this.ctx.stroke();
+
+                    return true;
+                });
+            }
+        }
+
+        // Initialize starfield
+        const starfield = new Starfield('starfield');
+
+        // ============================================
+        // PARALLAX (spheres + nebulae + starfield)
+        // ============================================
+        const sphere = document.querySelector('.sphere');
+        const sphere2 = document.querySelector('.sphere-2');
+        const nebula1 = document.querySelector('.nebula-1');
+        const nebula2 = document.querySelector('.nebula-2');
+
         document.addEventListener('mousemove', (e) => {
-            const sphere = document.querySelector('.sphere');
-            const sphere2 = document.querySelector('.sphere-2');
             const x = (e.clientX / window.innerWidth - 0.5) * 50;
             const y = (e.clientY / window.innerHeight - 0.5) * 50;
+
+            // Spheres
             sphere.style.transform = `translate(${x}px, ${y}px)`;
             sphere2.style.transform = `translate(${-x * 0.5}px, ${-y * 0.5}px)`;
+
+            // Nebulae (slower for depth)
+            nebula1.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+            nebula2.style.transform = `translate(${-x * 0.15}px, ${-y * 0.15}px)`;
+
+            // Update starfield mouse position
+            const mx = (e.clientX / window.innerWidth - 0.5) * 2;
+            const my = (e.clientY / window.innerHeight - 0.5) * 2;
+            starfield.updateMouse(mx, my);
         });
 
-        // Counter animation with continuous rise
+        // ============================================
+        // COUNTER ANIMATION
+        // ============================================
         const counter = document.getElementById('counter');
         const baseTarget = 10283292;
         let currentValue = 0;
@@ -513,7 +775,6 @@
                 if (progress < 1) {
                     requestAnimationFrame(update);
                 } else {
-                    // Start continuous rise after initial animation
                     startContinuousRise();
                 }
             }
@@ -527,7 +788,9 @@
             }, 800);
         }
 
-        // Intersection Observer
+        // ============================================
+        // INTERSECTION OBSERVER
+        // ============================================
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
