@@ -156,15 +156,16 @@ export default function Stars() {
       scrollRef.current.targetVelocity *= 0.95;
       scrollRef.current.section += (scrollRef.current.targetSection - scrollRef.current.section) * 0.04;
 
-      // Ambient drift - subtle continuous movement with layered sine waves
-      const ambientDriftX = Math.sin(time * 0.15) * 0.04 + Math.sin(time * 0.23) * 0.02;
-      const ambientDriftY = Math.cos(time * 0.18) * 0.03 + Math.cos(time * 0.27) * 0.02;
+      // Idle 3D orbit - continuous gentle rotation around the star field
+      const orbitSpeed = 0.08; // Base orbit speed
+      const orbitX = Math.sin(time * orbitSpeed) * 0.15 + Math.sin(time * orbitSpeed * 1.7) * 0.05;
+      const orbitY = Math.cos(time * orbitSpeed * 0.8) * 0.12 + Math.cos(time * orbitSpeed * 1.3) * 0.06;
 
-      // Camera rotation based on mouse + ambient drift
-      cameraRef.current.targetRotX = (mouseRef.current.y - 0.5) * 0.3 + ambientDriftX;
-      cameraRef.current.targetRotY = (mouseRef.current.x - 0.5) * 0.4 + ambientDriftY;
-      cameraRef.current.rotX += (cameraRef.current.targetRotX - cameraRef.current.rotX) * 0.03;
-      cameraRef.current.rotY += (cameraRef.current.targetRotY - cameraRef.current.rotY) * 0.03;
+      // Camera rotation based on mouse + idle orbit
+      cameraRef.current.targetRotX = (mouseRef.current.y - 0.5) * 0.3 + orbitX;
+      cameraRef.current.targetRotY = (mouseRef.current.x - 0.5) * 0.4 + orbitY;
+      cameraRef.current.rotX += (cameraRef.current.targetRotX - cameraRef.current.rotX) * 0.025;
+      cameraRef.current.rotY += (cameraRef.current.targetRotY - cameraRef.current.rotY) * 0.025;
 
       const scrollVelocity = scrollRef.current.velocity;
       const currentSection = scrollRef.current.section;

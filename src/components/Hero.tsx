@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import HeroScene from './HeroScene';
 
-const words = ['acquire', 'build', 'launch', 'scale', 'exit'];
+const words = ['build', 'launch', 'scale', 'acquire', 'exit'];
 
 function AnimatedWord({ word }: { word: string }) {
   const letters = useMemo(() => word.split(''), [word]);
@@ -98,7 +98,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-5xl md:text-6xl lg:text-7xl font-semibold leading-[1.05] tracking-tight mb-7"
+              className="text-6xl md:text-7xl lg:text-8xl font-semibold leading-[1.05] tracking-tight mb-7"
             >
               <span className="text-white">We </span>
               <span className="relative inline-block" style={{ minWidth: '4ch' }}>
@@ -107,7 +107,7 @@ export default function Hero() {
                 </AnimatePresence>
               </span>
               <br />
-              <span className="text-white">mobile apps.</span>
+              <span className="text-white whitespace-nowrap">mobile apps.</span>
             </motion.h1>
 
             <motion.p
@@ -116,7 +116,7 @@ export default function Hero() {
               transition={{ delay: 0.6, duration: 0.8 }}
               className="text-base md:text-lg text-white/50 leading-relaxed"
             >
-              Swiss venture studio focused on building a profitable portfolio of consumer software.
+              Venture studio focused on building a profitable portfolio of consumer software. Based in Switzerland.
             </motion.p>
           </div>
 

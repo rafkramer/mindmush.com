@@ -3,13 +3,13 @@ import { motion, useInView } from 'framer-motion';
 
 function LiveCounter({ baseValue }: { baseValue: number }) {
   const [displayValue, setDisplayValue] = useState(0);
-  const [isAnimationComplete, setIsAnimationComplete] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: '-50px' });
 
-  // Initial count-up animation
+  // Count up animation
   useEffect(() => {
-    if (!inView || isAnimationComplete) return;
+    if (!inView || isComplete) return;
 
     let startTime: number;
     let animationId: number;
@@ -24,26 +24,30 @@ function LiveCounter({ baseValue }: { baseValue: number }) {
       if (progress < 1) {
         animationId = requestAnimationFrame(animateIn);
       } else {
-        setIsAnimationComplete(true);
+        setIsComplete(true);
       }
     };
 
     animationId = requestAnimationFrame(animateIn);
     return () => cancelAnimationFrame(animationId);
-  }, [inView, baseValue, isAnimationComplete]);
+  }, [inView, baseValue, isComplete]);
 
-  // Continuous smooth increment after animation completes
+  // Continuous increment after complete
   useEffect(() => {
-    if (!isAnimationComplete) return;
+    if (!isComplete) return;
 
     const interval = setInterval(() => {
       setDisplayValue(prev => prev + 1);
-    }, 150);
+    }, 250);
 
     return () => clearInterval(interval);
-  }, [isAnimationComplete]);
+  }, [isComplete]);
 
-  return <span ref={ref}>{displayValue.toLocaleString()}</span>;
+  return (
+    <span ref={ref} className="bg-gradient-to-r from-[#a5b4fc] to-[#818cf8] bg-clip-text text-transparent">
+      {displayValue.toLocaleString()}
+    </span>
+  );
 }
 
 export default function ImpactStats() {
@@ -56,15 +60,15 @@ export default function ImpactStats() {
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <p className="text-base md:text-lg text-white/50 mb-4">
+          <p className="text-xl md:text-2xl text-white mb-6">
             50+ apps launched with
           </p>
 
-          <h2 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-semibold tracking-tight mb-4 text-white">
+          <h2 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-semibold tracking-tight mb-6">
             <LiveCounter baseValue={10847293} />
           </h2>
 
-          <p className="text-base md:text-lg text-white/50">
+          <p className="text-xl md:text-2xl text-white">
             downloads and counting
           </p>
         </motion.div>
