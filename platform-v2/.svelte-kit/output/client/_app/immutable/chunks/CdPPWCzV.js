@@ -1,0 +1,1 @@
+import{w as r,m as a}from"./IT3EpKRj.js";const i="mindmush_settings";function c(){const e=localStorage.getItem(i),n=e?JSON.parse(e):{applovinApiKey:""},t=r(n);return t.subscribe(s=>{localStorage.setItem(i,JSON.stringify(s))}),{subscribe:t.subscribe,update:s=>{t.update(o=>({...o,...s}))},get:()=>a(t)}}const p=c();export{p as s};

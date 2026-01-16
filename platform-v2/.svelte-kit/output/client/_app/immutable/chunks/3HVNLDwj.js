@@ -1,0 +1,11 @@
+import{c,a as o,f as x,s as u}from"./CrWmIGs7.js";import"./v4ViQ-6U.js";import{f as d,p as h,c as b,r as v,t as y,a as $}from"./IT3EpKRj.js";import{I as p,b as m,d as _,s as N}from"./DNuC7A3a.js";import{l as g,b as f,p as S}from"./D1N_oX3-.js";import{c as k}from"./BQmtcL2g.js";function L(s,e){const n=g(e,["children","$$slots","$$events","$$legacy"]);/**
+ * @license lucide-svelte v0.460.1 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const i=[["line",{x1:"6",x2:"10",y1:"11",y2:"11"}],["line",{x1:"8",x2:"8",y1:"9",y2:"13"}],["line",{x1:"15",x2:"15.01",y1:"12",y2:"12"}],["line",{x1:"18",x2:"18.01",y1:"10",y2:"10"}],["path",{d:"M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"}]];p(s,f({name:"gamepad-2"},()=>n,{get iconNode(){return i},children:(r,a)=>{var t=c(),l=d(t);m(l,e,"default",{}),o(r,t)},$$slots:{default:!0}}))}function M(s,e){const n=g(e,["children","$$slots","$$events","$$legacy"]);/**
+ * @license lucide-svelte v0.460.1 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const i=[["rect",{width:"14",height:"20",x:"5",y:"2",rx:"2",ry:"2"}],["path",{d:"M12 18h.01"}]];p(s,f({name:"smartphone"},()=>n,{get iconNode(){return i},children:(r,a)=>{var t=c(),l=d(t);m(l,e,"default",{}),o(r,t)},$$slots:{default:!0}}))}var z=x("<span> </span>");function C(s,e){h(e,!0);let n=S(e,"class",3,"");const i={building:"bg-blue-500/15 text-blue-400",live:"bg-green-500/12 text-green-400",scaling:"bg-indigo-500/15 text-indigo-400",passive:"bg-amber-500/12 text-amber-400",killed:"bg-red-500/12 text-red-400"},r={building:"Building",live:"Live",scaling:"Scaling",passive:"Passive",killed:"Killed"};var a=z(),t=b(a,!0);v(a),y(l=>{N(a,1,l),u(t,r[e.state])},[()=>_(k("inline-flex items-center px-3 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider",i[e.state],n()))]),o(s,a),$()}export{L as G,C as S,M as a};
