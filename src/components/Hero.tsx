@@ -1,55 +1,109 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import HeroScene from './HeroScene';
 
 const words = ['acquire', 'build', 'launch', 'scale', 'exit'];
 
+function AnimatedWord({ word }: { word: string }) {
+  const letters = useMemo(() => word.split(''), [word]);
+
+  return (
+    <motion.span
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      className="inline-flex"
+      style={{ perspective: '600px' }}
+    >
+      {letters.map((letter, i) => (
+        <motion.span
+          key={`${letter}-${i}`}
+          initial={{
+            y: 45,
+            opacity: 0,
+            rotateX: -50,
+            filter: 'blur(10px)',
+            scale: 0.85,
+          }}
+          animate={{
+            y: 0,
+            opacity: 1,
+            rotateX: 0,
+            filter: 'blur(0px)',
+            scale: 1,
+            transition: {
+              type: 'spring',
+              stiffness: 120,
+              damping: 18,
+              mass: 0.6,
+              delay: i * 0.04,
+            },
+          }}
+          exit={{
+            y: -35,
+            opacity: 0,
+            rotateX: 25,
+            filter: 'blur(8px)',
+            scale: 0.9,
+            transition: {
+              type: 'tween',
+              duration: 0.3,
+              ease: [0.5, 0, 0.9, 0.5],
+              delay: i * 0.025,
+            },
+          }}
+          className="inline-block bg-gradient-to-r from-[#a78bfa] to-[#8b5cf6] bg-clip-text text-transparent"
+          style={{
+            transformStyle: 'preserve-3d',
+            transformOrigin: 'center bottom',
+            willChange: 'transform, opacity, filter',
+          }}
+        >
+          {letter}
+        </motion.span>
+      ))}
+    </motion.span>
+  );
+}
+
 export default function Hero() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % words.length);
-    }, 2500);
+    }, 2800);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <section className="section px-6">
-      <div className="max-w-7xl mx-auto w-full overflow-visible">
-        <div className="grid lg:grid-cols-2 gap-8 items-center overflow-visible">
+    <section className="snap-section px-6 overflow-visible">
+      <div className="max-w-6xl mx-auto w-full overflow-visible">
+        <div className="grid lg:grid-cols-[1fr_1fr] gap-12 items-center overflow-visible">
           {/* Left: Content */}
           <div>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="mb-6"
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="mb-5"
             >
               <span className="text-xs font-mono tracking-widest text-[#8b5cf6] uppercase">
-                Venture Studio
+                MINDMUSH
               </span>
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="text-5xl md:text-6xl lg:text-7xl font-semibold leading-[1.05] tracking-tight mb-8"
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-5xl md:text-6xl lg:text-7xl font-semibold leading-[1.05] tracking-tight mb-7"
             >
               <span className="text-white">We </span>
-              <span className="relative inline-block">
+              <span className="relative inline-block" style={{ minWidth: '4ch' }}>
                 <AnimatePresence mode="wait">
-                  <motion.span
-                    key={words[currentIndex]}
-                    initial={{ y: 30, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: -30, opacity: 0 }}
-                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                    className="inline-block bg-gradient-to-r from-[#a78bfa] to-[#8b5cf6] bg-clip-text text-transparent"
-                  >
-                    {words[currentIndex]}
-                  </motion.span>
+                  <AnimatedWord key={words[currentIndex]} word={words[currentIndex]} />
                 </AnimatePresence>
               </span>
               <br />
@@ -59,20 +113,19 @@ export default function Hero() {
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="text-base md:text-lg text-[#888] max-w-lg leading-relaxed mb-12"
+              transition={{ delay: 0.6, duration: 0.8 }}
+              className="text-base md:text-lg text-white/50 leading-relaxed"
             >
-              Swiss venture studio focused on building a profitable portfolio of consumer software. We partner with exceptional founders and operators to create products that scale.
+              Swiss venture studio focused on building a profitable portfolio of consumer software.
             </motion.p>
-
           </div>
 
-          {/* Right: Planet Scene */}
+          {/* Right: 3D Scene */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, delay: 0.4 }}
-            className="hidden lg:block overflow-visible"
+            transition={{ duration: 1.2, delay: 0.3 }}
+            className="hidden lg:flex justify-center items-center"
           >
             <HeroScene />
           </motion.div>

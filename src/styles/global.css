@@ -4,13 +4,15 @@
   --color-bg: #0a0a0b;
   --color-bg-elevated: #111113;
   --color-bg-card: #151517;
-  --color-accent: #c8ff00;
-  --color-accent-muted: #9bc700;
+  --color-accent: #8b5cf6;
+  --color-accent-muted: #6d45d9;
   --color-purple: #8b5cf6;
   --color-purple-muted: #6d45d9;
   --color-text: #ffffff;
   --color-text-muted: #8888a0;
   --color-text-subtle: #555566;
+  --color-text-body: #a0a0b0;
+  --color-text-secondary: #8a8a9c;
   --color-border: #222233;
   --color-border-light: #333344;
   --font-sans: 'Inter', system-ui, sans-serif;
@@ -19,6 +21,18 @@
 
 html {
   background: #0a0a0b;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+/* Snap sections */
+.snap-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 body {
@@ -30,30 +44,15 @@ body {
 }
 
 ::selection {
-  background: var(--color-accent);
-  color: var(--color-bg);
+  background-color: #8b5cf6 !important;
+  color: #ffffff !important;
 }
 
-/* Snap scrolling */
-html {
-  scroll-snap-type: y mandatory;
+::-moz-selection {
+  background-color: #8b5cf6 !important;
+  color: #ffffff !important;
 }
 
-.section {
-  min-height: 100vh;
-  scroll-snap-align: start;
-  display: flex;
-  align-items: center;
-  position: relative;
-}
-
-.section-dark {
-  background: rgba(0, 0, 0, 0.3);
-}
-
-.section-light {
-  background: rgba(255, 255, 255, 0.02);
-}
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
@@ -79,19 +78,24 @@ html {
   outline-offset: 2px;
 }
 
-/* Film grain overlay - static noise */
+/* Film grain overlay - ultra fine premium texture */
 .grain {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  background: transparent url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E") repeat;
+  inset: 0;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.12;
+  opacity: 0.015;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+  animation: grain-shift 0.5s steps(4) infinite;
+}
+
+@keyframes grain-shift {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-2%, -2%); }
+  50% { transform: translate(2%, 1%); }
+  75% { transform: translate(-1%, 2%); }
 }
 
 /* Section numbering */
@@ -181,5 +185,26 @@ html {
 
 /* Subtle glow */
 .glow-subtle {
-  box-shadow: 0 0 80px rgba(200, 255, 0, 0.05);
+  box-shadow: 0 0 80px rgba(139, 92, 246, 0.1);
+}
+
+/* Color wave animation for counter */
+@keyframes color-wave {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.animate-color-wave {
+  animation: color-wave 8s linear infinite;
+}
+
+/* Custom cursor - hide default when custom cursor is active */
+.custom-cursor-active {
+  cursor: none;
+}
+
+.custom-cursor-active a,
+.custom-cursor-active button,
+.custom-cursor-active [role="button"] {
+  cursor: none;
 }

@@ -33,117 +33,54 @@ function Planet() {
   });
 
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} position={[0.5, 0, 0]}>
       {/* Main planet - wireframe sphere */}
       <mesh ref={planetRef}>
-        <icosahedronGeometry args={[2, 2]} />
+        <icosahedronGeometry args={[1.7, 2]} />
         <meshBasicMaterial color="#8b5cf6" wireframe transparent opacity={0.4} />
       </mesh>
 
-      {/* Solid inner core */}
+      {/* Transparent inner core - glass effect */}
       <mesh>
-        <sphereGeometry args={[1.9, 32, 32]} />
-        <meshBasicMaterial color="#1a1a2e" transparent opacity={0.9} />
+        <sphereGeometry args={[1.6, 32, 32]} />
+        <meshBasicMaterial color="#2a1a4a" transparent opacity={0.4} />
       </mesh>
 
       {/* Atmosphere glow */}
       <mesh ref={atmosphereRef}>
-        <sphereGeometry args={[2.3, 32, 32]} />
+        <sphereGeometry args={[2.0, 32, 32]} />
         <meshBasicMaterial color="#6d45d9" transparent opacity={0.04} side={THREE.BackSide} />
       </mesh>
 
       {/* Outer atmosphere */}
       <mesh>
-        <sphereGeometry args={[2.6, 32, 32]} />
+        <sphereGeometry args={[2.25, 32, 32]} />
         <meshBasicMaterial color="#8b5cf6" transparent opacity={0.02} side={THREE.BackSide} />
       </mesh>
 
       {/* Ring 1 */}
       <mesh rotation={[Math.PI / 2.2, 0, 0]}>
-        <torusGeometry args={[2.6, 0.008, 16, 100]} />
+        <torusGeometry args={[2.1, 0.006, 16, 100]} />
         <meshBasicMaterial color="#a78bfa" transparent opacity={0.3} />
       </mesh>
 
       {/* Ring 2 */}
       <mesh rotation={[Math.PI / 2.4, 0.15, 0]}>
-        <torusGeometry args={[3.0, 0.005, 16, 100]} />
+        <torusGeometry args={[2.35, 0.004, 16, 100]} />
         <meshBasicMaterial color="#8b5cf6" transparent opacity={0.15} />
       </mesh>
     </group>
   );
 }
 
-function OrbitingMoons() {
-  const groupRef = useRef<THREE.Group>(null);
-
-  const moons = useMemo(() => {
-    return [
-      { radius: 3.2, speed: 0.3, size: 0.08, offset: 0 },
-      { radius: 3.5, speed: -0.2, size: 0.06, offset: Math.PI },
-      { radius: 3.8, speed: 0.15, size: 0.05, offset: Math.PI / 2 },
-    ];
-  }, []);
-
-  useFrame((state) => {
-    if (!groupRef.current) return;
-    groupRef.current.children.forEach((child, i) => {
-      const moon = moons[i];
-      const angle = state.clock.elapsedTime * moon.speed + moon.offset;
-      child.position.x = Math.cos(angle) * moon.radius;
-      child.position.z = Math.sin(angle) * moon.radius;
-      child.position.y = Math.sin(angle * 2) * 0.3;
-    });
-  });
-
-  return (
-    <group ref={groupRef}>
-      {moons.map((moon, i) => (
-        <mesh key={i}>
-          <sphereGeometry args={[moon.size, 16, 16]} />
-          <meshBasicMaterial color="#ffffff" transparent opacity={0.8} />
-        </mesh>
-      ))}
-    </group>
-  );
-}
-
-function FloatingDust() {
-  const pointsRef = useRef<THREE.Points>(null);
-
-  const positions = useMemo(() => {
-    const pos = new Float32Array(60 * 3);
-    for (let i = 0; i < 60; i++) {
-      const i3 = i * 3;
-      const radius = 3 + Math.random() * 3;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = (Math.random() - 0.5) * Math.PI * 0.5;
-      pos[i3] = radius * Math.cos(phi) * Math.cos(theta);
-      pos[i3 + 1] = radius * Math.sin(phi);
-      pos[i3 + 2] = radius * Math.cos(phi) * Math.sin(theta);
-    }
-    return pos;
-  }, []);
-
-  useFrame((state) => {
-    if (pointsRef.current) {
-      pointsRef.current.rotation.y = state.clock.elapsedTime * 0.02;
-    }
-  });
-
-  return (
-    <points ref={pointsRef}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={60} array={positions} itemSize={3} />
-      </bufferGeometry>
-      <pointsMaterial size={0.03} color="#a78bfa" transparent opacity={0.5} sizeAttenuation />
-    </points>
-  );
-}
-
 export default function HeroScene() {
   return (
     <div className="w-full h-[500px] lg:h-[650px]">
-      <Canvas camera={{ position: [0, 0, 8], fov: 50 }} style={{ background: 'transparent' }}>
+      <Canvas
+        camera={{ position: [0, 0, 8], fov: 50 }}
+        style={{ background: 'transparent' }}
+        gl={{ antialias: true }}
+      >
         <Planet />
       </Canvas>
     </div>

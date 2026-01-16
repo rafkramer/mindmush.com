@@ -41,15 +41,15 @@ export default function Portfolio() {
   const activeLaunch = launches.find(l => l.id === activeId) || launches[0];
 
   const statusColors = {
-    live: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', dot: 'bg-emerald-400' },
-    exited: { bg: 'bg-purple-500/10', text: 'text-purple-400', dot: 'bg-purple-400' },
-    building: { bg: 'bg-amber-500/10', text: 'text-amber-400', dot: 'bg-amber-400 animate-pulse' },
+    live: { bg: 'bg-cyan-500/10', text: 'text-cyan-400', dot: 'bg-cyan-400' },
+    exited: { bg: 'bg-cyan-500/10', text: 'text-cyan-400', dot: 'bg-cyan-400' },
+    building: { bg: 'bg-cyan-500/10', text: 'text-cyan-400', dot: 'bg-cyan-400 animate-pulse' },
   };
 
   const status = statusColors[activeLaunch.status as keyof typeof statusColors];
 
   return (
-    <section id="portfolio" className="section section-light px-6">
+    <section id="portfolio" className="snap-section px-6">
       <div className="max-w-6xl mx-auto w-full">
         {/* Header */}
         <motion.div
@@ -59,7 +59,7 @@ export default function Portfolio() {
           transition={{ duration: 0.6 }}
           className="mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-white">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white">
             Notable Launches
           </h2>
         </motion.div>
@@ -85,7 +85,7 @@ export default function Portfolio() {
                 }`}
               >
                 <span className={`font-mono text-xs transition-colors ${
-                  activeId === launch.id ? 'text-[#8b5cf6]' : 'text-white/20'
+                  activeId === launch.id ? 'text-cyan-400' : 'text-white/20'
                 }`}>
                   {launch.id}
                 </span>
@@ -130,7 +130,7 @@ export default function Portfolio() {
                 </div>
 
                 {/* Description */}
-                <p className="text-white/50 leading-relaxed flex-1">
+                <p className="text-base md:text-lg text-white/50 leading-relaxed flex-1">
                   {activeLaunch.description}
                 </p>
 

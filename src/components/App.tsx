@@ -5,11 +5,14 @@ import ImpactStats from './ImpactStats';
 import Portfolio from './Portfolio';
 import Philosophy from './Philosophy';
 import Contact from './Contact';
-import Footer from './Footer';
+import CustomCursor from './CustomCursor';
+import ClickEffect from './ClickEffect';
 
 export default function App() {
   return (
     <>
+      <CustomCursor />
+      <ClickEffect />
       <Stars />
       <div className="relative z-10">
         <Navbar />
@@ -20,7 +23,6 @@ export default function App() {
           <Philosophy />
           <Contact />
         </main>
-        <Footer />
       </div>
     </>
   );
