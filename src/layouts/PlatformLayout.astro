@@ -1,0 +1,60 @@
+---
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="MINDMUSH Platform - Venture Management Dashboard" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>{title}</title>
+  </head>
+  <body class="bg-[#0a0a0b] text-white min-h-screen overflow-hidden">
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  @import "../styles/global.css";
+
+  /* Platform-specific styles */
+  html {
+    scroll-snap-type: none;
+  }
+
+  /* Override snap behavior for platform */
+  .platform-container {
+    scroll-snap-type: none;
+  }
+
+  /* Selection color for platform - purple accent */
+  ::selection {
+    background-color: #8b5cf6 !important;
+    color: #ffffff !important;
+  }
+  ::-moz-selection {
+    background-color: #8b5cf6 !important;
+    color: #ffffff !important;
+  }
+
+  /* State badge colors */
+  .state-building { color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
+  .state-live { color: #22c55e; background: rgba(34, 197, 94, 0.1); }
+  .state-scaling { color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
+  .state-passive { color: #a78bfa; background: rgba(167, 139, 250, 0.1); }
+  .state-killed { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+
+  /* Type badges */
+  .badge-app { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
+  .badge-game { background: rgba(251, 146, 60, 0.1); color: #fb923c; }
+</style>

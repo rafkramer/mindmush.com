@@ -5,7 +5,7 @@ const navItems = [
   { id: 'home', label: 'MINDMUSH', color: '#8b5cf6' },
   { id: 'numbers', label: 'Numbers', color: '#818cf8' },
   { id: 'portfolio', label: 'Portfolio', color: '#06b6d4' },
-  { id: 'philosophy', label: 'Partners', color: '#10b981' },
+  { id: 'partners', label: 'Partners', color: '#10b981' },
   { id: 'contact', label: 'Contact', color: '#ec4899' },
 ];
 

@@ -4,34 +4,34 @@ import { motion, AnimatePresence } from 'framer-motion';
 const launches = [
   {
     id: '01',
-    name: 'Skibidi War',
-    type: 'Mobile Game',
-    metric: '3M+ downloads',
-    icon: '🚽',
-    description: 'Official collaboration with the creators of the Skibidi Toilet saga. Launched to 60M+ social media impressions and 3M downloads in the first two weeks. Featured on the App Store front page and covered by major gaming publications.',
-    link: 'https://apps.apple.com',
-    linkLabel: 'App Store',
-    status: 'live',
-  },
-  {
-    id: '02',
     name: 'Debloat AI',
     type: 'Consumer App',
     metric: 'Acquired',
-    icon: '✨',
-    description: 'AI-powered beauty and wellness application that helped users track and optimize their health goals. Profitably scaled through strategic paid acquisition and influencer partnerships before being acquired by AppStack for a revenue multiple.',
-    link: null,
-    linkLabel: null,
+    icon: '/icons/debloat_ai_icon.png',
+    description: <>AI-powered face scanning app that helped users reduce puffiness and water retention. Marketed profitably through strategic paid ads and influencer partnerships before being acquired by <a href="https://appstack.tech" target="_blank" rel="noopener noreferrer" className="text-white/70 underline underline-offset-2 hover:text-cyan-400 transition-colors">AppStack</a>.</>,
+    link: 'https://www.debloat.ai/',
+    linkLabel: 'Website',
     status: 'exited',
   },
   {
-    id: '03',
+    id: '02',
     name: 'DaGame',
     type: 'Mobile Game',
     metric: '#1 App Store',
-    icon: '🚗',
-    description: 'The viral DaBaby car head meme transformed into an endless runner. Hit #1 on the US App Store, played by an estimated 20% of American high schoolers in 2021. Even DaBaby himself played it—and posted about it to his millions of followers.',
-    link: 'https://apps.apple.com',
+    icon: '/icons/dagame.png',
+    description: 'The viral DaBaby car head meme transformed into an endless runner. Hit #1 on the US App Store, played by an estimated 20% of American high schoolers in 2021. DaBaby caught his own daughter playing it and posted it to IG—various news outlets covered the story.',
+    link: 'https://www.xxlmag.com/dababy-daughter-video-game-head-car/',
+    linkLabel: 'XXL Mag',
+    status: 'live',
+  },
+  {
+    id: '03',
+    name: 'FaceKit 3D',
+    type: 'Consumer App',
+    metric: '1M+ scans',
+    icon: '/icons/facekit_3d_icon.png',
+    description: 'Facial analysis app leveraging Apple\'s TrueDepth camera for 3D attractiveness scoring. Pioneered a new marketing channel by partnering with a network of 10+ AI-generated influencers, driving organic virality across Instagram and TikTok.',
+    link: 'https://apps.apple.com/ch/app/facekit-3d-face-analysis/id6756392359',
     linkLabel: 'App Store',
     status: 'live',
   },
@@ -40,32 +40,32 @@ const launches = [
     name: 'Obama Run',
     type: 'Mobile Game',
     metric: 'Viral Fame',
-    icon: '🏃',
-    description: 'The infamous presidential runner that became a meme in its own right. Played live by IShowSpeed, KSI, and other major creators. Spawned countless fan edits, TikToks, and a dedicated cult following that persists years after launch.',
-    link: 'https://apps.apple.com',
+    icon: '/icons/obama_run_icon.png',
+    description: 'The infamous presidential runner that became a meme in its own right. Played live by IShowSpeed and other major creators. Spawned countless fan edits, TikToks, and a dedicated cult following that persists years after launch.',
+    link: 'https://apps.apple.com/us/app/obama-run-legacy/id1576515186',
     linkLabel: 'App Store',
     status: 'live',
   },
   {
     id: '05',
-    name: 'FaceKit 3D',
-    type: 'Consumer App',
-    metric: '1M+ scans',
-    icon: '📸',
-    description: 'Revolutionary facial analysis app leveraging Apple\'s TrueDepth camera for 3D attractiveness scoring. Pioneered a new marketing channel by partnering with a network of 50+ AI-generated influencers, driving organic virality across Instagram and TikTok.',
-    link: 'https://apps.apple.com',
+    name: 'Cronblizz Blitz',
+    type: 'Branded Game',
+    metric: '100M+ play minutes',
+    icon: '/icons/starry.png',
+    description: <>Partnered with PepsiCo to launch <a href="https://www.starrylemonlime.com/" target="_blank" rel="noopener noreferrer" className="text-white/70 underline underline-offset-2 hover:text-cyan-400 transition-colors">Starry's</a> holiday flavor. Built a custom game with influencer <a href="https://www.instagram.com/cron/?hl=en" target="_blank" rel="noopener noreferrer" className="text-white/70 underline underline-offset-2 hover:text-cyan-400 transition-colors">OkCron</a> where players collect and purchase the new drink. 100M+ minutes of playtime, driving brand loyalty and a successful product launch.</>,
+    link: 'https://apps.apple.com/app/cranberry-blizz/id6737592107',
     linkLabel: 'App Store',
     status: 'live',
   },
   {
     id: '06',
-    name: 'Amanda AI',
-    type: 'Consumer App',
-    metric: 'Acquired',
-    icon: '💬',
-    description: 'AI relationship coach that helped users navigate difficult conversations and interpersonal conflicts. Rode the wave of conversational AI to rapid growth, then was acquired by ParkmanLabs to be integrated into their mental wellness platform.',
-    link: null,
-    linkLabel: null,
+    name: 'Skibidi War',
+    type: 'Mobile Game',
+    metric: '3M+ downloads',
+    icon: '/icons/Game_image.webp',
+    description: <>Official collaboration with <a href="https://www.youtube.com/@DaFuqBoom" target="_blank" rel="noopener noreferrer" className="text-white/70 underline underline-offset-2 hover:text-cyan-400 transition-colors">DaFuq!?Boom!</a>, creators of the Skibidi Toilet saga. Launched to 60M+ social media impressions and 3M downloads in the first two weeks. Hit #1 on the App Store in multiple countries before being discontinued.</>,
+    link: 'https://skibidi-toilet.fandom.com/wiki/Skibidi_War:_Toilets_Attack',
+    linkLabel: 'Fandom',
     status: 'exited',
   },
 ];
@@ -94,7 +94,7 @@ export default function Portfolio() {
           className="mb-16"
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white">
-            Notable Launches
+            <span className="text-cyan-400">Notable</span> Launches
           </h2>
         </motion.div>
 
@@ -161,8 +161,8 @@ export default function Portfolio() {
 
                 {/* Icon and Title */}
                 <div className="flex items-center gap-5 mb-8">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/[0.1] flex items-center justify-center text-3xl shadow-lg">
-                    {activeLaunch.icon}
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/[0.1] flex items-center justify-center overflow-hidden shadow-lg">
+                    <img src={activeLaunch.icon} alt={activeLaunch.name} className="w-full h-full object-cover rounded-2xl" />
                   </div>
                   <h3 className="text-3xl md:text-4xl font-semibold text-white">
                     {activeLaunch.name}

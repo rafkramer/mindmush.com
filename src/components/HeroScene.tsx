@@ -1,5 +1,5 @@
 import { useRef, useMemo, useEffect } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
 function Planet() {
@@ -33,7 +33,7 @@ function Planet() {
   });
 
   return (
-    <group ref={groupRef} position={[0.5, 0, 0]}>
+    <group ref={groupRef} position={[0.1, -0.15, 0]} scale={0.92}>
       {/* Main planet - wireframe sphere */}
       <mesh ref={planetRef}>
         <icosahedronGeometry args={[1.7, 2]} />
@@ -75,7 +75,7 @@ function Planet() {
 
 export default function HeroScene() {
   return (
-    <div className="w-full h-[500px] lg:h-[650px]">
+    <div className="w-full h-[500px] lg:h-[650px] overflow-visible">
       <Canvas
         camera={{ position: [0, 0, 8], fov: 50 }}
         style={{ background: 'transparent' }}

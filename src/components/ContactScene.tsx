@@ -124,7 +124,7 @@ function OrbitingDust() {
   return (
     <points ref={pointsRef}>
       <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={PARTICLE_COUNT} array={positions} itemSize={3} />
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial size={0.03} color="#a78bfa" transparent opacity={0.7} sizeAttenuation />
     </points>

@@ -1,230 +1,271 @@
-import { motion, useInView } from 'framer-motion';
-import { useRef, useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { useState, useRef, useEffect } from 'react';
+import { useInView } from 'framer-motion';
+
+const conversations = [
+  {
+    id: 'creators',
+    title: 'Creators',
+    subtitle: 'Audience → App',
+    messages: [
+      { timestamp: 'Today 2:34 PM', isHeader: true },
+      { sender: 'partner', text: 'I have 2M followers but no app' },
+      { sender: 'mindmush', text: "We got you. What's the niche?" },
+      { sender: 'partner', text: 'Fitness accountability' },
+      { sender: 'mindmush', text: 'Give us 8 weeks' },
+      { timestamp: '4 months later', isHeader: true },
+      { sender: 'partner', text: 'Just hit $47k/mo 🤯' },
+      { sender: 'mindmush', text: 'Told you', hasHeart: true },
+    ],
+  },
+  {
+    id: 'builders',
+    title: 'Builders',
+    subtitle: 'Code → Growth',
+    messages: [
+      { timestamp: 'March 15', isHeader: true },
+      { sender: 'partner', text: 'Built an app, maybe 200 users, stuck' },
+      { sender: 'mindmush', text: "What's the retention look like?" },
+      { sender: 'partner', text: '40% d7' },
+      { sender: 'mindmush', text: "Product's solid. Growth is the gap. We're in." },
+      { timestamp: '8 months later', isHeader: true },
+      { sender: 'partner', text: 'Just got acquired for $180k' },
+      { sender: 'mindmush', text: '🤝', hasHeart: true },
+    ],
+  },
+  {
+    id: 'founders',
+    title: 'Founders',
+    subtitle: 'Idea → Product',
+    messages: [
+      { timestamp: 'June 3', isHeader: true },
+      { sender: 'partner', text: "I know the wedding industry cold but can't code" },
+      { sender: 'mindmush', text: "You don't need to. What's the insight?" },
+      { sender: 'partner', text: 'Vendors need a better booking flow' },
+      { sender: 'mindmush', text: "We'll build it. You sell it." },
+      { timestamp: '12 weeks later', isHeader: true },
+      { sender: 'partner', text: '50k users. This is insane.' },
+      { sender: 'mindmush', text: 'Just getting started', hasHeart: true },
+    ],
+  },
+  {
+    id: 'academics',
+    title: 'Academics',
+    subtitle: 'Research → Revenue',
+    messages: [
+      { timestamp: 'January 22', isHeader: true },
+      { sender: 'partner', text: 'PhD in computer vision, published papers, no product' },
+      { sender: 'mindmush', text: 'What can your tech actually do?' },
+      { sender: 'partner', text: 'Real-time face analysis, way better than existing apps' },
+      { sender: 'mindmush', text: "Let's commercialize it" },
+      { timestamp: '6 months later', isHeader: true },
+      { sender: 'partner', text: 'App is top 10 in Health & Fitness' },
+      { sender: 'mindmush', text: 'Research meets reality', hasHeart: true },
+    ],
+  },
+  {
+    id: 'buyers',
+    title: 'Buyers',
+    subtitle: 'Capital → Apps',
+    messages: [
+      { timestamp: 'September 8', isHeader: true },
+      { sender: 'partner', text: 'Interested in buying one of your apps' },
+      { sender: 'mindmush', text: 'Which one caught your eye?' },
+      { sender: 'partner', text: 'The AI face scanning one. What are you looking for?' },
+      { sender: 'mindmush', text: 'Right buyer, fair price, smooth transition' },
+      { timestamp: '3 weeks later', isHeader: true },
+      { sender: 'partner', text: 'Deal closed. Team is thrilled.' },
+      { sender: 'mindmush', text: 'Pleasure doing business', hasHeart: true },
+    ],
+  },
+  {
+    id: 'sellers',
+    title: 'Sellers',
+    subtitle: 'Apps → Exit',
+    messages: [
+      { timestamp: 'November 12', isHeader: true },
+      { sender: 'partner', text: 'Built this app 3 years ago, ready to move on' },
+      { sender: 'mindmush', text: "What's the MRR and growth look like?" },
+      { sender: 'partner', text: '$12k MRR, flat but solid retention' },
+      { sender: 'mindmush', text: 'We might be interested. Let us dig in.' },
+      { timestamp: '6 weeks later', isHeader: true },
+      { sender: 'partner', text: 'Just signed. Thanks for the smooth process' },
+      { sender: 'mindmush', text: "We'll take it from here", hasHeart: true },
+    ],
+  },
+];
+
+interface Message {
+  timestamp?: string;
+  isHeader?: boolean;
+  sender?: string;
+  text?: string;
+  hasHeart?: boolean;
+}
+
+function ChatMessage({ msg, index, isMindmush, shouldAnimate }: { msg: Message; index: number; isMindmush: boolean; shouldAnimate: boolean }) {
+  if (msg.isHeader) {
+    return (
+      <motion.div
+        initial={shouldAnimate ? { opacity: 0, scale: 0.8 } : false}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4, delay: shouldAnimate ? index * 0.1 : 0 }}
+        className="flex justify-center py-2"
+      >
+        <span className="text-[11px] text-white/30 bg-white/[0.04] px-3 py-1 rounded-full">
+          {msg.timestamp}
+        </span>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div
+      initial={shouldAnimate ? { opacity: 0, y: 20, x: isMindmush ? 30 : -30 } : false}
+      animate={{ opacity: 1, y: 0, x: 0 }}
+      transition={{
+        duration: 0.5,
+        delay: shouldAnimate ? index * 0.1 : 0,
+        ease: [0.25, 0.1, 0.25, 1],
+      }}
+      className={`flex ${isMindmush ? 'justify-end' : 'justify-start'}`}
+    >
+      <div className="relative">
+        <div
+          className={`max-w-[75%] px-4 py-2.5 text-[15px] leading-relaxed ${
+            isMindmush
+              ? 'bg-emerald-500/15 text-emerald-50 rounded-2xl rounded-br-sm'
+              : 'bg-white/[0.06] text-white/80 rounded-2xl rounded-bl-sm'
+          }`}
+        >
+          {msg.text}
+        </div>
+        {msg.hasHeart && (
+          <span className="absolute -bottom-2 right-0 text-sm bg-white/10 rounded-full px-1.5 py-0.5 backdrop-blur-sm">❤️</span>
+        )}
+      </div>
+    </motion.div>
+  );
+}
 
 export default function Philosophy() {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-25%' });
-  const [step, setStep] = useState(0);
+  const isInView = useInView(ref, { once: false, amount: 0.3 });
+  const [activeTab, setActiveTab] = useState('creators');
+  const [showTabs, setShowTabs] = useState(false);
+  const [animateMessages, setAnimateMessages] = useState(false);
+  const hasAnimated = useRef(false);
 
+  const activeConversation = conversations.find(c => c.id === activeTab) || conversations[0];
+
+  // Trigger intro animation when section comes into view
   useEffect(() => {
-    if (inView) {
-      // Step 1: Pieces fly in and assemble
-      setTimeout(() => setStep(1), 100);
-      // Step 2: Puzzle shrinks
-      setTimeout(() => setStep(2), 2000);
-      // Step 3: Text appears
-      setTimeout(() => setStep(3), 2800);
+    if (isInView && !hasAnimated.current) {
+      hasAnimated.current = true;
+      setAnimateMessages(true);
+
+      // Show tabs after messages have animated in
+      const timer = setTimeout(() => {
+        setShowTabs(true);
+      }, 900); // Wait for messages to finish animating
+
+      return () => clearTimeout(timer);
     }
-  }, [inView]);
 
-  // Dimensions
-  const W = 140;
-  const H = 100;
-  const T = 25;
+    if (!isInView) {
+      // Reset when leaving view so it plays again
+      hasAnimated.current = false;
+      setShowTabs(false);
+      setAnimateMessages(false);
+    }
+  }, [isInView]);
 
-  // TAB: cubic bezier bulging RIGHT from the right edge
-  const drawTab = (atX: number) => `
-    C ${atX + T*0.4} ${H/2 - T*0.8}, ${atX + T} ${H/2 - T*0.5}, ${atX + T} ${H/2}
-    C ${atX + T} ${H/2 + T*0.5}, ${atX + T*0.4} ${H/2 + T*0.8}, ${atX} ${H/2 + T}
-  `;
-
-  // HOLE: cubic bezier curving INTO piece from left edge
-  const drawHole = () => `
-    C ${T*0.4} ${H/2 + T*0.8}, ${T} ${H/2 + T*0.5}, ${T} ${H/2}
-    C ${T} ${H/2 - T*0.5}, ${T*0.4} ${H/2 - T*0.8}, 0 ${H/2 - T}
-  `;
-
-  // Piece paths
-  const piece1 = `M 0 0 L ${W} 0 L ${W} ${H/2 - T} ${drawTab(W)} L ${W} ${H} L 0 ${H} Z`;
-  const piece2 = `M 0 0 L ${W} 0 L ${W} ${H/2 - T} ${drawTab(W)} L ${W} ${H} L 0 ${H} L 0 ${H/2 + T} ${drawHole()} L 0 0 Z`;
-  const piece3 = `M 0 0 L ${W} 0 L ${W} ${H} L 0 ${H} L 0 ${H/2 + T} ${drawHole()} L 0 0 Z`;
-
-  // Smooth easing
-  const smoothEase = [0.25, 0.1, 0.25, 1];
-
-  // Text labels
-  const labels = ['Development', 'Distribution', 'Acquisitions'];
+  // Handle tab change
+  const handleTabChange = (id: string) => {
+    setActiveTab(id);
+    setAnimateMessages(true);
+    // Reset animation flag after a tick so messages animate
+    setTimeout(() => setAnimateMessages(false), 50);
+  };
 
   return (
-    <section id="philosophy" className="snap-section px-6">
-      <div className="max-w-6xl mx-auto w-full flex flex-col items-center justify-center h-full">
-        <div ref={ref} className="relative flex items-center justify-center" style={{ height: '70vh' }}>
+    <section id="partners" className="snap-section px-6" ref={ref}>
+      <div className="max-w-4xl mx-auto w-full flex flex-col justify-center items-center h-full">
 
-          {/* Subtle glow on complete */}
-          <motion.div
-            className="absolute rounded-full pointer-events-none"
-            style={{
-              background: 'radial-gradient(ellipse, rgba(16, 185, 129, 0.15) 0%, transparent 70%)',
-              width: 500,
-              height: 300,
-            }}
-            initial={{ opacity: 0 }}
-            animate={step >= 2 ? { opacity: 1 } : {}}
-            transition={{ duration: 1.2, ease: smoothEase }}
-          />
-
-          {/* SVG Container that scales down */}
-          <motion.div
-            initial={{ scale: 1.4 }}
-            animate={step >= 2 ? { scale: 0.75 } : { scale: 1.4 }}
-            transition={{
-              duration: 1.0,
-              ease: [0.4, 0, 0.2, 1]
-            }}
-          >
-            <svg
-              width="550"
-              height="200"
-              viewBox="-50 -50 550 200"
-              className="overflow-visible"
-            >
-              <defs>
-                <linearGradient id="puzzleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#6ee7b7" />
-                  <stop offset="100%" stopColor="#10b981" />
-                </linearGradient>
-                <filter id="subtleGlow">
-                  <feGaussianBlur stdDeviation="3" result="blur" />
-                  <feMerge>
-                    <feMergeNode in="blur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-
-              {/* Piece 1 - from left */}
-              <motion.g
-                initial={{ x: -300, y: 80, rotate: -15, opacity: 0 }}
-                animate={step >= 1 ? {
-                  x: 0,
-                  y: 0,
-                  rotate: 0,
-                  opacity: 1
-                } : {}}
-                transition={{
-                  duration: 1.4,
-                  ease: [0.25, 0.1, 0.25, 1],
-                  delay: 0
-                }}
-              >
-                <motion.path
-                  d={piece1}
-                  fill="rgba(16, 185, 129, 0.12)"
-                  stroke="url(#puzzleGrad)"
-                  strokeWidth="2"
-                  animate={step >= 2 ? { filter: "url(#subtleGlow)" } : {}}
-                  transition={{ duration: 0.6 }}
-                />
-                <motion.text
-                  x={W / 2}
-                  y={H / 2 + 5}
-                  textAnchor="middle"
-                  fill="rgba(110, 231, 183, 0.9)"
-                  fontSize="11"
-                  fontWeight="500"
-                  letterSpacing="0.05em"
-                  initial={{ opacity: 0 }}
-                  animate={step >= 1 ? { opacity: 1 } : {}}
-                  transition={{ duration: 0.8, delay: 0.8 }}
-                >
-                  {labels[0]}
-                </motion.text>
-              </motion.g>
-
-              {/* Piece 2 - from bottom */}
-              <motion.g
-                initial={{ x: W, y: 250, rotate: 10, opacity: 0 }}
-                animate={step >= 1 ? {
-                  x: W,
-                  y: 0,
-                  rotate: 0,
-                  opacity: 1
-                } : {}}
-                transition={{
-                  duration: 1.4,
-                  ease: [0.25, 0.1, 0.25, 1],
-                  delay: 0.2
-                }}
-              >
-                <motion.path
-                  d={piece2}
-                  fill="rgba(16, 185, 129, 0.12)"
-                  stroke="url(#puzzleGrad)"
-                  strokeWidth="2"
-                  animate={step >= 2 ? { filter: "url(#subtleGlow)" } : {}}
-                  transition={{ duration: 0.6 }}
-                />
-                <motion.text
-                  x={W / 2}
-                  y={H / 2 + 5}
-                  textAnchor="middle"
-                  fill="rgba(110, 231, 183, 0.9)"
-                  fontSize="11"
-                  fontWeight="500"
-                  letterSpacing="0.05em"
-                  initial={{ opacity: 0 }}
-                  animate={step >= 1 ? { opacity: 1 } : {}}
-                  transition={{ duration: 0.8, delay: 1.0 }}
-                >
-                  {labels[1]}
-                </motion.text>
-              </motion.g>
-
-              {/* Piece 3 - from right */}
-              <motion.g
-                initial={{ x: W * 2 + 300, y: -80, rotate: 15, opacity: 0 }}
-                animate={step >= 1 ? {
-                  x: W * 2,
-                  y: 0,
-                  rotate: 0,
-                  opacity: 1
-                } : {}}
-                transition={{
-                  duration: 1.4,
-                  ease: [0.25, 0.1, 0.25, 1],
-                  delay: 0.4
-                }}
-              >
-                <motion.path
-                  d={piece3}
-                  fill="rgba(16, 185, 129, 0.12)"
-                  stroke="url(#puzzleGrad)"
-                  strokeWidth="2"
-                  animate={step >= 2 ? { filter: "url(#subtleGlow)" } : {}}
-                  transition={{ duration: 0.6 }}
-                />
-                <motion.text
-                  x={W / 2}
-                  y={H / 2 + 5}
-                  textAnchor="middle"
-                  fill="rgba(110, 231, 183, 0.9)"
-                  fontSize="11"
-                  fontWeight="500"
-                  letterSpacing="0.05em"
-                  initial={{ opacity: 0 }}
-                  animate={step >= 1 ? { opacity: 1 } : {}}
-                  transition={{ duration: 0.8, delay: 1.2 }}
-                >
-                  {labels[2]}
-                </motion.text>
-              </motion.g>
-            </svg>
-          </motion.div>
-        </div>
-
-        {/* Text - appears after shrink */}
+        {/* Header */}
         <motion.div
-          className="text-center max-w-2xl -mt-20"
           initial={{ opacity: 0, y: 30 }}
-          animate={step >= 3 ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.9, ease: [0.25, 0.1, 0.25, 1] }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+          className="text-center mb-8"
         >
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-white mb-4">
-            Partners <span className="text-emerald-400">compound.</span>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white">
+            Who we <span className="text-emerald-400">partner</span> with
           </h2>
-          <p className="text-lg md:text-xl text-white/50">
-            The right connections turn good ideas into great exits.
-          </p>
+        </motion.div>
+
+        {/* Tab Buttons - appear after intro */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={showTabs ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
+          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+          className="flex flex-wrap justify-center gap-1 mb-8"
+        >
+          {conversations.map((conv) => (
+            <button
+              key={conv.id}
+              onClick={() => handleTabChange(conv.id)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                activeTab === conv.id
+                  ? 'text-white bg-white/10'
+                  : 'text-white/40 hover:text-white/60 hover:bg-white/5'
+              }`}
+            >
+              {conv.title}
+            </button>
+          ))}
+        </motion.div>
+
+        {/* Chat Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 25 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 25 }}
+          transition={{ duration: 0.7, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+          className="w-full max-w-3xl"
+        >
+          <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/[0.06]">
+            {/* Card Header */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="flex items-center justify-between mb-5 pb-4 border-b border-white/[0.06]"
+            >
+              <div className="flex items-center gap-3">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={isInView ? { scale: 1 } : { scale: 0 }}
+                  transition={{ duration: 0.4, delay: 0.3 }}
+                  className="w-2.5 h-2.5 rounded-full bg-emerald-500"
+                />
+                <span className="text-sm font-medium text-white/70">{activeConversation.title}</span>
+              </div>
+              <span className="text-xs text-white/30">{activeConversation.subtitle}</span>
+            </motion.div>
+
+            {/* Messages */}
+            <div className="space-y-3 min-h-[280px]">
+              {activeConversation.messages.map((msg, i) => (
+                <ChatMessage
+                  key={`${activeTab}-${i}`}
+                  msg={msg}
+                  index={i}
+                  isMindmush={msg.sender === 'mindmush'}
+                  shouldAnimate={animateMessages}
+                />
+              ))}
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>

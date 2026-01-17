@@ -5,7 +5,7 @@ const sectionColors: Record<string, string> = {
   default: '#8b5cf6',    // purple
   numbers: '#4f46e5',    // indigo
   portfolio: '#06b6d4',  // cyan
-  philosophy: '#10b981', // emerald
+  partners: '#10b981',   // emerald
   contact: '#ec4899',    // pink
 };
 
@@ -40,7 +40,7 @@ export default function CustomCursor() {
     };
 
     const checkSection = () => {
-      const sections = ['numbers', 'portfolio', 'philosophy', 'contact'];
+      const sections = ['numbers', 'portfolio', 'partners', 'contact'];
       let found = 'default';
 
       for (const sectionId of sections) {
