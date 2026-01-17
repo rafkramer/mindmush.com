@@ -12,6 +12,7 @@ import { SettingsPage } from './pages/SettingsPage';
 import { PartnerDashboard } from './pages/PartnerDashboard';
 import { PartnerPayouts } from './pages/PartnerPayouts';
 import { PartnerContract } from './pages/PartnerContract';
+import { ChatPage } from './pages/ChatPage';
 import { AddVentureModal } from './modals/AddVentureModal';
 import { EditVentureModal } from './modals/EditVentureModal';
 import { AddPartnerModal } from './modals/AddPartnerModal';
@@ -319,6 +320,8 @@ function PlatformContent() {
             }}
           />
         );
+      case 'chat':
+        return <ChatPage />;
       case 'settings':
         return (
           <SettingsPage

@@ -190,68 +190,112 @@ export default function Philosophy() {
   }, [clearAnim]);
 
   const showUI = phase === 'complete';
+  const showCategories = phase === 'intro' || phase === 'complete'; // Show during intro
 
   return (
     <section id="partners" className="snap-section px-4 sm:px-6" ref={ref}>
       <div className="max-w-4xl mx-auto w-full flex flex-col items-center justify-center h-full">
 
-        {/* Header & Tabs - only render after intro complete */}
+        {/* Header - only render after intro complete */}
         <AnimatePresence>
           {showUI && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 1.2, ease: "easeOut" }}
-              className="flex flex-col items-center"
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white text-center mb-6 sm:mb-8 md:mb-10"
             >
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white text-center mb-4 sm:mb-6 md:mb-8">
-                Who we <span className="text-emerald-400">partner</span> with
-              </h2>
-
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
-                className="flex flex-wrap justify-center gap-1 mb-4 sm:mb-6"
-              >
-                {conversations.map((conv) => (
-                  <button
-                    key={conv.id}
-                    onClick={() => handleTabChange(conv.id)}
-                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 ${
-                      activeTab === conv.id
-                        ? 'text-white bg-white/10'
-                        : 'text-white/40 hover:text-white/60 hover:bg-white/5'
-                    }`}
-                  >
-                    {conv.title}
-                  </button>
-                ))}
-              </motion.div>
-            </motion.div>
+              Who we <span className="text-emerald-400">partner</span> with
+            </motion.h2>
           )}
         </AnimatePresence>
 
         {/* Chat Card */}
         <motion.div
           layout
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 15 }}
+          initial={{ opacity: 0, y: 30, scale: 0.96 }}
+          animate={{
+            opacity: isInView ? 1 : 0,
+            y: isInView ? 0 : 30,
+            scale: isInView ? 1 : 0.96
+          }}
           transition={{
-            duration: 0.8,
+            duration: 1,
             ease: [0.16, 1, 0.3, 1],
             layout: { duration: 1.4, ease: [0.25, 0.1, 0.25, 1] }
           }}
-          className="w-full max-w-2xl"
+          className="w-full max-w-2xl relative"
         >
           <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white/[0.02] border border-white/[0.06]">
-            {/* Card Header */}
-            <div className="flex items-center justify-between mb-4 sm:mb-5 pb-3 sm:pb-4 border-b border-white/[0.06]">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-500" />
-                <span className="text-xs sm:text-sm font-medium text-white/70">{activeConversation.title}</span>
+            {/* Card Header with Category Tabs and Video Call */}
+            <div className="mb-4 sm:mb-5 pb-3 sm:pb-4 border-b border-white/[0.06]">
+              <div className="flex items-center gap-3">
+                {/* Category tabs */}
+                <div className="flex items-center flex-1 justify-between">
+                  {conversations.map((conv, index) => {
+                    const isFirst = index === 0;
+                    const shouldShow = isFirst || showUI;
+
+                    return (
+                      <motion.button
+                        key={conv.id}
+                        initial={{ opacity: isFirst ? 1 : 0, x: isFirst ? 0 : -10 }}
+                        animate={shouldShow ? { opacity: 1, x: 0 } : { opacity: 0, x: -10 }}
+                        transition={{
+                          duration: 0.4,
+                          delay: shouldShow && !isFirst ? (index - 1) * 0.06 : 0,
+                          ease: [0.16, 1, 0.3, 1]
+                        }}
+                        onClick={() => handleTabChange(conv.id)}
+                        className={`relative px-2 sm:px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-medium whitespace-nowrap transition-all duration-200 flex items-center gap-1 sm:gap-1.5 ${
+                          activeTab === conv.id
+                            ? 'text-white'
+                            : 'text-white/40 hover:text-white/60'
+                        }`}
+                      >
+                        {activeTab === conv.id && (
+                          <>
+                            <motion.div
+                              layoutId="activeCategory"
+                              className="absolute inset-0 rounded-full bg-white/10 border border-white/10"
+                              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                            />
+                            <motion.div
+                              layoutId="activeDot"
+                              className="w-1.5 h-1.5 rounded-full bg-emerald-500"
+                              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                            />
+                          </>
+                        )}
+                        <span className="relative z-10">{conv.title}</span>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+
+                {/* Video Call Button */}
+                <AnimatePresence>
+                  {showUI && (
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{ duration: 0.4, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                      className="relative flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 transition-colors group"
+                    >
+                      <motion.div
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                        className="w-2 h-2 rounded-full bg-emerald-500"
+                      />
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      <span className="text-[10px] sm:text-xs font-medium hidden sm:inline">Testimonial</span>
+                    </motion.button>
+                  )}
+                </AnimatePresence>
               </div>
-              <span className="text-[10px] sm:text-xs text-white/30">{activeConversation.subtitle}</span>
             </div>
 
             {/* Messages Container - responsive height */}

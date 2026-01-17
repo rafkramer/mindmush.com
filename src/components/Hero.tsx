@@ -1,8 +1,15 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import HeroScene from './HeroScene';
 
-const words = ['build', 'launch', 'scale', 'acquire', 'exit'];
+const words = ['build', 'launch', 'scale', 'buy', 'sell'];
+
+const wordWidths: Record<string, string> = {
+  build: '2.75em',
+  launch: '3.4em',
+  scale: '2.65em',
+  buy: '2.1em',
+  sell: '2.05em',
+};
 
 function AnimatedWord({ word }: { word: string }) {
   const letters = useMemo(() => word.split(''), [word]);
@@ -17,27 +24,26 @@ function AnimatedWord({ word }: { word: string }) {
       {letters.map((letter, i) => (
         <motion.span
           key={`${letter}-${i}`}
-          initial={{
-            y: 20,
-            opacity: 0,
-          }}
+          initial={{ y: 25, opacity: 0, filter: 'blur(4px)' }}
           animate={{
             y: 0,
             opacity: 1,
+            filter: 'blur(0px)',
             transition: {
               type: 'spring',
-              stiffness: 150,
-              damping: 20,
-              delay: i * 0.03,
+              stiffness: 200,
+              damping: 25,
+              delay: i * 0.025,
             },
           }}
           exit={{
-            y: -15,
+            y: -20,
             opacity: 0,
+            filter: 'blur(4px)',
             transition: {
-              duration: 0.2,
+              duration: 0.15,
               ease: 'easeIn',
-              delay: i * 0.02,
+              delay: i * 0.015,
             },
           }}
           className="inline-block bg-gradient-to-r from-[#a78bfa] to-[#8b5cf6] bg-clip-text text-transparent"
@@ -51,6 +57,7 @@ function AnimatedWord({ word }: { word: string }) {
 
 export default function Hero() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const currentWord = words[currentIndex];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -60,59 +67,88 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="snap-section px-4 sm:px-6 overflow-visible">
-      <div className="max-w-6xl mx-auto w-full overflow-visible">
-        <div className="grid lg:grid-cols-[1fr_1fr] gap-6 sm:gap-8 lg:gap-12 items-center overflow-visible">
-          {/* Left: Content */}
-          <div>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="mb-4 sm:mb-5"
-            >
-              <span className="text-[10px] sm:text-xs font-mono tracking-widest text-[#8b5cf6] uppercase">
-                MINDMUSH
-              </span>
-            </motion.div>
+    <section id="hero" className="snap-section relative overflow-hidden">
+      <div className="absolute inset-0 flex items-center justify-center">
+        {/* Glow effect behind text */}
+        <div
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            width: '500px',
+            height: '500px',
+            background: 'radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0.05) 40%, transparent 70%)',
+            filter: 'blur(40px)',
+          }}
+        />
+        <div className="flex flex-col items-center text-center px-4 relative z-10">
 
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-[2rem] sm:text-[2.5rem] md:text-[3.5rem] lg:text-[5rem] font-semibold leading-[1.1] sm:leading-[1.05] tracking-tight mb-5 sm:mb-7"
-            >
-              <span className="text-white">We </span>
-              <span className="relative inline-block min-w-[3ch] sm:min-w-[4ch]">
+          {/* MINDMUSH label */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="mb-6"
+          >
+            <span className="text-[10px] sm:text-xs font-mono tracking-widest text-[#8b5cf6] uppercase">
+              MINDMUSH
+            </span>
+          </motion.div>
+
+          {/* Main headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-[2.5rem] sm:text-[3.5rem] md:text-[4.5rem] lg:text-[5rem] font-semibold leading-[1.05] tracking-tight"
+          >
+            <span className="inline-flex items-baseline">
+              <span className="text-white">We&thinsp;</span>
+              <span
+                className="inline-block overflow-hidden text-left"
+                style={{
+                  width: wordWidths[currentWord],
+                  transition: 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                }}
+              >
                 <AnimatePresence mode="wait">
-                  <AnimatedWord key={words[currentIndex]} word={words[currentIndex]} />
+                  <AnimatedWord key={currentWord} word={currentWord} />
                 </AnimatePresence>
               </span>
-              <br />
-              <span className="text-white">mobile apps.</span>
-            </motion.h1>
+            </span>
+            <br />
+            <span className="text-white">mobile apps.</span>
+          </motion.h1>
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.8 }}
-              className="text-sm sm:text-base md:text-lg text-white/50 leading-relaxed sm:leading-[2] mt-4 sm:mt-8"
-            >
-              Venture studio focused on growing a profitable portfolio of
-              <br className="hidden sm:block" />
-              <span className="whitespace-nowrap">consumer software. Based in Switzerland. Operating internationally.</span>
-            </motion.p>
-          </div>
-
-          {/* Right: 3D Scene */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.2, delay: 0.3 }}
-            className="hidden lg:flex justify-center items-center overflow-visible"
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="text-base sm:text-lg md:text-xl text-white/60 leading-relaxed mt-8 max-w-xl"
           >
-            <HeroScene />
+            Venture studio that understands how to win in the app game.<br />Established in 2020. Based in Switzerland.
+          </motion.p>
+
+          {/* CTA Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.8 }}
+            className="flex flex-wrap justify-center gap-4 mt-10"
+          >
+            <a
+              href="#portfolio"
+              className="px-6 py-3 bg-[#8b5cf6] hover:bg-[#7c3aed] text-white font-medium rounded-full transition-colors duration-200"
+            >
+              Launches
+            </a>
+            <a
+              href="#contact"
+              className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-medium rounded-full border border-white/20 transition-colors duration-200"
+            >
+              Partners
+            </a>
           </motion.div>
+
         </div>
       </div>
     </section>

@@ -99,38 +99,99 @@ export default function Portfolio() {
         </motion.div>
 
         {/* Portfolio Grid */}
-        <div className="flex flex-col lg:grid lg:grid-cols-[260px_1fr] gap-4 sm:gap-6 lg:gap-8">
-          {/* Navigation - Horizontal scroll on mobile */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="flex lg:flex-col gap-2 overflow-x-auto pb-2 lg:pb-0 lg:justify-between lg:h-[400px] -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide"
-          >
+        <div className="flex flex-col lg:grid lg:grid-cols-[280px_1fr] gap-6 sm:gap-8 lg:gap-12 items-center">
+          {/* 3D Phone with App Icons */}
+          <div className="hidden lg:block" style={{ perspective: '1000px' }}>
+            <motion.div
+              initial={{ opacity: 0, rotateY: -30 }}
+              whileInView={{ opacity: 1, rotateY: -15 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, ease: 'easeOut' }}
+              className="relative"
+              style={{
+                transformStyle: 'preserve-3d',
+              }}
+            >
+              {/* Phone Frame */}
+              <div
+                className="relative rounded-[40px] p-3 bg-gradient-to-b from-[#1a1a1f] to-[#0d0d10] border border-white/10 shadow-2xl"
+                style={{
+                  width: '220px',
+                  boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 40px rgba(139, 92, 246, 0.1), inset 0 1px 0 rgba(255,255,255,0.1)'
+                }}
+              >
+                {/* Notch */}
+                <div className="absolute top-3 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full" />
+
+                {/* Screen */}
+                <div className="relative rounded-[28px] bg-gradient-to-b from-[#0a0a0c] to-[#111114] overflow-hidden pt-10 pb-6 px-4">
+                  {/* App Grid */}
+                  <div className="grid grid-cols-3 gap-4">
+                    {launches.map((launch) => (
+                      <button
+                        key={launch.id}
+                        onClick={() => setActiveId(launch.id)}
+                        className="flex flex-col items-center gap-1.5 group"
+                      >
+                        <div
+                          className={`w-14 h-14 rounded-[14px] overflow-hidden transition-all duration-200 ${
+                            activeId === launch.id
+                              ? 'ring-2 ring-cyan-400 ring-offset-2 ring-offset-[#0a0a0c] scale-110'
+                              : 'group-hover:scale-105'
+                          }`}
+                          style={{
+                            boxShadow: activeId === launch.id
+                              ? '0 8px 20px rgba(34, 211, 238, 0.3)'
+                              : '0 4px 12px rgba(0, 0, 0, 0.4)'
+                          }}
+                        >
+                          <img
+                            src={launch.icon}
+                            alt={launch.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <span className={`text-[9px] font-medium truncate max-w-[60px] transition-colors ${
+                          activeId === launch.id ? 'text-cyan-400' : 'text-white/60'
+                        }`}>
+                          {launch.name.split(' ')[0]}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Home Indicator */}
+                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-24 h-1 bg-white/20 rounded-full" />
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Mobile Navigation - horizontal scroll */}
+          <div className="flex lg:hidden gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
             {launches.map((launch) => (
               <button
                 key={launch.id}
                 onClick={() => setActiveId(launch.id)}
-                className={`flex-shrink-0 lg:flex-shrink flex items-center gap-2 sm:gap-4 px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-left transition-all duration-200 lg:flex-1 ${
-                  activeId === launch.id
-                    ? 'bg-white/5'
-                    : 'hover:bg-white/[0.02]'
-                }`}
+                className="flex-shrink-0 flex flex-col items-center gap-1.5"
               >
-                <span className={`font-mono text-[10px] sm:text-xs transition-colors ${
-                  activeId === launch.id ? 'text-cyan-400' : 'text-white/20'
+                <div
+                  className={`w-14 h-14 rounded-xl overflow-hidden transition-all duration-200 ${
+                    activeId === launch.id
+                      ? 'ring-2 ring-cyan-400 scale-110'
+                      : ''
+                  }`}
+                >
+                  <img src={launch.icon} alt={launch.name} className="w-full h-full object-cover" />
+                </div>
+                <span className={`text-[10px] font-medium transition-colors ${
+                  activeId === launch.id ? 'text-cyan-400' : 'text-white/50'
                 }`}>
-                  {launch.id}
-                </span>
-                <span className={`text-xs sm:text-sm transition-colors whitespace-nowrap lg:whitespace-normal ${
-                  activeId === launch.id ? 'text-white' : 'text-white/50'
-                }`}>
-                  {launch.name}
+                  {launch.name.split(' ')[0]}
                 </span>
               </button>
             ))}
-          </motion.div>
+          </div>
 
           {/* Detail Card */}
           <motion.div

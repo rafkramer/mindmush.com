@@ -32,19 +32,22 @@ function LiveCounter({ baseValue }: { baseValue: number }) {
     return () => cancelAnimationFrame(animationId);
   }, [inView, baseValue, isComplete]);
 
-  // Continuous increment after complete
+  // Continuous increment after complete - +1 every 0.5-2 seconds
   useEffect(() => {
     if (!isComplete) return;
 
-    const interval = setInterval(() => {
+    const tick = () => {
       setDisplayValue(prev => prev + 1);
-    }, 250);
+      const nextDelay = 500 + Math.random() * 1500;
+      timeoutId = setTimeout(tick, nextDelay);
+    };
 
-    return () => clearInterval(interval);
+    let timeoutId = setTimeout(tick, 500 + Math.random() * 1500);
+    return () => clearTimeout(timeoutId);
   }, [isComplete]);
 
   return (
-    <span ref={ref} className="bg-gradient-to-r from-[#a5b4fc] to-[#818cf8] bg-clip-text text-transparent">
+    <span ref={ref} className="text-[#a5b4fc] tabular-nums">
       {displayValue.toLocaleString()}
     </span>
   );
@@ -52,8 +55,8 @@ function LiveCounter({ baseValue }: { baseValue: number }) {
 
 export default function ImpactStats() {
   return (
-    <section id="numbers" className="snap-section px-4 sm:px-6">
-      <div className="max-w-5xl mx-auto w-full text-center">
+    <section id="numbers" className="snap-section px-4 sm:px-6 relative overflow-hidden">
+      <div className="max-w-5xl mx-auto w-full text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

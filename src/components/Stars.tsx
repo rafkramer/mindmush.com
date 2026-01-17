@@ -216,8 +216,13 @@ export default function Stars() {
       const cosY = Math.cos(cameraRef.current.rotY);
       const sinY = Math.sin(cameraRef.current.rotY);
 
-      // Forward movement speed based on scroll (subtle zoom)
-      const forwardSpeed = scrollVelocity * 8;
+      // Movement based on scroll - different for each section transition
+      const scrollY = scrollRef.current.y;
+      const isFirstSection = scrollY < height; // Hero → Numbers
+
+      // Hero→Numbers: reversed zoom OUT
+      // Everything else: normal zoom IN
+      const forwardSpeed = isFirstSection ? -scrollVelocity * 8 : scrollVelocity * 8;
 
       // Sort stars by Z for proper rendering (far to near)
       const sortedStars = [...starsRef.current].sort((a, b) => b.z - a.z);

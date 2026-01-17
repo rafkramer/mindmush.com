@@ -7,6 +7,7 @@ import Philosophy from './Philosophy';
 import Contact from './Contact';
 import CustomCursor from './CustomCursor';
 import ClickEffect from './ClickEffect';
+import ScrollIconOrbit from './ScrollIconOrbit';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
       <CustomCursor />
       <ClickEffect />
       <Stars />
+      <ScrollIconOrbit />
       <div className="relative z-10">
         <Navbar />
         <main>
