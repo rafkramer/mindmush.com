@@ -4,8 +4,8 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-white/40">
         <span>© {new Date().getFullYear()} MINDMUSH · Zürich, Switzerland</span>
         <div className="flex items-center gap-6">
-          <a href="/privacy.html" className="hover:text-white transition-colors">Privacy</a>
-          <a href="/terms.html" className="hover:text-white transition-colors">Terms</a>
+          <a href="/privacy" className="hover:text-white transition-colors">Privacy</a>
+          <a href="/terms" className="hover:text-white transition-colors">Terms</a>
         </div>
       </div>
     </footer>
