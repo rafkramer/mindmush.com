@@ -83,7 +83,7 @@ export default function Portfolio() {
   const status = statusColors[activeLaunch.status as keyof typeof statusColors];
 
   return (
-    <section id="portfolio" className="snap-section px-6">
+    <section id="portfolio" className="snap-section px-4 sm:px-6">
       <div className="max-w-6xl mx-auto w-full">
         {/* Header */}
         <motion.div
@@ -91,39 +91,39 @@ export default function Portfolio() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="mb-16"
+          className="mb-8 sm:mb-12 lg:mb-16"
         >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white">
             <span className="text-cyan-400">Notable</span> Launches
           </h2>
         </motion.div>
 
         {/* Portfolio Grid */}
-        <div className="grid lg:grid-cols-[260px_1fr] gap-8">
-          {/* Navigation */}
+        <div className="flex flex-col lg:grid lg:grid-cols-[260px_1fr] gap-4 sm:gap-6 lg:gap-8">
+          {/* Navigation - Horizontal scroll on mobile */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="flex flex-col justify-between h-[400px]"
+            className="flex lg:flex-col gap-2 overflow-x-auto pb-2 lg:pb-0 lg:justify-between lg:h-[400px] -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide"
           >
             {launches.map((launch) => (
               <button
                 key={launch.id}
                 onClick={() => setActiveId(launch.id)}
-                className={`w-full flex items-center gap-4 px-4 py-3 rounded-lg text-left transition-all duration-200 flex-1 ${
+                className={`flex-shrink-0 lg:flex-shrink flex items-center gap-2 sm:gap-4 px-3 sm:px-4 py-2 sm:py-3 rounded-lg text-left transition-all duration-200 lg:flex-1 ${
                   activeId === launch.id
                     ? 'bg-white/5'
                     : 'hover:bg-white/[0.02]'
                 }`}
               >
-                <span className={`font-mono text-xs transition-colors ${
+                <span className={`font-mono text-[10px] sm:text-xs transition-colors ${
                   activeId === launch.id ? 'text-cyan-400' : 'text-white/20'
                 }`}>
                   {launch.id}
                 </span>
-                <span className={`text-sm transition-colors ${
+                <span className={`text-xs sm:text-sm transition-colors whitespace-nowrap lg:whitespace-normal ${
                   activeId === launch.id ? 'text-white' : 'text-white/50'
                 }`}>
                   {launch.name}
@@ -147,7 +147,7 @@ export default function Portfolio() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.25 }}
-                className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-10 md:p-12 flex flex-col w-full h-[400px]"
+                className="bg-white/[0.02] border border-white/[0.06] rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-10 lg:p-12 flex flex-col w-full min-h-[320px] sm:min-h-[360px] lg:h-[400px]"
               >
                 {/* Top row - Type and Metric */}
                 <div className="flex items-center justify-between mb-6">
