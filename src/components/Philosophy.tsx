@@ -257,22 +257,29 @@ export default function Philosophy() {
                   className="space-y-3"
                 >
                   {activeConversation.messages.map((msg, i) => {
-                    // Headers (dates) are always visible
+                    const show = hasVisited || i < visibleCount;
+
+                    // First header (date) is always visible, others animate in
                     if (msg.isHeader) {
+                      const isFirstHeader = i === 0;
+                      if (!isFirstHeader && !show) return null;
+
                       return (
-                        <div
+                        <motion.div
                           key={i}
+                          initial={{ opacity: isFirstHeader ? 1 : 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.6, ease: "easeOut" }}
                           className="flex justify-center py-2"
                         >
                           <span className="text-[11px] text-white/30 bg-white/[0.04] px-3 py-1 rounded-full">
                             {msg.timestamp}
                           </span>
-                        </div>
+                        </motion.div>
                       );
                     }
 
                     // Messages animate in
-                    const show = hasVisited || i < visibleCount;
                     if (!show) return null;
 
                     const isMindmush = msg.sender === 'mindmush';
