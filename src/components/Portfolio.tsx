@@ -99,14 +99,14 @@ export default function Portfolio() {
         </motion.div>
 
         {/* Portfolio Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 sm:gap-8 lg:gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6 sm:gap-8 lg:gap-12 items-stretch">
           {/* App List - Left side */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="hidden lg:block bg-white/[0.02] border border-white/[0.06] rounded-2xl p-2"
+            className="hidden lg:flex flex-col justify-between bg-white/[0.02] border border-white/[0.06] rounded-2xl p-2"
           >
             {launches.map((launch) => (
               <button
