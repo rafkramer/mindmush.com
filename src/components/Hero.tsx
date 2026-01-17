@@ -96,9 +96,9 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.8 }}
-              className="text-sm sm:text-base md:text-lg text-white/50 leading-relaxed sm:leading-[2] mt-4 sm:mt-8 max-w-md lg:max-w-none"
+              className="text-sm sm:text-base md:text-lg text-white/50 leading-relaxed sm:leading-[2] mt-4 sm:mt-8"
             >
-              Venture studio focused on growing a profitable portfolio of consumer software. Based in Switzerland. Operating internationally.
+              Venture studio focused on growing a profitable portfolio of<br className="hidden sm:block" /> consumer software. Based in Switzerland. Operating internationally.
             </motion.p>
           </div>
 

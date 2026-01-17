@@ -29,10 +29,33 @@ html {
 .snap-section {
   scroll-snap-align: start;
   scroll-snap-stop: always;
-  min-height: 100vh;
+  min-height: 100dvh; /* Use dynamic viewport height for mobile */
   display: flex;
   flex-direction: column;
   justify-content: center;
+  /* Account for mobile bottom navigation bar */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Mobile nav safe area for sections */
+@media (max-width: 767px) {
+  .snap-section {
+    padding-bottom: calc(70px + env(safe-area-inset-bottom)); /* Bottom nav height + safe area */
+  }
+}
+
+/* Safe area bottom utility for mobile nav */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Hide scrollbar utility for horizontal scroll nav */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 
 body {

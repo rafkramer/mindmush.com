@@ -192,66 +192,70 @@ export default function Philosophy() {
   const showUI = phase === 'complete';
 
   return (
-    <section id="partners" className="snap-section px-6" ref={ref}>
-      <div className="max-w-4xl mx-auto w-full flex flex-col items-center h-full relative">
+    <section id="partners" className="snap-section px-4 sm:px-6" ref={ref}>
+      <div className="max-w-4xl mx-auto w-full flex flex-col items-center justify-center h-full">
 
-        {/* Wrapper that centers content - during intro only card shows centered, after complete everything stacks */}
-        <div className={`flex flex-col items-center w-full transition-all duration-700 ease-out ${
-          showUI ? 'justify-start pt-8' : 'justify-center h-full absolute inset-0'
-        }`}>
-
-          {/* Header - appears after intro */}
-          <motion.h2
-            initial={false}
-            animate={{ opacity: showUI ? 1 : 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white text-center mb-8"
-          >
-            Who we <span className="text-emerald-400">partner</span> with
-          </motion.h2>
-
-          {/* Tab Buttons - appear after intro */}
-          <motion.div
-            initial={false}
-            animate={{ opacity: showUI ? 1 : 0 }}
-            transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
-            className="flex flex-wrap justify-center gap-1 mb-6"
-            style={{ pointerEvents: showUI ? 'auto' : 'none' }}
-          >
-          {conversations.map((conv) => (
-            <button
-              key={conv.id}
-              onClick={() => handleTabChange(conv.id)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                activeTab === conv.id
-                  ? 'text-white bg-white/10'
-                  : 'text-white/40 hover:text-white/60 hover:bg-white/5'
-              }`}
+        {/* Header & Tabs - only render after intro complete */}
+        <AnimatePresence>
+          {showUI && (
+            <motion.div
+              initial={{ opacity: 0, y: -30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              className="flex flex-col items-center"
             >
-              {conv.title}
-            </button>
-          ))}
-        </motion.div>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white text-center mb-4 sm:mb-6 md:mb-8">
+                Who we <span className="text-emerald-400">partner</span> with
+              </h2>
+
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+                className="flex flex-wrap justify-center gap-1 mb-4 sm:mb-6"
+              >
+                {conversations.map((conv) => (
+                  <button
+                    key={conv.id}
+                    onClick={() => handleTabChange(conv.id)}
+                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 ${
+                      activeTab === conv.id
+                        ? 'text-white bg-white/10'
+                        : 'text-white/40 hover:text-white/60 hover:bg-white/5'
+                    }`}
+                  >
+                    {conv.title}
+                  </button>
+                ))}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Chat Card */}
         <motion.div
+          layout
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 15 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          transition={{
+            duration: 0.8,
+            ease: [0.16, 1, 0.3, 1],
+            layout: { duration: 1, ease: [0.16, 1, 0.3, 1] }
+          }}
           className="w-full max-w-2xl"
         >
-          <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/[0.06]">
+          <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white/[0.02] border border-white/[0.06]">
             {/* Card Header */}
-            <div className="flex items-center justify-between mb-5 pb-4 border-b border-white/[0.06]">
-              <div className="flex items-center gap-3">
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                <span className="text-sm font-medium text-white/70">{activeConversation.title}</span>
+            <div className="flex items-center justify-between mb-4 sm:mb-5 pb-3 sm:pb-4 border-b border-white/[0.06]">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-500" />
+                <span className="text-xs sm:text-sm font-medium text-white/70">{activeConversation.title}</span>
               </div>
-              <span className="text-xs text-white/30">{activeConversation.subtitle}</span>
+              <span className="text-[10px] sm:text-xs text-white/30">{activeConversation.subtitle}</span>
             </div>
 
-            {/* Messages Container - universal fixed size for all */}
-            <div className="h-[440px] overflow-hidden">
+            {/* Messages Container - responsive height */}
+            <div className="h-[300px] sm:h-[360px] md:h-[440px] overflow-hidden">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeTab}
@@ -301,7 +305,7 @@ export default function Philosophy() {
                         className={`flex ${isMindmush ? 'justify-end' : 'justify-start'}`}
                       >
                         <div
-                          className={`px-4 py-2.5 text-[15px] leading-relaxed ${
+                          className={`px-3 sm:px-4 py-2 sm:py-2.5 text-[13px] sm:text-[15px] leading-relaxed max-w-[85%] sm:max-w-none ${
                             isMindmush
                               ? 'bg-emerald-500/15 text-emerald-50 rounded-2xl rounded-br-sm'
                               : 'bg-white/[0.06] text-white/80 rounded-2xl rounded-bl-sm'
@@ -330,7 +334,7 @@ export default function Philosophy() {
                           transition={{ duration: 0.4, ease: "easeInOut" }}
                           className={`flex ${isMindmushTyping ? 'justify-end' : 'justify-start'}`}
                         >
-                          <div className={`px-4 py-3 rounded-2xl flex items-center gap-[6px] ${
+                          <div className={`px-3 sm:px-4 py-2.5 sm:py-3 rounded-2xl flex items-center gap-[5px] sm:gap-[6px] ${
                             isMindmushTyping
                               ? 'bg-emerald-500/15 rounded-br-sm'
                               : 'bg-white/[0.06] rounded-bl-sm'
@@ -360,7 +364,6 @@ export default function Philosophy() {
             </div>
           </div>
         </motion.div>
-        </div>
       </div>
     </section>
   );

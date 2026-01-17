@@ -52,7 +52,7 @@ function LiveCounter({ baseValue }: { baseValue: number }) {
 
 export default function ImpactStats() {
   return (
-    <section id="numbers" className="snap-section px-6">
+    <section id="numbers" className="snap-section px-4 sm:px-6">
       <div className="max-w-5xl mx-auto w-full text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -60,15 +60,15 @@ export default function ImpactStats() {
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <p className="text-xl md:text-2xl text-white mb-6">
+          <p className="text-base sm:text-xl md:text-2xl text-white mb-4 sm:mb-6">
             50+ apps launched with
           </p>
 
-          <h2 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-semibold tracking-tight mb-6">
+          <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-9xl font-semibold tracking-tight mb-4 sm:mb-6">
             <LiveCounter baseValue={10847293} />
           </h2>
 
-          <p className="text-xl md:text-2xl text-white">
+          <p className="text-base sm:text-xl md:text-2xl text-white">
             downloads and counting
           </p>
         </motion.div>

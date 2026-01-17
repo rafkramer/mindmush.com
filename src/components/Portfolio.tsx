@@ -150,41 +150,41 @@ export default function Portfolio() {
                 className="bg-white/[0.02] border border-white/[0.06] rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-10 lg:p-12 flex flex-col w-full min-h-[320px] sm:min-h-[360px] lg:h-[400px]"
               >
                 {/* Top row - Type and Metric */}
-                <div className="flex items-center justify-between mb-6">
-                  <span className="text-xs font-mono text-cyan-400/60 uppercase tracking-widest">
+                <div className="flex items-center justify-between mb-4 sm:mb-6">
+                  <span className="text-[10px] sm:text-xs font-mono text-cyan-400/60 uppercase tracking-widest">
                     {activeLaunch.type}
                   </span>
-                  <span className={`text-xs font-medium px-3 py-1.5 rounded-full ${status.bg} ${status.text}`}>
+                  <span className={`text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1 sm:py-1.5 rounded-full ${status.bg} ${status.text}`}>
                     {activeLaunch.metric}
                   </span>
                 </div>
 
                 {/* Icon and Title */}
-                <div className="flex items-center gap-5 mb-8">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/[0.1] flex items-center justify-center overflow-hidden shadow-lg">
-                    <img src={activeLaunch.icon} alt={activeLaunch.name} className="w-full h-full object-cover rounded-2xl" />
+                <div className="flex items-center gap-3 sm:gap-5 mb-4 sm:mb-8">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white/[0.08] to-white/[0.02] border border-white/[0.1] flex items-center justify-center overflow-hidden shadow-lg flex-shrink-0">
+                    <img src={activeLaunch.icon} alt={activeLaunch.name} className="w-full h-full object-cover rounded-xl sm:rounded-2xl" />
                   </div>
-                  <h3 className="text-3xl md:text-4xl font-semibold text-white">
+                  <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-white">
                     {activeLaunch.name}
                   </h3>
                 </div>
 
                 {/* Description */}
-                <p className="text-base md:text-lg text-white/50 leading-relaxed flex-1">
+                <p className="text-sm sm:text-base md:text-lg text-white/50 leading-relaxed flex-1">
                   {activeLaunch.description}
                 </p>
 
                 {/* Footer */}
                 {activeLaunch.link && (
-                  <div className="mt-auto pt-8">
+                  <div className="mt-auto pt-4 sm:pt-8">
                     <a
                       href={activeLaunch.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group inline-flex items-center gap-2 text-sm text-white/40 hover:text-cyan-400 transition-colors"
+                      className="group inline-flex items-center gap-2 text-xs sm:text-sm text-white/40 hover:text-cyan-400 transition-colors"
                     >
                       View on {activeLaunch.linkLabel}
-                      <svg className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
                       </svg>
                     </a>
