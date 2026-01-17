@@ -2,11 +2,34 @@ import { useScroll } from 'framer-motion';
 import { useEffect, useState, useRef } from 'react';
 
 const APP_ICONS = [
+  // Main app icons
   '/icons/debloat_ai_icon.png',
   '/icons/facekit_3d_icon.png',
   '/icons/obama_run_icon.png',
   '/icons/amanda_ai_icon.png',
   '/icons/dagame.png',
+  '/icons/Game_image.webp',
+  // Temp icons to fill orbit
+  '/icons/app-icons  temp/instagram.png',
+  '/icons/app-icons  temp/tiktok.png',
+  '/icons/app-icons  temp/spotify.png',
+  '/icons/app-icons  temp/netflix.png',
+  '/icons/app-icons  temp/discord.png',
+  '/icons/app-icons  temp/snapchat.png',
+  '/icons/app-icons  temp/youtube.png',
+  '/icons/app-icons  temp/twitch.png',
+  '/icons/app-icons  temp/reddit.png',
+  '/icons/app-icons  temp/x.png',
+  '/icons/app-icons  temp/whatsapp.png',
+  '/icons/app-icons  temp/telegram.png',
+  '/icons/app-icons  temp/uber.png',
+  '/icons/app-icons  temp/airbnb.png',
+  '/icons/app-icons  temp/cash-app.png',
+  '/icons/app-icons  temp/venmo.png',
+  '/icons/app-icons  temp/robinhood.png',
+  '/icons/app-icons  temp/coinbase.png',
+  '/icons/app-icons  temp/shazam.png',
+  '/icons/app-icons  temp/notion.png',
 ];
 
 export default function ScrollIconOrbit() {

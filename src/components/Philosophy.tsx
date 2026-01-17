@@ -2,6 +2,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useInView } from 'framer-motion';
 
+// Sound effects
+const playSound = (src: string, volume = 0.3) => {
+  const audio = new Audio(src);
+  audio.volume = volume;
+  audio.play().catch(() => {}); // Ignore autoplay errors
+};
+
 const conversations = [
   {
     id: 'creators',
@@ -31,21 +38,6 @@ const conversations = [
       { timestamp: '8 months later', isHeader: true },
       { sender: 'partner', text: 'Just got acquired for $180k' },
       { sender: 'mindmush', text: '🤝' },
-    ],
-  },
-  {
-    id: 'founders',
-    title: 'Founders',
-    subtitle: 'Idea → Product',
-    messages: [
-      { timestamp: 'June 3', isHeader: true },
-      { sender: 'partner', text: "I know the wedding industry cold but can't code" },
-      { sender: 'mindmush', text: "You don't need to. What's the insight?" },
-      { sender: 'partner', text: 'Vendors need a better booking flow' },
-      { sender: 'mindmush', text: "We'll build it. You sell it." },
-      { timestamp: '12 weeks later', isHeader: true },
-      { sender: 'partner', text: '50k users. This is insane.' },
-      { sender: 'mindmush', text: 'Just getting started' },
     ],
   },
   {
@@ -95,6 +87,41 @@ const conversations = [
   },
 ];
 
+const testimonials = [
+  {
+    id: 1,
+    name: 'Alex Chen',
+    role: 'Fitness Creator',
+    followers: '2.1M followers',
+    quote: "MINDMUSH took my idea and turned it into a $47k/mo business in 4 months. They handle the tech so I can focus on content.",
+    avatar: '/icons/debloat_ai_icon.png',
+  },
+  {
+    id: 2,
+    name: 'Sarah Kim',
+    role: 'Indie Developer',
+    followers: 'Solo founder',
+    quote: "I was stuck at 200 users for a year. MINDMUSH helped me scale and exit for $180k. Best decision I made.",
+    avatar: '/icons/facekit_3d_icon.png',
+  },
+  {
+    id: 3,
+    name: 'Dr. James Liu',
+    role: 'ML Researcher',
+    followers: 'Stanford PhD',
+    quote: "Had the tech, no clue how to monetize. Now my app is top 10 in Health & Fitness. They made it happen.",
+    avatar: '/icons/amanda_ai_icon.png',
+  },
+  {
+    id: 4,
+    name: 'Mike Torres',
+    role: 'App Investor',
+    followers: 'Angel investor',
+    quote: "Smooth acquisition process. The team was professional and the transition was seamless. Would work with them again.",
+    avatar: '/icons/obama_run_icon.png',
+  },
+];
+
 export default function Philosophy() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: false, amount: 0.3 });
@@ -103,6 +130,8 @@ export default function Philosophy() {
   const [phase, setPhase] = useState<'idle' | 'intro' | 'complete'>('idle');
   const [visitedTabs, setVisitedTabs] = useState<Set<string>>(new Set());
   const [isTyping, setIsTyping] = useState(false);
+  const [showTestimonials, setShowTestimonials] = useState(false);
+  const [testimonialIndex, setTestimonialIndex] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const activeConversation = conversations.find(c => c.id === activeTab) || conversations[0];
@@ -115,7 +144,7 @@ export default function Philosophy() {
     }
   }, []);
 
-  const runTypingAnimation = useCallback((msgCount: number, speed: number, onComplete: () => void) => {
+  const runTypingAnimation = useCallback((msgCount: number, speed: number, onComplete: () => void, messages?: typeof conversations[0]['messages']) => {
     clearAnim();
 
     // Start with typing indicator showing (headers are always visible)
@@ -133,6 +162,24 @@ export default function Philosophy() {
     intervalRef.current = setInterval(() => {
       count++;
       setVisibleCount(count);
+
+      // Play sound for new message
+      if (messages && messages[count - 1] && !messages[count - 1].isHeader) {
+        const isMindmush = messages[count - 1].sender === 'mindmush';
+        if (isMindmush) {
+          playSound('/sound-effects/receive-message.wav', 0.25);
+        } else {
+          playSound('/sound-effects/message-delivered.wav', 0.25);
+        }
+      }
+
+      // Play typing sound if there's a next message coming
+      if (messages && count < messages.length) {
+        const nextMsg = messages[count];
+        if (nextMsg && !nextMsg.isHeader) {
+          playSound('/sound-effects/typing-indicator.wav', 0.15);
+        }
+      }
 
       // Keep typing indicator on until we reach the end
       if (count >= msgCount) {
@@ -156,7 +203,7 @@ export default function Philosophy() {
           setVisitedTabs(new Set(['creators']));
           setPhase('complete');
         }, 800);
-      });
+      }, conversations[0].messages);
     }
 
     if (!isInView && phase !== 'idle') {
@@ -180,7 +227,7 @@ export default function Philosophy() {
         // Same speed for all - 1200ms
         runTypingAnimation(conv.messages.length, 1200, () => {
           setVisitedTabs(prev => new Set([...prev, id]));
-        });
+        }, conv.messages);
       }
     }
   };
@@ -273,7 +320,7 @@ export default function Philosophy() {
                   })}
                 </div>
 
-                {/* Video Call Button */}
+                {/* Call Button */}
                 <AnimatePresence>
                   {showUI && (
                     <motion.button
@@ -281,17 +328,17 @@ export default function Philosophy() {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
                       transition={{ duration: 0.4, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                      className="relative flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 transition-colors group"
+                      onClick={() => setShowTestimonials(!showTestimonials)}
+                      className={`relative flex items-center gap-2 px-3 py-1.5 rounded-full border transition-colors ${
+                        showTestimonials
+                          ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
+                          : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20'
+                      }`}
                     >
-                      <motion.div
-                        animate={{ scale: [1, 1.2, 1] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                        className="w-2 h-2 rounded-full bg-emerald-500"
-                      />
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                       </svg>
-                      <span className="text-[10px] sm:text-xs font-medium hidden sm:inline">Testimonial</span>
+                      <span className="text-[10px] sm:text-xs font-medium hidden sm:inline">Testimonials</span>
                     </motion.button>
                   )}
                 </AnimatePresence>
@@ -409,6 +456,115 @@ export default function Philosophy() {
           </div>
         </motion.div>
       </div>
+
+      {/* Call Popup - Fixed position next to chat */}
+      <AnimatePresence>
+        {showTestimonials && (
+          <motion.div
+            initial={{ opacity: 0, x: 40, scale: 0.95 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 40, scale: 0.95 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed top-1/2 -translate-y-1/2 right-4 sm:right-8 lg:right-[calc(50%-380px)] z-50 hidden sm:block"
+          >
+            <div className="relative p-4 rounded-2xl bg-[#0d0d0f] border border-white/[0.08] w-[260px] shadow-2xl">
+              {/* Call Header */}
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/[0.06]">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-xs text-white/60">Live Call</span>
+                </div>
+                <button
+                  onClick={() => setShowTestimonials(false)}
+                  className="p-1.5 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Caller Info */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={testimonialIndex}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex flex-col items-center text-center"
+                >
+                  {/* Avatar */}
+                  <div className="relative mb-4">
+                    <div className="w-16 h-16 rounded-full overflow-hidden ring-2 ring-emerald-500/30 ring-offset-2 ring-offset-[#0d0d0f]">
+                      <img
+                        src={testimonials[testimonialIndex].avatar}
+                        alt={testimonials[testimonialIndex].name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    {/* Speaking indicator */}
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                      className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center"
+                    >
+                      <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                      </svg>
+                    </motion.div>
+                  </div>
+
+                  {/* Name & Role */}
+                  <h4 className="text-white font-medium text-sm mb-0.5">{testimonials[testimonialIndex].name}</h4>
+                  <p className="text-white/40 text-[11px] mb-3">{testimonials[testimonialIndex].role}</p>
+
+                  {/* Quote */}
+                  <p className="text-white/60 text-xs leading-relaxed">
+                    "{testimonials[testimonialIndex].quote}"
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Navigation */}
+              <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/[0.06]">
+                <div className="flex gap-1.5">
+                  {testimonials.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setTestimonialIndex(i)}
+                      className={`h-1.5 rounded-full transition-all ${
+                        i === testimonialIndex
+                          ? 'bg-emerald-500 w-4'
+                          : 'bg-white/20 w-1.5 hover:bg-white/40'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <div className="flex gap-1.5">
+                  <button
+                    onClick={() => setTestimonialIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length)}
+                    className="p-1.5 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
+                  >
+                    <svg className="w-3 h-3 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => setTestimonialIndex((prev) => (prev + 1) % testimonials.length)}
+                    className="p-1.5 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
+                  >
+                    <svg className="w-3 h-3 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
