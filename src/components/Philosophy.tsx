@@ -193,26 +193,31 @@ export default function Philosophy() {
 
   return (
     <section id="partners" className="snap-section px-6" ref={ref}>
-      <div className="max-w-4xl mx-auto w-full flex flex-col justify-center items-center h-full">
+      <div className="max-w-4xl mx-auto w-full flex flex-col items-center h-full relative">
 
-        {/* Header - appears after intro */}
-        <motion.h2
-          initial={false}
-          animate={{ opacity: showUI ? 1 : 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white text-center mb-8"
-        >
-          Who we <span className="text-emerald-400">partner</span> with
-        </motion.h2>
+        {/* Wrapper that centers content - during intro only card shows centered, after complete everything stacks */}
+        <div className={`flex flex-col items-center w-full transition-all duration-700 ease-out ${
+          showUI ? 'justify-start pt-8' : 'justify-center h-full absolute inset-0'
+        }`}>
 
-        {/* Tab Buttons - appear after intro */}
-        <motion.div
-          initial={false}
-          animate={{ opacity: showUI ? 1 : 0 }}
-          transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
-          className="flex flex-wrap justify-center gap-1 mb-6"
-          style={{ pointerEvents: showUI ? 'auto' : 'none' }}
-        >
+          {/* Header - appears after intro */}
+          <motion.h2
+            initial={false}
+            animate={{ opacity: showUI ? 1 : 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white text-center mb-8"
+          >
+            Who we <span className="text-emerald-400">partner</span> with
+          </motion.h2>
+
+          {/* Tab Buttons - appear after intro */}
+          <motion.div
+            initial={false}
+            animate={{ opacity: showUI ? 1 : 0 }}
+            transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
+            className="flex flex-wrap justify-center gap-1 mb-6"
+            style={{ pointerEvents: showUI ? 'auto' : 'none' }}
+          >
           {conversations.map((conv) => (
             <button
               key={conv.id}
@@ -355,6 +360,7 @@ export default function Philosophy() {
             </div>
           </div>
         </motion.div>
+        </div>
       </div>
     </section>
   );

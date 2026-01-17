@@ -60,18 +60,18 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="snap-section px-6 overflow-visible">
+    <section className="snap-section px-4 sm:px-6 overflow-visible">
       <div className="max-w-6xl mx-auto w-full overflow-visible">
-        <div className="grid lg:grid-cols-[1fr_1fr] gap-12 items-center overflow-visible">
+        <div className="grid lg:grid-cols-[1fr_1fr] gap-6 sm:gap-8 lg:gap-12 items-center overflow-visible">
           {/* Left: Content */}
           <div>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="mb-5"
+              className="mb-4 sm:mb-5"
             >
-              <span className="text-xs font-mono tracking-widest text-[#8b5cf6] uppercase">
+              <span className="text-[10px] sm:text-xs font-mono tracking-widest text-[#8b5cf6] uppercase">
                 MINDMUSH
               </span>
             </motion.div>
@@ -80,25 +80,25 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="text-[3.25rem] md:text-[4rem] lg:text-[5rem] font-semibold leading-[1.05] tracking-tight mb-7"
+              className="text-[2rem] sm:text-[2.5rem] md:text-[3.5rem] lg:text-[5rem] font-semibold leading-[1.1] sm:leading-[1.05] tracking-tight mb-5 sm:mb-7"
             >
               <span className="text-white">We </span>
-              <span className="relative inline-block" style={{ minWidth: '4ch' }}>
+              <span className="relative inline-block min-w-[3ch] sm:min-w-[4ch]">
                 <AnimatePresence mode="wait">
                   <AnimatedWord key={words[currentIndex]} word={words[currentIndex]} />
                 </AnimatePresence>
               </span>
               <br />
-              <span className="text-white whitespace-nowrap">mobile apps.</span>
+              <span className="text-white">mobile apps.</span>
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.8 }}
-              className="text-base md:text-lg text-white/50 leading-[2] mt-8 whitespace-nowrap"
+              className="text-sm sm:text-base md:text-lg text-white/50 leading-relaxed sm:leading-[2] mt-4 sm:mt-8 max-w-md lg:max-w-none"
             >
-              Venture studio focused on growing a profitable portfolio of<br />consumer software. Based in Switzerland. Operating internationally.
+              Venture studio focused on growing a profitable portfolio of consumer software. Based in Switzerland. Operating internationally.
             </motion.p>
           </div>
 
