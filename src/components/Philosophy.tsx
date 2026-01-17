@@ -199,9 +199,9 @@ export default function Philosophy() {
         <AnimatePresence>
           {showUI && (
             <motion.div
-              initial={{ opacity: 0, y: -30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
               className="flex flex-col items-center"
             >
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white text-center mb-4 sm:mb-6 md:mb-8">
@@ -211,7 +211,7 @@ export default function Philosophy() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+                transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
                 className="flex flex-wrap justify-center gap-1 mb-4 sm:mb-6"
               >
                 {conversations.map((conv) => (
@@ -240,7 +240,7 @@ export default function Philosophy() {
           transition={{
             duration: 0.8,
             ease: [0.16, 1, 0.3, 1],
-            layout: { duration: 1, ease: [0.16, 1, 0.3, 1] }
+            layout: { duration: 1.4, ease: [0.25, 0.1, 0.25, 1] }
           }}
           className="w-full max-w-2xl"
         >

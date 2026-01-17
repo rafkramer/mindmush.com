@@ -45,7 +45,32 @@ export function LoginPage({ onLogin }: LoginPageProps) {
         <div className="bg-white/[0.02] border border-white/[0.06] rounded-3xl p-8 backdrop-blur-md">
           {/* Logo */}
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-white tracking-tight">
+            {/* Mindmush Logo */}
+            <div className="flex justify-center mb-4">
+              <div className="relative w-16 h-16">
+                {/* Outer ring */}
+                <svg viewBox="0 0 64 64" className="w-full h-full">
+                  <defs>
+                    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#a78bfa" />
+                      <stop offset="100%" stopColor="#8b5cf6" />
+                    </linearGradient>
+                  </defs>
+                  {/* Outer circle */}
+                  <circle cx="32" cy="32" r="30" fill="none" stroke="url(#logoGradient)" strokeWidth="2" opacity="0.3" />
+                  {/* Inner wireframe sphere effect */}
+                  <ellipse cx="32" cy="32" rx="22" ry="22" fill="none" stroke="url(#logoGradient)" strokeWidth="1.5" opacity="0.6" />
+                  <ellipse cx="32" cy="32" rx="22" ry="10" fill="none" stroke="url(#logoGradient)" strokeWidth="1" opacity="0.4" />
+                  <ellipse cx="32" cy="32" rx="10" ry="22" fill="none" stroke="url(#logoGradient)" strokeWidth="1" opacity="0.4" />
+                  {/* Center dot */}
+                  <circle cx="32" cy="32" r="4" fill="url(#logoGradient)" />
+                </svg>
+              </div>
+            </div>
+            <span className="text-[10px] font-mono tracking-[0.3em] text-purple-400/60 uppercase">
+              MINDMUSH
+            </span>
+            <h1 className="text-xl font-semibold text-white tracking-tight mt-2">
               Partner Platform
             </h1>
           </div>

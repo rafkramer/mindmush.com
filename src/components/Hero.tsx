@@ -98,7 +98,9 @@ export default function Hero() {
               transition={{ delay: 0.6, duration: 0.8 }}
               className="text-sm sm:text-base md:text-lg text-white/50 leading-relaxed sm:leading-[2] mt-4 sm:mt-8"
             >
-              Venture studio focused on growing a profitable portfolio of<br className="hidden sm:block" /> consumer software. Based in Switzerland. Operating internationally.
+              Venture studio focused on growing a profitable portfolio of
+              <br className="hidden sm:block" />
+              <span className="whitespace-nowrap">consumer software. Based in Switzerland. Operating internationally.</span>
             </motion.p>
           </div>
 
