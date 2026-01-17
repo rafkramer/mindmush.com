@@ -40,7 +40,7 @@ export function Modal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -53,18 +53,23 @@ export function Modal({
 
           {/* Modal */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            transition={{ type: 'spring', duration: 0.3, bounce: 0.1 }}
-            className={`relative w-full ${sizes[size]} bg-[#111113] border border-white/[0.08] rounded-2xl shadow-2xl overflow-hidden`}
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 100 }}
+            transition={{ type: 'spring', duration: 0.4, bounce: 0.15 }}
+            className={`relative w-full ${sizes[size]} bg-[#111113] border border-white/[0.08] sm:rounded-2xl rounded-t-2xl shadow-2xl overflow-hidden max-h-[90vh] sm:max-h-none`}
           >
+            {/* Drag handle for mobile */}
+            <div className="sm:hidden flex justify-center pt-2 pb-1">
+              <div className="w-10 h-1 bg-white/20 rounded-full" />
+            </div>
+
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
-              <h2 className="text-lg font-semibold text-white">{title}</h2>
+            <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-white/[0.06]">
+              <h2 className="text-base sm:text-lg font-semibold text-white">{title}</h2>
               <button
                 onClick={onClose}
-                className="p-1.5 text-white/40 hover:text-white hover:bg-white/[0.05] rounded-lg transition-all"
+                className="p-2 sm:p-1.5 -mr-1 text-white/40 hover:text-white hover:bg-white/[0.05] rounded-lg transition-all"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -73,7 +78,7 @@ export function Modal({
             </div>
 
             {/* Content */}
-            <div className="px-6 py-5 max-h-[70vh] overflow-y-auto">
+            <div className="px-4 sm:px-6 py-4 sm:py-5 max-h-[calc(90vh-80px)] sm:max-h-[70vh] overflow-y-auto">
               {children}
             </div>
           </motion.div>

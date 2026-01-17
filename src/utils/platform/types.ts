@@ -51,8 +51,22 @@ export interface Settings {
 export interface Payout {
   id: string;
   userId: number;
+  ventureId?: string;
   period: string;
   amount: number;
-  status: 'pending' | 'paid';
-  date: string;
+  status: 'pending' | 'processing' | 'paid';
+  paidDate?: string;
+  expectedDate: string;
+}
+
+export interface Document {
+  id: string;
+  userId: number;
+  title: string;
+  type: 'contract' | 'agreement' | 'nda' | 'amendment' | 'other';
+  status: 'draft' | 'pending_signature' | 'signed' | 'expired';
+  createdAt: string;
+  signedAt?: string;
+  expiresAt?: string;
+  url?: string;
 }

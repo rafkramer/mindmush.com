@@ -35,9 +35,7 @@ export function DashboardPage({
   const studioChartRef = useRef<HTMLCanvasElement>(null);
   const [revenueChart, setRevenueChart] = useState<ChartInstance | null>(null);
   const [studioChart, setStudioChart] = useState<ChartInstance | null>(null);
-  const [activeMetrics, setActiveMetrics] = useState<Set<MetricKey>>(
-    new Set(['ventureRevenue', 'studioRevenue', 'studioProfit'])
-  );
+  const [highlightedMetric, setHighlightedMetric] = useState<MetricKey | null>(null);
 
   // Calculate stats
   let totalRevenue = 0;
@@ -55,20 +53,9 @@ export function DashboardPage({
   const studioProfit = studioRevenue - studioExpenses;
   const profitMargin = totalRevenue > 0 ? ((totalRevenue - totalExpenses) / totalRevenue * 100) : 0;
 
-  // Toggle metric visibility
-  const toggleMetric = useCallback((metric: MetricKey) => {
-    setActiveMetrics(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(metric)) {
-        // Don't allow removing if it's the last one
-        if (newSet.size > 1) {
-          newSet.delete(metric);
-        }
-      } else {
-        newSet.add(metric);
-      }
-      return newSet;
-    });
+  // Toggle metric highlight - click to focus, click again to unfocus
+  const toggleHighlight = useCallback((metric: MetricKey) => {
+    setHighlightedMetric(prev => prev === metric ? null : metric);
   }, []);
 
   // Metric definitions
@@ -200,64 +187,80 @@ export function DashboardPage({
             return gradient;
           };
 
+          // Helper to adjust color opacity
+          const adjustOpacity = (color: string, opacity: number) => {
+            // For hex colors like #8b5cf6
+            if (color.startsWith('#')) {
+              const r = parseInt(color.slice(1, 3), 16);
+              const g = parseInt(color.slice(3, 5), 16);
+              const b = parseInt(color.slice(5, 7), 16);
+              return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+            }
+            return color;
+          };
+
           const datasets = [
             {
               key: 'ventureRevenue',
               label: 'Venture Revenue',
               data: ventureRevenueData,
-              borderColor: '#8b5cf6',
+              baseColor: '#8b5cf6',
               backgroundColor: createGradient('rgb(139, 92, 246)', 0.15),
               fill: true,
-              hidden: !activeMetrics.has('ventureRevenue'),
             },
             {
               key: 'ventureExpenses',
               label: 'Venture Expenses',
               data: ventureExpensesData,
-              borderColor: '#f97316',
+              baseColor: '#f97316',
               backgroundColor: 'transparent',
               fill: false,
               borderDash: [5, 5],
-              hidden: !activeMetrics.has('ventureExpenses'),
             },
             {
               key: 'studioRevenue',
               label: 'Studio Revenue',
               data: studioRevenueData,
-              borderColor: '#3b82f6',
+              baseColor: '#3b82f6',
               backgroundColor: createGradient('rgb(59, 130, 246)', 0.1),
               fill: true,
-              hidden: !activeMetrics.has('studioRevenue'),
             },
             {
               key: 'studioExpenses',
               label: 'Studio Expenses',
               data: studioExpensesData,
-              borderColor: '#ef4444',
+              baseColor: '#ef4444',
               backgroundColor: 'transparent',
               fill: false,
               borderDash: [5, 5],
-              hidden: !activeMetrics.has('studioExpenses'),
             },
             {
               key: 'studioProfit',
               label: 'Studio Profit',
               data: studioProfitData,
-              borderColor: '#22c55e',
+              baseColor: '#22c55e',
               backgroundColor: createGradient('rgb(34, 197, 94)', 0.1),
               fill: true,
-              hidden: !activeMetrics.has('studioProfit'),
             },
-          ].map(ds => ({
-            ...ds,
-            tension: 0.4,
-            borderWidth: activeMetrics.has(ds.key as MetricKey) ? 2.5 : 2,
-            pointRadius: 0,
-            pointHoverRadius: 4,
-            pointHoverBackgroundColor: ds.borderColor,
-            pointHoverBorderColor: '#fff',
-            pointHoverBorderWidth: 2,
-          }));
+          ].map(ds => {
+            const isHighlighted = highlightedMetric === ds.key;
+            const isFaded = highlightedMetric !== null && !isHighlighted;
+
+            return {
+              ...ds,
+              borderColor: isFaded ? adjustOpacity(ds.baseColor, 0.2) : ds.baseColor,
+              backgroundColor: isFaded ? 'transparent' : ds.backgroundColor,
+              fill: isFaded ? false : ds.fill,
+              tension: 0.4,
+              borderWidth: isHighlighted ? 3.5 : isFaded ? 1 : 2,
+              pointRadius: 0,
+              pointHoverRadius: isHighlighted ? 6 : 4,
+              pointHoverBackgroundColor: ds.baseColor,
+              pointHoverBorderColor: '#fff',
+              pointHoverBorderWidth: 2,
+              order: isHighlighted ? 0 : 1, // Highlighted line renders on top
+            };
+          });
 
           const chart = new ChartJS(ctx, {
             type: 'line',
@@ -350,17 +353,17 @@ export function DashboardPage({
       if (revenueChart) revenueChart.destroy();
       if (studioChart) studioChart.destroy();
     };
-  }, [ventures, studioExpenses, dateRange, totalRevenue, studioProfit, activeMetrics, generateTrendData, ventureExpensesTotal, studioRevenue]);
+  }, [ventures, studioExpenses, dateRange, totalRevenue, studioProfit, highlightedMetric, generateTrendData, ventureExpensesTotal, studioRevenue]);
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Dashboard</h1>
-          <p className="text-white/40 text-sm mt-1">Studio performance overview</p>
+          <h1 className="text-xl sm:text-2xl font-semibold text-white">Dashboard</h1>
+          <p className="text-white/40 text-xs sm:text-sm mt-1">Studio performance overview</p>
         </div>
-        <Button variant="secondary" onClick={onSync}>
+        <Button variant="secondary" onClick={onSync} className="w-full sm:w-auto">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
@@ -369,7 +372,7 @@ export function DashboardPage({
       </div>
 
       {/* Stats Grid - Clickable to filter chart */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4">
         <StatCard
           label="Venture Revenue"
           value={formatCurrency(totalRevenue)}
@@ -380,8 +383,8 @@ export function DashboardPage({
           }
           iconColor="purple"
           delay={0}
-          onClick={() => toggleMetric('ventureRevenue')}
-          active={activeMetrics.has('ventureRevenue')}
+          onClick={() => toggleHighlight('ventureRevenue')}
+          active={highlightedMetric === null || highlightedMetric === 'ventureRevenue'}
         />
         <StatCard
           label="Venture Expenses"
@@ -393,8 +396,8 @@ export function DashboardPage({
           }
           iconColor="orange"
           delay={0.1}
-          onClick={() => toggleMetric('ventureExpenses')}
-          active={activeMetrics.has('ventureExpenses')}
+          onClick={() => toggleHighlight('ventureExpenses')}
+          active={highlightedMetric === null || highlightedMetric === 'ventureExpenses'}
         />
         <StatCard
           label="Studio Revenue"
@@ -406,8 +409,8 @@ export function DashboardPage({
           }
           iconColor="blue"
           delay={0.2}
-          onClick={() => toggleMetric('studioRevenue')}
-          active={activeMetrics.has('studioRevenue')}
+          onClick={() => toggleHighlight('studioRevenue')}
+          active={highlightedMetric === null || highlightedMetric === 'studioRevenue'}
         />
         <StatCard
           label="Studio Expenses"
@@ -419,8 +422,8 @@ export function DashboardPage({
           }
           iconColor="red"
           delay={0.3}
-          onClick={() => toggleMetric('studioExpenses')}
-          active={activeMetrics.has('studioExpenses')}
+          onClick={() => toggleHighlight('studioExpenses')}
+          active={highlightedMetric === null || highlightedMetric === 'studioExpenses'}
         />
         <StatCard
           label="Studio Profit"
@@ -433,28 +436,28 @@ export function DashboardPage({
           iconColor="green"
           positive={studioProfit >= 0}
           delay={0.4}
-          onClick={() => toggleMetric('studioProfit')}
-          active={activeMetrics.has('studioProfit')}
+          onClick={() => toggleHighlight('studioProfit')}
+          active={highlightedMetric === null || highlightedMetric === 'studioProfit'}
         />
       </div>
 
       {/* Main Financial Chart - Full Width */}
-      <Card>
+      <Card className="overflow-hidden">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-medium text-white/70">Financial Overview</h3>
-          <p className="text-xs text-white/30">Click metrics above to filter</p>
+          <p className="text-xs text-white/30 hidden sm:block">Click metrics above to filter</p>
         </div>
-        <div className="h-80">
+        <div className="h-48 sm:h-64 lg:h-80 -mx-2 sm:mx-0">
           <canvas ref={revenueChartRef} />
         </div>
       </Card>
 
       {/* Revenue by Venture & Profit Margins */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Revenue by Venture */}
         <Card>
           <h3 className="text-sm font-medium text-white/70 mb-4">Revenue by Venture</h3>
-          <div className="h-64 flex items-center justify-center">
+          <div className="h-48 sm:h-64 flex items-center justify-center">
             <canvas ref={studioChartRef} />
           </div>
         </Card>
@@ -514,7 +517,7 @@ export function DashboardPage({
         </Card>
       </div>
 
-      {/* Portfolio Table */}
+      {/* Portfolio */}
       <Card>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-medium text-white/70">Portfolio</h3>
@@ -526,79 +529,138 @@ export function DashboardPage({
             <p className="text-white/40">No ventures yet. Add your first venture to get started.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-white/[0.06]">
-                  <th className="text-left py-3 px-2 text-xs font-medium text-white/40">Venture</th>
-                  <th className="text-left py-3 px-2 text-xs font-medium text-white/40">Type</th>
-                  <th className="text-left py-3 px-2 text-xs font-medium text-white/40">State</th>
-                  <th className="text-right py-3 px-2 text-xs font-medium text-white/40">Revenue</th>
-                  <th className="text-right py-3 px-2 text-xs font-medium text-white/40">Expenses</th>
-                  <th className="text-right py-3 px-2 text-xs font-medium text-white/40">Profit</th>
-                  <th className="text-right py-3 px-2 text-xs font-medium text-white/40">Equity</th>
-                  <th className="text-right py-3 px-2 text-xs font-medium text-white/40">Studio Rev</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ventures.map((venture, i) => {
-                  const ventureExpenses = (venture.expenses || [])
-                    .reduce((sum, e) => sum + e.amount, 0);
-                  const profit = (venture.revenue || 0) - ventureExpenses;
-                  const studioRev = (venture.revenue || 0) * (venture.studioEquity / 100);
+          <>
+            {/* Mobile Card View */}
+            <div className="sm:hidden space-y-3">
+              {ventures.map((venture, i) => {
+                const ventureExpenses = (venture.expenses || [])
+                  .reduce((sum, e) => sum + e.amount, 0);
+                const profit = (venture.revenue || 0) - ventureExpenses;
 
-                  return (
-                    <motion.tr
-                      key={venture.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.05 }}
-                      onClick={() => onViewVenture(venture.id)}
-                      className="border-b border-white/[0.03] hover:bg-white/[0.02] cursor-pointer transition-colors"
-                    >
-                      <td className="py-3 px-2">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-9 h-9 rounded-xl flex items-center justify-center overflow-hidden ${
-                            venture.type === 'game' ? 'bg-orange-500/10' : 'bg-blue-500/10'
-                          }`}>
-                            {venture.icon ? (
-                              <img src={venture.icon} alt={venture.name} className="w-full h-full object-cover" />
-                            ) : (
-                              <svg className={`w-5 h-5 ${venture.type === 'game' ? 'text-orange-400' : 'text-blue-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={venture.type === 'game' ? 'M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959' : 'M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3'} />
-                              </svg>
-                            )}
-                          </div>
-                          <span className="text-sm text-white font-medium">{venture.name}</span>
+                return (
+                  <motion.div
+                    key={venture.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.03 }}
+                    onClick={() => onViewVenture(venture.id)}
+                    className="p-3 bg-white/[0.02] rounded-xl active:bg-white/[0.04] cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0 ${
+                        venture.type === 'game' ? 'bg-orange-500/10' : 'bg-blue-500/10'
+                      }`}>
+                        {venture.icon ? (
+                          <img src={venture.icon} alt={venture.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <svg className={`w-5 h-5 ${venture.type === 'game' ? 'text-orange-400' : 'text-blue-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={venture.type === 'game' ? 'M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959' : 'M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3'} />
+                          </svg>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-white truncate">{venture.name}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <StateBadge state={venture.state} />
+                          <TypeBadge type={venture.type} />
                         </div>
-                      </td>
-                      <td className="py-3 px-2">
-                        <TypeBadge type={venture.type} />
-                      </td>
-                      <td className="py-3 px-2">
-                        <StateBadge state={venture.state} />
-                      </td>
-                      <td className="py-3 px-2 text-right text-sm text-white/70 font-mono">
-                        {formatCurrency(venture.revenue || 0)}
-                      </td>
-                      <td className="py-3 px-2 text-right text-sm text-white/70 font-mono">
-                        {formatCurrency(ventureExpenses)}
-                      </td>
-                      <td className={`py-3 px-2 text-right text-sm font-mono ${profit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                        {formatCurrency(profit)}
-                      </td>
-                      <td className="py-3 px-2 text-right text-sm text-white/70">
-                        {venture.studioEquity}%
-                      </td>
-                      <td className="py-3 px-2 text-right text-sm text-white/70 font-mono">
-                        {formatCurrency(studioRev)}
-                      </td>
-                    </motion.tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                      <svg className="w-5 h-5 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 text-xs">
+                      <div>
+                        <p className="text-white/40 mb-0.5">Revenue</p>
+                        <p className="text-white font-mono">{formatCurrency(venture.revenue || 0)}</p>
+                      </div>
+                      <div>
+                        <p className="text-white/40 mb-0.5">Profit</p>
+                        <p className={`font-mono ${profit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {formatCurrency(profit)}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-white/[0.06]">
+                    <th className="text-left py-3 px-2 text-xs font-medium text-white/40">Venture</th>
+                    <th className="text-left py-3 px-2 text-xs font-medium text-white/40">Type</th>
+                    <th className="text-left py-3 px-2 text-xs font-medium text-white/40">State</th>
+                    <th className="text-right py-3 px-2 text-xs font-medium text-white/40">Revenue</th>
+                    <th className="text-right py-3 px-2 text-xs font-medium text-white/40">Expenses</th>
+                    <th className="text-right py-3 px-2 text-xs font-medium text-white/40">Profit</th>
+                    <th className="text-right py-3 px-2 text-xs font-medium text-white/40">Equity</th>
+                    <th className="text-right py-3 px-2 text-xs font-medium text-white/40">Studio Rev</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ventures.map((venture, i) => {
+                    const ventureExpenses = (venture.expenses || [])
+                      .reduce((sum, e) => sum + e.amount, 0);
+                    const profit = (venture.revenue || 0) - ventureExpenses;
+                    const studioRev = (venture.revenue || 0) * (venture.studioEquity / 100);
+
+                    return (
+                      <motion.tr
+                        key={venture.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        onClick={() => onViewVenture(venture.id)}
+                        className="border-b border-white/[0.03] hover:bg-white/[0.02] cursor-pointer transition-colors"
+                      >
+                        <td className="py-3 px-2">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-9 h-9 rounded-xl flex items-center justify-center overflow-hidden ${
+                              venture.type === 'game' ? 'bg-orange-500/10' : 'bg-blue-500/10'
+                            }`}>
+                              {venture.icon ? (
+                                <img src={venture.icon} alt={venture.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <svg className={`w-5 h-5 ${venture.type === 'game' ? 'text-orange-400' : 'text-blue-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={venture.type === 'game' ? 'M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959' : 'M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3'} />
+                                </svg>
+                              )}
+                            </div>
+                            <span className="text-sm text-white font-medium">{venture.name}</span>
+                          </div>
+                        </td>
+                        <td className="py-3 px-2">
+                          <TypeBadge type={venture.type} />
+                        </td>
+                        <td className="py-3 px-2">
+                          <StateBadge state={venture.state} />
+                        </td>
+                        <td className="py-3 px-2 text-right text-sm text-white/70 font-mono">
+                          {formatCurrency(venture.revenue || 0)}
+                        </td>
+                        <td className="py-3 px-2 text-right text-sm text-white/70 font-mono">
+                          {formatCurrency(ventureExpenses)}
+                        </td>
+                        <td className={`py-3 px-2 text-right text-sm font-mono ${profit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {formatCurrency(profit)}
+                        </td>
+                        <td className="py-3 px-2 text-right text-sm text-white/70">
+                          {venture.studioEquity}%
+                        </td>
+                        <td className="py-3 px-2 text-right text-sm text-white/70 font-mono">
+                          {formatCurrency(studioRev)}
+                        </td>
+                      </motion.tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </Card>
     </div>

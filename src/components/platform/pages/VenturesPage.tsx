@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { StateBadge, TypeBadge } from '../ui/Badge';
+import { SearchInput } from '../ui/SearchInput';
 import { formatCurrency } from '../../../utils/platform/format';
 import { getSettings } from '../../../utils/platform/storage';
 import { VENTURE_STATES, type VentureState } from '../../../utils/platform/constants';
@@ -20,11 +21,29 @@ export function VenturesPage({
   onAddVenture,
 }: VenturesPageProps) {
   const [stateFilter, setStateFilter] = useState<VentureState | 'all'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const settings = getSettings();
 
-  const filteredVentures = stateFilter === 'all'
-    ? ventures
-    : ventures.filter(v => v.state === stateFilter);
+  const filteredVentures = useMemo(() => {
+    let result = ventures;
+
+    // Filter by state
+    if (stateFilter !== 'all') {
+      result = result.filter(v => v.state === stateFilter);
+    }
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(v =>
+        v.name.toLowerCase().includes(query) ||
+        v.type.toLowerCase().includes(query) ||
+        v.bundleId?.toLowerCase().includes(query)
+      );
+    }
+
+    return result;
+  }, [ventures, stateFilter, searchQuery]);
 
   const getApiStatus = (venture: Venture) => {
     if (venture.state === 'building' || venture.state === 'killed') {
@@ -45,24 +64,32 @@ export function VenturesPage({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between sm:gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Ventures</h1>
-          <p className="text-white/40 text-sm mt-1">Manage your portfolio</p>
+          <h1 className="text-xl sm:text-2xl font-semibold text-white">Ventures</h1>
+          <p className="text-white/40 text-xs sm:text-sm mt-1">Manage your portfolio</p>
         </div>
-        <Button variant="primary" onClick={onAddVenture}>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          Add Venture
-        </Button>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+          <SearchInput
+            placeholder="Search ventures..."
+            value={searchQuery}
+            onChange={setSearchQuery}
+            className="w-full sm:w-64"
+          />
+          <Button variant="primary" onClick={onAddVenture} className="w-full sm:w-auto justify-center">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add Venture
+          </Button>
+        </div>
       </div>
 
       {/* State Filter Pills */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-nowrap gap-2 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible sm:pb-0 scrollbar-hide">
         <button
           onClick={() => setStateFilter('all')}
-          className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all ${
+          className={`px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-medium rounded-full transition-all whitespace-nowrap flex-shrink-0 ${
             stateFilter === 'all'
               ? 'bg-white text-[#0a0a0b]'
               : 'text-white/50 hover:text-white bg-white/[0.03] hover:bg-white/[0.06]'
@@ -74,7 +101,7 @@ export function VenturesPage({
           <button
             key={state}
             onClick={() => setStateFilter(state)}
-            className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all ${
+            className={`px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-medium rounded-full transition-all whitespace-nowrap flex-shrink-0 ${
               stateFilter === state
                 ? 'bg-white text-[#0a0a0b]'
                 : 'text-white/50 hover:text-white bg-white/[0.03] hover:bg-white/[0.06]'
@@ -91,7 +118,7 @@ export function VenturesPage({
           <p className="text-white/40">No ventures found. Add your first venture to get started.</p>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {filteredVentures.map((venture, i) => {
             const ventureExpenses = (venture.expenses || [])
               .reduce((sum, e) => sum + e.amount, 0);

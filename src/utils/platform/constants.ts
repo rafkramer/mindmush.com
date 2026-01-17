@@ -4,6 +4,7 @@ export const STORAGE_KEYS = {
   studioExpenses: 'mindmush_studio_expenses',
   settings: 'mindmush_settings',
   payouts: 'mindmush_payouts',
+  documents: 'mindmush_documents',
   currentUser: 'mindmush_current_user',
 } as const;
 

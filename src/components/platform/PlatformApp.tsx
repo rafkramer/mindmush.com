@@ -57,6 +57,7 @@ function PlatformContent() {
   const [currentVenture, setCurrentVenture] = useState<Venture | null>(null);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [settings, setSettings] = useState<Settings>({});
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Modal State
   const [showAddVentureModal, setShowAddVentureModal] = useState(false);
@@ -362,31 +363,28 @@ function PlatformContent() {
         currentPage={currentPage}
         onNavigate={handleNavigate}
         onLogout={logout}
+        isMobileOpen={isMobileSidebarOpen}
+        onMobileClose={() => setIsMobileSidebarOpen(false)}
       />
 
       {/* Main Content */}
       <main className="flex-1 overflow-hidden">
-        {/* Top Bar with Date Filter */}
-        <div className="h-16 border-b border-white/[0.06] flex items-center justify-between px-6">
-          <div className="flex items-center gap-2">
-            {[1, 7, 30, 'all'].map((range) => (
-              <button
-                key={range}
-                onClick={() => setDateRange(range as number | 'all')}
-                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                  dateRange === range
-                    ? 'bg-white/[0.1] text-white'
-                    : 'text-white/40 hover:text-white hover:bg-white/[0.05]'
-                }`}
-              >
-                {range === 'all' ? 'All Time' : range === 1 ? '24h' : `${range}d`}
-              </button>
-            ))}
-          </div>
+        {/* Mobile Header */}
+        <div className="lg:hidden flex items-center justify-between p-4 border-b border-white/[0.06]">
+          <button
+            onClick={() => setIsMobileSidebarOpen(true)}
+            className="p-2 rounded-xl hover:bg-white/[0.06] transition-colors"
+          >
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </button>
+          <span className="text-sm font-medium text-white">Partner Platform</span>
+          <div className="w-10" /> {/* Spacer for centering */}
         </div>
 
         {/* Page Content */}
-        <div className="h-[calc(100vh-4rem)] overflow-y-auto p-6">
+        <div className="h-[calc(100vh-65px)] lg:h-screen overflow-y-auto p-4 lg:p-6">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentPage + (currentVenture?.id || '')}

@@ -54,7 +54,7 @@ export function StatCard({
       whileHover={{ y: -2, transition: { duration: 0.2 } }}
       whileTap={onClick ? { scale: 0.98 } : undefined}
       onClick={onClick}
-      className={`relative bg-white/[0.02] border rounded-2xl p-5 backdrop-blur-sm overflow-hidden group ${
+      className={`relative bg-white/[0.02] border rounded-xl sm:rounded-2xl p-3 sm:p-5 backdrop-blur-sm overflow-hidden group ${
         onClick ? 'cursor-pointer' : ''
       } ${
         active
@@ -65,14 +65,16 @@ export function StatCard({
       {/* Subtle gradient overlay on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-      <div className="relative flex items-center gap-4">
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg ${iconColors[iconColor]}`}>
-          {icon}
+      <div className="relative flex items-center gap-2 sm:gap-4">
+        <div className={`w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg flex-shrink-0 ${iconColors[iconColor]}`}>
+          <div className="scale-75 sm:scale-100">
+            {icon}
+          </div>
         </div>
         <div className="flex-1 min-w-0">
-          <div className="text-xs font-medium text-white/40 uppercase tracking-wider mb-1">{label}</div>
-          <div className="flex items-baseline gap-2">
-            <span className={`text-2xl font-semibold tracking-tight ${valueColor}`} style={{ fontFamily: 'Space Grotesk, monospace' }}>
+          <div className="text-[10px] sm:text-xs font-medium text-white/40 uppercase tracking-wider mb-0.5 sm:mb-1 truncate">{label}</div>
+          <div className="flex items-baseline gap-1 sm:gap-2">
+            <span className={`text-base sm:text-2xl font-semibold tracking-tight ${valueColor}`} style={{ fontFamily: 'Space Grotesk, monospace' }}>
               {value}
             </span>
             {trend && (

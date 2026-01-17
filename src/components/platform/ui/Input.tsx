@@ -25,7 +25,7 @@ export function Input({
       <div className="relative">
         <input
           type={isPassword && showPassword ? 'text' : type}
-          className={`w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-purple-500/50 focus:bg-white/[0.05] transition-all ${error ? 'border-red-500/50' : ''} ${className}`}
+          className={`w-full px-3 sm:px-4 py-3 sm:py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-base sm:text-sm text-white placeholder-white/30 focus:outline-none focus:border-purple-500/50 focus:bg-white/[0.05] transition-all ${error ? 'border-red-500/50' : ''} ${className}`}
           {...props}
         />
         {isPassword && (
@@ -73,7 +73,7 @@ export function Textarea({
         </label>
       )}
       <textarea
-        className={`w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-purple-500/50 focus:bg-white/[0.05] transition-all resize-none ${error ? 'border-red-500/50' : ''} ${className}`}
+        className={`w-full px-3 sm:px-4 py-3 sm:py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-base sm:text-sm text-white placeholder-white/30 focus:outline-none focus:border-purple-500/50 focus:bg-white/[0.05] transition-all resize-none ${error ? 'border-red-500/50' : ''} ${className}`}
         {...props}
       />
       {error && (
@@ -102,7 +102,7 @@ export function Select({
         </label>
       )}
       <select
-        className={`w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white focus:outline-none focus:border-purple-500/50 focus:bg-white/[0.05] transition-all appearance-none cursor-pointer ${className}`}
+        className={`w-full px-3 sm:px-4 py-3 sm:py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-base sm:text-sm text-white focus:outline-none focus:border-purple-500/50 focus:bg-white/[0.05] transition-all appearance-none cursor-pointer ${className}`}
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23ffffff40'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
           backgroundRepeat: 'no-repeat',

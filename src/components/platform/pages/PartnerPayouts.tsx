@@ -37,29 +37,29 @@ export function PartnerPayouts({ user, ventures }: PartnerPayoutsProps) {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-white">Payouts</h1>
-        <p className="text-white/40 text-sm mt-1">Track your earnings and payment schedule</p>
+        <h1 className="text-xl sm:text-2xl font-semibold text-white">Payouts</h1>
+        <p className="text-white/40 text-xs sm:text-sm mt-1">Track your earnings and payment schedule</p>
       </div>
 
       {/* Next Payout Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-2xl p-6"
+        className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-xl sm:rounded-2xl p-4 sm:p-6"
       >
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-white/50 mb-1">Next Payout</p>
-            <p className="text-4xl font-bold text-white font-mono">{formatCurrency(pendingAmount)}</p>
-            <p className="text-sm text-white/50 mt-2">
+        <div className="flex items-center justify-between gap-4">
+          <div className="min-w-0">
+            <p className="text-xs sm:text-sm text-white/50 mb-1">Next Payout</p>
+            <p className="text-2xl sm:text-4xl font-bold text-white font-mono truncate">{formatCurrency(pendingAmount)}</p>
+            <p className="text-xs sm:text-sm text-white/50 mt-1 sm:mt-2">
               {formatDate(nextPayoutDate.toISOString())}
             </p>
           </div>
-          <div className="text-right">
-            <div className="w-20 h-20 rounded-2xl bg-white/[0.05] flex items-center justify-center">
+          <div className="text-right flex-shrink-0">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl bg-white/[0.05] flex items-center justify-center">
               <div className="text-center">
-                <p className="text-2xl font-bold text-white">{daysUntilPayout}</p>
-                <p className="text-xs text-white/40">days</p>
+                <p className="text-xl sm:text-2xl font-bold text-white">{daysUntilPayout}</p>
+                <p className="text-[10px] sm:text-xs text-white/40">days</p>
               </div>
             </div>
           </div>
@@ -67,7 +67,7 @@ export function PartnerPayouts({ user, ventures }: PartnerPayoutsProps) {
       </motion.div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         <Card>
           <p className="text-sm text-white/50 mb-1">Total Paid Out</p>
           <p className="text-2xl font-semibold text-green-400 font-mono">{formatCurrency(totalPaidOut)}</p>
@@ -102,42 +102,81 @@ export function PartnerPayouts({ user, ventures }: PartnerPayoutsProps) {
             <p className="text-white/40">No payout history yet.</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-white/[0.06]">
-                  <th className="text-left py-3 px-2 text-xs font-medium text-white/40">Period</th>
-                  <th className="text-right py-3 px-2 text-xs font-medium text-white/40">Amount</th>
-                  <th className="text-center py-3 px-2 text-xs font-medium text-white/40">Status</th>
-                  <th className="text-right py-3 px-2 text-xs font-medium text-white/40">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {payouts.map((payout, i) => (
-                  <motion.tr
-                    key={payout.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.03 }}
-                    className="border-b border-white/[0.03]"
-                  >
-                    <td className="py-3 px-2 text-sm text-white">{payout.period}</td>
-                    <td className="py-3 px-2 text-right text-sm text-white/70 font-mono">
-                      {formatCurrency(payout.amount)}
-                    </td>
-                    <td className="py-3 px-2 text-center">
-                      <Badge variant={payout.status === 'paid' ? 'success' : 'warning'}>
-                        {payout.status.charAt(0).toUpperCase() + payout.status.slice(1)}
-                      </Badge>
-                    </td>
-                    <td className="py-3 px-2 text-right text-sm text-white/40">
-                      {formatDate(payout.date)}
-                    </td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <>
+            {/* Mobile Card View */}
+            <div className="sm:hidden space-y-3">
+              {payouts.map((payout, i) => (
+                <motion.div
+                  key={payout.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.03 }}
+                  className="p-3 bg-white/[0.02] rounded-xl"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-white">{payout.period}</span>
+                    <Badge variant={payout.status === 'paid' ? 'success' : payout.status === 'processing' ? 'info' : 'warning'}>
+                      {payout.status.charAt(0).toUpperCase() + payout.status.slice(1)}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-lg font-semibold text-white font-mono">{formatCurrency(payout.amount)}</span>
+                    {payout.paidDate ? (
+                      <span className="text-xs text-green-400">Paid {formatDate(payout.paidDate)}</span>
+                    ) : (
+                      <span className="text-xs text-white/40">Expected {formatDate(payout.expectedDate)}</span>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-white/[0.06]">
+                    <th className="text-left py-3 px-2 text-xs font-medium text-white/40">Period</th>
+                    <th className="text-right py-3 px-2 text-xs font-medium text-white/40">Amount</th>
+                    <th className="text-center py-3 px-2 text-xs font-medium text-white/40">Status</th>
+                    <th className="text-right py-3 px-2 text-xs font-medium text-white/40">Expected</th>
+                    <th className="text-right py-3 px-2 text-xs font-medium text-white/40">Paid</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {payouts.map((payout, i) => (
+                    <motion.tr
+                      key={payout.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.03 }}
+                      className="border-b border-white/[0.03]"
+                    >
+                      <td className="py-3 px-2 text-sm text-white">{payout.period}</td>
+                      <td className="py-3 px-2 text-right text-sm text-white/70 font-mono">
+                        {formatCurrency(payout.amount)}
+                      </td>
+                      <td className="py-3 px-2 text-center">
+                        <Badge variant={payout.status === 'paid' ? 'success' : payout.status === 'processing' ? 'info' : 'warning'}>
+                          {payout.status.charAt(0).toUpperCase() + payout.status.slice(1)}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-2 text-right text-sm text-white/40">
+                        {formatDate(payout.expectedDate)}
+                      </td>
+                      <td className="py-3 px-2 text-right text-sm">
+                        {payout.paidDate ? (
+                          <span className="text-green-400">{formatDate(payout.paidDate)}</span>
+                        ) : (
+                          <span className="text-white/20">—</span>
+                        )}
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </Card>
     </div>

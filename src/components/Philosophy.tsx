@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
-import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useInView } from 'framer-motion';
 
 const conversations = [
@@ -15,7 +15,7 @@ const conversations = [
       { sender: 'mindmush', text: 'Give us 8 weeks' },
       { timestamp: '4 months later', isHeader: true },
       { sender: 'partner', text: 'Just hit $47k/mo 🤯' },
-      { sender: 'mindmush', text: 'Told you', hasHeart: true },
+      { sender: 'mindmush', text: 'Told you' },
     ],
   },
   {
@@ -30,7 +30,7 @@ const conversations = [
       { sender: 'mindmush', text: "Product's solid. Growth is the gap. We're in." },
       { timestamp: '8 months later', isHeader: true },
       { sender: 'partner', text: 'Just got acquired for $180k' },
-      { sender: 'mindmush', text: '🤝', hasHeart: true },
+      { sender: 'mindmush', text: '🤝' },
     ],
   },
   {
@@ -45,7 +45,7 @@ const conversations = [
       { sender: 'mindmush', text: "We'll build it. You sell it." },
       { timestamp: '12 weeks later', isHeader: true },
       { sender: 'partner', text: '50k users. This is insane.' },
-      { sender: 'mindmush', text: 'Just getting started', hasHeart: true },
+      { sender: 'mindmush', text: 'Just getting started' },
     ],
   },
   {
@@ -60,7 +60,7 @@ const conversations = [
       { sender: 'mindmush', text: "Let's commercialize it" },
       { timestamp: '6 months later', isHeader: true },
       { sender: 'partner', text: 'App is top 10 in Health & Fitness' },
-      { sender: 'mindmush', text: 'Research meets reality', hasHeart: true },
+      { sender: 'mindmush', text: 'Research meets reality' },
     ],
   },
   {
@@ -75,7 +75,7 @@ const conversations = [
       { sender: 'mindmush', text: 'Right buyer, fair price, smooth transition' },
       { timestamp: '3 weeks later', isHeader: true },
       { sender: 'partner', text: 'Deal closed. Team is thrilled.' },
-      { sender: 'mindmush', text: 'Pleasure doing business', hasHeart: true },
+      { sender: 'mindmush', text: 'Pleasure doing business' },
     ],
   },
   {
@@ -90,126 +90,128 @@ const conversations = [
       { sender: 'mindmush', text: 'We might be interested. Let us dig in.' },
       { timestamp: '6 weeks later', isHeader: true },
       { sender: 'partner', text: 'Just signed. Thanks for the smooth process' },
-      { sender: 'mindmush', text: "We'll take it from here", hasHeart: true },
+      { sender: 'mindmush', text: "We'll take it from here" },
     ],
   },
 ];
-
-interface Message {
-  timestamp?: string;
-  isHeader?: boolean;
-  sender?: string;
-  text?: string;
-  hasHeart?: boolean;
-}
-
-function ChatMessage({ msg, index, isMindmush, shouldAnimate }: { msg: Message; index: number; isMindmush: boolean; shouldAnimate: boolean }) {
-  if (msg.isHeader) {
-    return (
-      <motion.div
-        initial={shouldAnimate ? { opacity: 0, scale: 0.8 } : false}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.4, delay: shouldAnimate ? index * 0.1 : 0 }}
-        className="flex justify-center py-2"
-      >
-        <span className="text-[11px] text-white/30 bg-white/[0.04] px-3 py-1 rounded-full">
-          {msg.timestamp}
-        </span>
-      </motion.div>
-    );
-  }
-
-  return (
-    <motion.div
-      initial={shouldAnimate ? { opacity: 0, y: 20, x: isMindmush ? 30 : -30 } : false}
-      animate={{ opacity: 1, y: 0, x: 0 }}
-      transition={{
-        duration: 0.5,
-        delay: shouldAnimate ? index * 0.1 : 0,
-        ease: [0.25, 0.1, 0.25, 1],
-      }}
-      className={`flex ${isMindmush ? 'justify-end' : 'justify-start'}`}
-    >
-      <div className="relative">
-        <div
-          className={`max-w-[75%] px-4 py-2.5 text-[15px] leading-relaxed ${
-            isMindmush
-              ? 'bg-emerald-500/15 text-emerald-50 rounded-2xl rounded-br-sm'
-              : 'bg-white/[0.06] text-white/80 rounded-2xl rounded-bl-sm'
-          }`}
-        >
-          {msg.text}
-        </div>
-        {msg.hasHeart && (
-          <span className="absolute -bottom-2 right-0 text-sm bg-white/10 rounded-full px-1.5 py-0.5 backdrop-blur-sm">❤️</span>
-        )}
-      </div>
-    </motion.div>
-  );
-}
 
 export default function Philosophy() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: false, amount: 0.3 });
   const [activeTab, setActiveTab] = useState('creators');
-  const [showTabs, setShowTabs] = useState(false);
-  const [animateMessages, setAnimateMessages] = useState(false);
-  const hasAnimated = useRef(false);
+  const [visibleCount, setVisibleCount] = useState(0);
+  const [phase, setPhase] = useState<'idle' | 'intro' | 'complete'>('idle');
+  const [visitedTabs, setVisitedTabs] = useState<Set<string>>(new Set());
+  const [isTyping, setIsTyping] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const activeConversation = conversations.find(c => c.id === activeTab) || conversations[0];
+  const hasVisited = visitedTabs.has(activeTab);
 
-  // Trigger intro animation when section comes into view
+  const clearAnim = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  }, []);
+
+  const runTypingAnimation = useCallback((msgCount: number, speed: number, onComplete: () => void) => {
+    clearAnim();
+
+    // Start with typing indicator showing (headers are always visible)
+    // visibleCount = 1 means only index 0 messages show, but headers bypass this
+    setVisibleCount(1);
+    setIsTyping(true);
+
+    if (msgCount <= 1) {
+      setIsTyping(false);
+      onComplete();
+      return;
+    }
+
+    let count = 1;
+    intervalRef.current = setInterval(() => {
+      count++;
+      setVisibleCount(count);
+
+      // Keep typing indicator on until we reach the end
+      if (count >= msgCount) {
+        clearAnim();
+        setIsTyping(false);
+        onComplete();
+      }
+    }, speed);
+  }, [clearAnim]);
+
+  // Initial intro animation
   useEffect(() => {
-    if (isInView && !hasAnimated.current) {
-      hasAnimated.current = true;
-      setAnimateMessages(true);
+    if (isInView && phase === 'idle') {
+      setPhase('intro');
+      setActiveTab('creators');
+      setVisitedTabs(new Set());
 
-      // Show tabs after messages have animated in
-      const timer = setTimeout(() => {
-        setShowTabs(true);
-      }, 900); // Wait for messages to finish animating
-
-      return () => clearTimeout(timer);
+      // Relaxed animation - 1200ms between messages
+      runTypingAnimation(conversations[0].messages.length, 1200, () => {
+        setTimeout(() => {
+          setVisitedTabs(new Set(['creators']));
+          setPhase('complete');
+        }, 800);
+      });
     }
 
-    if (!isInView) {
-      // Reset when leaving view so it plays again
-      hasAnimated.current = false;
-      setShowTabs(false);
-      setAnimateMessages(false);
+    if (!isInView && phase !== 'idle') {
+      clearAnim();
+      setPhase('idle');
+      setVisibleCount(0);
+      setVisitedTabs(new Set());
+      setIsTyping(false);
+      setActiveTab('creators');
     }
-  }, [isInView]);
+  }, [isInView, phase, runTypingAnimation, clearAnim]);
 
-  // Handle tab change
   const handleTabChange = (id: string) => {
+    if (phase !== 'complete') return;
+
     setActiveTab(id);
-    setAnimateMessages(true);
-    // Reset animation flag after a tick so messages animate
-    setTimeout(() => setAnimateMessages(false), 50);
+
+    if (!visitedTabs.has(id)) {
+      const conv = conversations.find(c => c.id === id);
+      if (conv) {
+        // Same speed for all - 1200ms
+        runTypingAnimation(conv.messages.length, 1200, () => {
+          setVisitedTabs(prev => new Set([...prev, id]));
+        });
+      }
+    }
   };
+
+  useEffect(() => {
+    return () => clearAnim();
+  }, [clearAnim]);
+
+  const showUI = phase === 'complete';
 
   return (
     <section id="partners" className="snap-section px-6" ref={ref}>
       <div className="max-w-4xl mx-auto w-full flex flex-col justify-center items-center h-full">
 
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
-          className="text-center mb-8"
+        {/* Header - appears after intro */}
+        <motion.h2
+          initial={false}
+          animate={{ opacity: showUI ? 1 : 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white text-center mb-8"
         >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-white">
-            Who we <span className="text-emerald-400">partner</span> with
-          </h2>
-        </motion.div>
+          Who we <span className="text-emerald-400">partner</span> with
+        </motion.h2>
 
         {/* Tab Buttons - appear after intro */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={showTabs ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
-          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-          className="flex flex-wrap justify-center gap-1 mb-8"
+          initial={false}
+          animate={{ opacity: showUI ? 1 : 0 }}
+          transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
+          className="flex flex-wrap justify-center gap-1 mb-6"
+          style={{ pointerEvents: showUI ? 'auto' : 'none' }}
         >
           {conversations.map((conv) => (
             <button
@@ -228,42 +230,121 @@ export default function Philosophy() {
 
         {/* Chat Card */}
         <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 25 }}
-          transition={{ duration: 0.7, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
-          className="w-full max-w-3xl"
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 15 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full max-w-2xl"
         >
           <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/[0.06]">
             {/* Card Header */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="flex items-center justify-between mb-5 pb-4 border-b border-white/[0.06]"
-            >
+            <div className="flex items-center justify-between mb-5 pb-4 border-b border-white/[0.06]">
               <div className="flex items-center gap-3">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={isInView ? { scale: 1 } : { scale: 0 }}
-                  transition={{ duration: 0.4, delay: 0.3 }}
-                  className="w-2.5 h-2.5 rounded-full bg-emerald-500"
-                />
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
                 <span className="text-sm font-medium text-white/70">{activeConversation.title}</span>
               </div>
               <span className="text-xs text-white/30">{activeConversation.subtitle}</span>
-            </motion.div>
+            </div>
 
-            {/* Messages */}
-            <div className="space-y-3 min-h-[280px]">
-              {activeConversation.messages.map((msg, i) => (
-                <ChatMessage
-                  key={`${activeTab}-${i}`}
-                  msg={msg}
-                  index={i}
-                  isMindmush={msg.sender === 'mindmush'}
-                  shouldAnimate={animateMessages}
-                />
-              ))}
+            {/* Messages Container - universal fixed size for all */}
+            <div className="h-[440px] overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeTab}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  className="space-y-3"
+                >
+                  {activeConversation.messages.map((msg, i) => {
+                    // Headers (dates) are always visible
+                    if (msg.isHeader) {
+                      return (
+                        <div
+                          key={i}
+                          className="flex justify-center py-2"
+                        >
+                          <span className="text-[11px] text-white/30 bg-white/[0.04] px-3 py-1 rounded-full">
+                            {msg.timestamp}
+                          </span>
+                        </div>
+                      );
+                    }
+
+                    // Messages animate in
+                    const show = hasVisited || i < visibleCount;
+                    if (!show) return null;
+
+                    const isMindmush = msg.sender === 'mindmush';
+                    return (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          duration: 0.8,
+                          ease: [0.16, 1, 0.3, 1],
+                          opacity: { duration: 0.6, ease: "easeOut" }
+                        }}
+                        className={`flex ${isMindmush ? 'justify-end' : 'justify-start'}`}
+                      >
+                        <div
+                          className={`px-4 py-2.5 text-[15px] leading-relaxed ${
+                            isMindmush
+                              ? 'bg-emerald-500/15 text-emerald-50 rounded-2xl rounded-br-sm'
+                              : 'bg-white/[0.06] text-white/80 rounded-2xl rounded-bl-sm'
+                          }`}
+                        >
+                          {msg.text}
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+
+                  {/* Typing indicator - shows on the side of whoever is typing next */}
+                  <AnimatePresence mode="popLayout">
+                    {isTyping && !hasVisited && (() => {
+                      const nextMsg = activeConversation.messages[visibleCount];
+                      if (!nextMsg || nextMsg.isHeader) return null;
+
+                      const isMindmushTyping = nextMsg.sender === 'mindmush';
+
+                      return (
+                        <motion.div
+                          key={`typing-${visibleCount}-${isMindmushTyping}`}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.4, ease: "easeInOut" }}
+                          className={`flex ${isMindmushTyping ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div className={`px-4 py-3 rounded-2xl flex items-center gap-[6px] ${
+                            isMindmushTyping
+                              ? 'bg-emerald-500/15 rounded-br-sm'
+                              : 'bg-white/[0.06] rounded-bl-sm'
+                          }`}>
+                            <motion.span
+                              animate={{ y: [0, -2.5, 0], opacity: [0.4, 0.8, 0.4] }}
+                              transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: 0 }}
+                              className={`w-[5px] h-[5px] rounded-full ${isMindmushTyping ? 'bg-emerald-400' : 'bg-white/50'}`}
+                            />
+                            <motion.span
+                              animate={{ y: [0, -2.5, 0], opacity: [0.4, 0.8, 0.4] }}
+                              transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: 0.25 }}
+                              className={`w-[5px] h-[5px] rounded-full ${isMindmushTyping ? 'bg-emerald-400' : 'bg-white/50'}`}
+                            />
+                            <motion.span
+                              animate={{ y: [0, -2.5, 0], opacity: [0.4, 0.8, 0.4] }}
+                              transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                              className={`w-[5px] h-[5px] rounded-full ${isMindmushTyping ? 'bg-emerald-400' : 'bg-white/50'}`}
+                            />
+                          </div>
+                        </motion.div>
+                      );
+                    })()}
+                  </AnimatePresence>
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
         </motion.div>

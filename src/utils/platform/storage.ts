@@ -1,5 +1,5 @@
 import { STORAGE_KEYS } from './constants';
-import type { User, Venture, StudioExpense, Settings, Payout } from './types';
+import type { User, Venture, StudioExpense, Settings, Payout, Document } from './types';
 
 // Demo data based on real MINDMUSH portfolio
 const DEMO_USERS: User[] = [
@@ -162,17 +162,33 @@ const DEMO_STUDIO_EXPENSES: StudioExpense[] = [
 ];
 
 const DEMO_PAYOUTS: Payout[] = [
-  { id: 'p1', userId: 2, period: 'January 2025', amount: 12450, date: '2025-01-15', status: 'pending' },
-  { id: 'p2', userId: 3, period: 'January 2025', amount: 8720, date: '2025-01-15', status: 'pending' },
-  { id: 'p3', userId: 4, period: 'January 2025', amount: 6340, date: '2025-01-15', status: 'pending' },
-  { id: 'p4', userId: 2, period: 'December 2024', amount: 11200, date: '2024-12-15', status: 'paid' },
-  { id: 'p5', userId: 3, period: 'December 2024', amount: 7850, date: '2024-12-15', status: 'paid' },
-  { id: 'p6', userId: 4, period: 'December 2024', amount: 5420, date: '2024-12-15', status: 'paid' },
+  { id: 'p1', userId: 2, period: 'January 2025', amount: 12450, expectedDate: '2025-02-28', status: 'pending' },
+  { id: 'p2', userId: 3, period: 'January 2025', amount: 8720, expectedDate: '2025-02-28', status: 'pending' },
+  { id: 'p3', userId: 4, period: 'January 2025', amount: 6340, expectedDate: '2025-02-28', status: 'pending' },
+  { id: 'p4', userId: 2, period: 'December 2024', amount: 11200, expectedDate: '2025-01-31', paidDate: '2025-01-15', status: 'paid' },
+  { id: 'p5', userId: 3, period: 'December 2024', amount: 7850, expectedDate: '2025-01-31', paidDate: '2025-01-15', status: 'paid' },
+  { id: 'p6', userId: 4, period: 'December 2024', amount: 5420, expectedDate: '2025-01-31', paidDate: '2025-01-15', status: 'paid' },
+  { id: 'p7', userId: 2, period: 'November 2024', amount: 10800, expectedDate: '2024-12-31', paidDate: '2024-12-15', status: 'paid' },
+  { id: 'p8', userId: 3, period: 'November 2024', amount: 7200, expectedDate: '2024-12-31', paidDate: '2024-12-15', status: 'paid' },
+  { id: 'p9', userId: 4, period: 'November 2024', amount: 4980, expectedDate: '2024-12-31', paidDate: '2024-12-15', status: 'paid' },
+];
+
+const DEMO_DOCUMENTS: Document[] = [
+  { id: 'd1', userId: 2, title: 'Partner Equity Agreement', type: 'contract', status: 'signed', createdAt: '2024-01-15T00:00:00Z', signedAt: '2024-01-20T00:00:00Z' },
+  { id: 'd2', userId: 2, title: 'Non-Disclosure Agreement', type: 'nda', status: 'signed', createdAt: '2024-01-15T00:00:00Z', signedAt: '2024-01-16T00:00:00Z' },
+  { id: 'd3', userId: 2, title: 'FaceKit 3D - Revenue Share Amendment', type: 'amendment', status: 'signed', createdAt: '2024-06-01T00:00:00Z', signedAt: '2024-06-05T00:00:00Z' },
+  { id: 'd4', userId: 3, title: 'Development Partner Agreement', type: 'contract', status: 'signed', createdAt: '2024-02-01T00:00:00Z', signedAt: '2024-02-05T00:00:00Z' },
+  { id: 'd5', userId: 3, title: 'Confidentiality Agreement', type: 'nda', status: 'signed', createdAt: '2024-02-01T00:00:00Z', signedAt: '2024-02-02T00:00:00Z' },
+  { id: 'd6', userId: 3, title: 'Debloat AI - Equity Assignment', type: 'agreement', status: 'signed', createdAt: '2024-05-15T00:00:00Z', signedAt: '2024-05-20T00:00:00Z' },
+  { id: 'd7', userId: 4, title: 'Creative Partnership Contract', type: 'contract', status: 'signed', createdAt: '2023-09-01T00:00:00Z', signedAt: '2023-09-05T00:00:00Z' },
+  { id: 'd8', userId: 4, title: 'NDA - Game Development', type: 'nda', status: 'signed', createdAt: '2023-09-01T00:00:00Z', signedAt: '2023-09-02T00:00:00Z' },
+  { id: 'd9', userId: 4, title: 'Obama Run - Profit Sharing Agreement', type: 'agreement', status: 'signed', createdAt: '2023-10-15T00:00:00Z', signedAt: '2023-10-18T00:00:00Z' },
+  { id: 'd10', userId: 2, title: '2025 Partnership Renewal', type: 'contract', status: 'pending_signature', createdAt: '2025-01-10T00:00:00Z' },
 ];
 
 // Initialize data with defaults if not present
 // Data version - increment to force refresh demo data
-const DEMO_DATA_VERSION = '5';
+const DEMO_DATA_VERSION = '6';
 
 export function initializeData(): void {
   // Check if we need to refresh demo data
@@ -186,6 +202,7 @@ export function initializeData(): void {
     localStorage.setItem(STORAGE_KEYS.studioExpenses, JSON.stringify(DEMO_STUDIO_EXPENSES));
     localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify({ applovinApiKey: 'demo_key_xxxxx' }));
     localStorage.setItem(STORAGE_KEYS.payouts, JSON.stringify(DEMO_PAYOUTS));
+    localStorage.setItem(STORAGE_KEYS.documents, JSON.stringify(DEMO_DOCUMENTS));
     localStorage.setItem('mindmush_demo_version', DEMO_DATA_VERSION);
   }
 }
@@ -233,6 +250,15 @@ export function getPayouts(): Payout[] {
 
 export function savePayouts(payouts: Payout[]): void {
   localStorage.setItem(STORAGE_KEYS.payouts, JSON.stringify(payouts));
+}
+
+// Documents
+export function getDocuments(): Document[] {
+  return JSON.parse(localStorage.getItem(STORAGE_KEYS.documents) || '[]');
+}
+
+export function saveDocuments(documents: Document[]): void {
+  localStorage.setItem(STORAGE_KEYS.documents, JSON.stringify(documents));
 }
 
 // Current User (session)

@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { User } from '../../utils/platform/types';
 
 export type Page =
@@ -24,6 +24,8 @@ interface SidebarProps {
   currentPage: Page;
   onNavigate: (page: Page) => void;
   onLogout: () => void;
+  isMobileOpen?: boolean;
+  onMobileClose?: () => void;
 }
 
 const adminNav: NavItem[] = [
@@ -105,12 +107,35 @@ const partnerNav: NavItem[] = [
   },
 ];
 
-export function Sidebar({ user, currentPage, onNavigate, onLogout }: SidebarProps) {
+export function Sidebar({ user, currentPage, onNavigate, onLogout, isMobileOpen, onMobileClose }: SidebarProps) {
   const isAdmin = user.role === 'admin';
   const navItems = isAdmin ? adminNav : partnerNav;
 
+  const handleNavigate = (page: Page) => {
+    onNavigate(page);
+    onMobileClose?.();
+  };
+
   return (
-    <aside className="w-64 h-screen bg-[#0a0a0b] border-r border-white/[0.06] flex flex-col">
+    <>
+      {/* Mobile Overlay */}
+      {isMobileOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+          onClick={onMobileClose}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`
+        fixed lg:relative inset-y-0 left-0 z-50
+        w-64 h-screen bg-[#0a0a0b] border-r border-white/[0.06] flex flex-col
+        transform transition-transform duration-300 ease-out
+        ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
       {/* Logo */}
       <div className="p-6 border-b border-white/[0.06]">
         <h1 className="text-lg font-bold text-white tracking-tight">
@@ -129,7 +154,7 @@ export function Sidebar({ user, currentPage, onNavigate, onLogout }: SidebarProp
           return (
             <button
               key={item.id}
-              onClick={() => onNavigate(item.id)}
+              onClick={() => handleNavigate(item.id)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all relative ${
                 isActive
                   ? 'text-white bg-white/[0.06]'
@@ -176,5 +201,6 @@ export function Sidebar({ user, currentPage, onNavigate, onLogout }: SidebarProp
         </button>
       </div>
     </aside>
+    </>
   );
 }
