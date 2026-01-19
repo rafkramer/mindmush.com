@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About – mindmush</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Space Grotesk', system-ui, sans-serif;
+            background: #000;
+            color: #fff;
+            min-height: 100vh;
+            padding: 4rem 2rem;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        a { color: #fff; }
+        .back {
+            display: inline-block;
+            margin-bottom: 3rem;
+            font-size: 0.85rem;
+            text-decoration: none;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        .back:hover { opacity: 1; }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+        p {
+            opacity: 0.8;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+        .stats {
+            display: flex;
+            gap: 3rem;
+            margin: 3rem 0;
+        }
+        .stat-num {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.5;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .contact {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .contact a {
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        .contact a:hover { opacity: 1; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back">← Back</a>
+        <h1>About</h1>
+
+        <p>mindmush is a venture studio based in Zürich, Switzerland. We build, launch, scale, and acquire mobile apps.</p>
+
+        <p>Since 2020, we've partnered with creators and builders who ship. Our team knows the app game inside and out — from zero to millions of downloads.</p>
+
+        <div class="stats">
+            <div>
+                <div class="stat-num">50+</div>
+                <div class="stat-label">Apps shipped</div>
+            </div>
+            <div>
+                <div class="stat-num">10M+</div>
+                <div class="stat-label">Downloads</div>
+            </div>
+        </div>
+
+        <p>We're always looking to partner with killers who want to build the next big thing.</p>
+
+        <div class="contact">
+            <p>Get in touch: <a href="mailto:contact@mindmush.com">contact@mindmush.com</a></p>
+        </div>
+    </div>
+</body>
+</html>
