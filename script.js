@@ -16,6 +16,18 @@ document.addEventListener('mousemove', (e) => {
     mouse.targetY = e.clientY / height;
 });
 
+document.addEventListener('touchmove', (e) => {
+    const touch = e.touches[0];
+    mouse.targetX = touch.clientX / width;
+    mouse.targetY = touch.clientY / height;
+});
+
+document.addEventListener('touchstart', (e) => {
+    const touch = e.touches[0];
+    mouse.targetX = touch.clientX / width;
+    mouse.targetY = touch.clientY / height;
+});
+
 function drawGrid() {
     time += 0.005;
 
@@ -25,10 +37,12 @@ function drawGrid() {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, width, height);
 
-    const cols = 100;
-    const rows = 100;
-    const cellW = width / cols * 5;
-    const cellH = height / rows * 5;
+    // Responsive grid - bigger tiles on mobile
+    const isMobile = width < 768;
+    const cols = isMobile ? 30 : 100;
+    const rows = isMobile ? 40 : 100;
+    const cellW = width / cols * (isMobile ? 4 : 5);
+    const cellH = height / rows * (isMobile ? 3 : 5);
 
     const perspective = 400;
     const cameraZ = 600;
@@ -48,14 +62,20 @@ function drawGrid() {
                         Math.sin(x * 0.1 - time) * Math.sin(y * 0.1 + time * 0.5) * 30;
             pz += wave;
 
-            // Mouse influence - tight cursor tracking
+            // Mouse influence - ripple effect
             const normalizedX = (x / cols);
             const normalizedY = (y / rows);
             const mouseDx = mouse.x - normalizedX;
             const mouseDy = mouse.y - normalizedY;
             const distToMouse = Math.sqrt(mouseDx ** 2 + mouseDy ** 2);
-            const mouseInfluence = Math.max(0, 1 - distToMouse / 0.2) ** 2;
-            pz += mouseInfluence * 100;
+
+            // Main bulge
+            const bulge = Math.max(0, 1 - distToMouse / 0.25) ** 2;
+            pz += bulge * 150;
+
+            // Ripple rings around cursor
+            const ripple = Math.sin(distToMouse * 30 - time * 4) * Math.max(0, 1 - distToMouse / 0.4) * 20;
+            pz += ripple;
 
             const cosX = Math.cos(rotationX);
             const sinX = Math.sin(rotationX);
@@ -129,8 +149,8 @@ function drawGrid() {
     ctx.fillStyle = glow;
     ctx.fillRect(0, 0, width, height);
 
-    // Edge fades
-    const edgeFade = 80;
+    // Edge fades - subtle for text readability
+    const edgeFade = 120;
 
     const topGrad = ctx.createLinearGradient(0, 0, 0, edgeFade);
     topGrad.addColorStop(0, 'rgba(0, 0, 0, 0.8)');

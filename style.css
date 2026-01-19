@@ -11,6 +11,7 @@
 html, body {
     height: 100%;
     overflow: hidden;
+    touch-action: manipulation;
 }
 
 body {
@@ -145,19 +146,98 @@ footer {
     color: #000;
 }
 
+.btn-icon {
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 /* ===== MOBILE ===== */
 @media (max-width: 768px) {
     .layout {
-        padding: 2rem 1.5rem;
+        padding: 1.5rem;
+    }
+
+    header {
+        font-size: 0.65rem;
+        letter-spacing: 0.1em;
+    }
+
+    .logo {
+        font-size: clamp(3rem, 15vw, 5rem);
+    }
+
+    .tagline {
+        font-size: 1.1rem;
+        margin-top: 0.75rem;
+        text-align: center;
     }
 
     footer {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: column-reverse;
+        align-items: center;
         gap: 1.5rem;
     }
 
     .links {
-        gap: 1.5rem;
+        gap: 1.25rem;
+        justify-content: center;
+    }
+
+    .links a {
+        font-size: 0.65rem;
+    }
+
+    .cta-buttons {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn {
+        font-size: 0.8rem;
+        padding: 0.7rem 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .layout {
+        padding: 1.25rem;
+    }
+
+    header {
+        font-size: 0.55rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .logo {
+        font-size: clamp(2.5rem, 14vw, 4rem);
+    }
+
+    .tagline {
+        font-size: 1rem;
+    }
+
+    .links {
+        gap: 1rem;
+    }
+
+    .links a {
+        font-size: 0.6rem;
+    }
+
+    .btn {
+        font-size: 0.75rem;
+        padding: 0.6rem 0.9rem;
+    }
+
+    .btn-icon {
+        padding: 0.6rem;
+    }
+
+    .btn-icon svg {
+        width: 16px;
+        height: 16px;
     }
 }
