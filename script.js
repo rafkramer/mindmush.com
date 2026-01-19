@@ -106,11 +106,11 @@ function drawGrid() {
 
             const depth = (p1.depth + p2.depth) / 2;
             const hue = 260 + depth * 40;
-            const lightness = 30 + depth * 40;
-            const alpha = 0.15 + depth * 0.5;
+            const lightness = isMobile ? 20 + depth * 30 : 30 + depth * 40;
+            const alpha = isMobile ? 0.1 + depth * 0.3 : 0.15 + depth * 0.5;
 
             ctx.strokeStyle = `hsla(${hue}, 70%, ${lightness}%, ${alpha})`;
-            ctx.lineWidth = 0.5 + depth * 1.5;
+            ctx.lineWidth = isMobile ? 0.5 + depth * 0.8 : 0.5 + depth * 1.5;
 
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
@@ -126,11 +126,11 @@ function drawGrid() {
 
             const depth = (p1.depth + p2.depth) / 2;
             const hue = 260 + depth * 40;
-            const lightness = 30 + depth * 40;
-            const alpha = 0.15 + depth * 0.5;
+            const lightness = isMobile ? 20 + depth * 30 : 30 + depth * 40;
+            const alpha = isMobile ? 0.1 + depth * 0.3 : 0.15 + depth * 0.5;
 
             ctx.strokeStyle = `hsla(${hue}, 70%, ${lightness}%, ${alpha})`;
-            ctx.lineWidth = 0.5 + depth * 1.5;
+            ctx.lineWidth = isMobile ? 0.5 + depth * 0.8 : 0.5 + depth * 1.5;
 
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
