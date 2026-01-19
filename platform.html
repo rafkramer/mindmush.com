@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform – mindmush</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+        body {
+            font-family: 'Space Grotesk', system-ui, sans-serif;
+            background: #000;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            -webkit-font-smoothing: antialiased;
+        }
+        .content {
+            text-align: center;
+        }
+        h1 {
+            font-size: clamp(2rem, 8vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.03em;
+        }
+        p {
+            font-size: 1.1rem;
+            opacity: 0.5;
+            margin-bottom: 2.5rem;
+        }
+        .back {
+            display: inline-block;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid #fff;
+            border-radius: 2px;
+            transition: all 0.25s ease;
+        }
+        .back:hover {
+            background: #fff;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>Coming Soon</h1>
+        <p>Something's brewing.</p>
+        <a href="/" class="back">← Back to Home</a>
+    </div>
+</body>
+</html>
