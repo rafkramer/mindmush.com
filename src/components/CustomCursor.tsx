@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, useSpring, useMotionValue } from 'framer-motion';
 
+// Purple for hero/numbers, then colors shift for other sections
 const sectionColors: Record<string, string> = {
-  default: '#8b5cf6',    // purple
-  numbers: '#4f46e5',    // indigo
+  default: '#8b5cf6',    // purple (hero)
+  numbers: '#8b5cf6',    // purple (same as hero)
   portfolio: '#06b6d4',  // cyan
   partners: '#10b981',   // emerald
   contact: '#ec4899',    // pink
@@ -12,17 +13,15 @@ const sectionColors: Record<string, string> = {
 export default function CustomCursor() {
   const [isHovering, setIsHovering] = useState(false);
   const [currentSection, setCurrentSection] = useState('default');
-  const cursorRef = useRef<HTMLDivElement>(null);
 
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
 
-  const springConfig = { damping: 25, stiffness: 300 };
+  const springConfig = { damping: 30, stiffness: 400 };
   const cursorXSpring = useSpring(cursorX, springConfig);
   const cursorYSpring = useSpring(cursorY, springConfig);
 
   useEffect(() => {
-    // Only enable custom cursor on desktop
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     if (isTouchDevice) return;
 
@@ -73,50 +72,24 @@ export default function CustomCursor() {
   const color = sectionColors[currentSection] || sectionColors.default;
 
   return (
-    <>
-      {/* Main cursor dot */}
+    <motion.div
+      className="fixed top-0 left-0 pointer-events-none z-[10000]"
+      style={{
+        x: cursorXSpring,
+        y: cursorYSpring,
+        translateX: '-50%',
+        translateY: '-50%',
+      }}
+    >
       <motion.div
-        ref={cursorRef}
-        className="fixed top-0 left-0 pointer-events-none z-[10000] mix-blend-difference"
-        style={{
-          x: cursorXSpring,
-          y: cursorYSpring,
-          translateX: '-50%',
-          translateY: '-50%',
+        animate={{
+          scale: isHovering ? 1.8 : 1,
+          opacity: isHovering ? 0.8 : 0.6,
         }}
-      >
-        <motion.div
-          animate={{
-            scale: isHovering ? 1.5 : 1,
-            backgroundColor: color,
-          }}
-          transition={{ duration: 0.2 }}
-          className="w-3 h-3 rounded-full"
-          style={{ backgroundColor: color }}
-        />
-      </motion.div>
-
-      {/* Cursor ring */}
-      <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-[9999]"
-        style={{
-          x: cursorXSpring,
-          y: cursorYSpring,
-          translateX: '-50%',
-          translateY: '-50%',
-        }}
-      >
-        <motion.div
-          animate={{
-            scale: isHovering ? 1.8 : 1,
-            borderColor: color,
-            opacity: isHovering ? 0.5 : 0.3,
-          }}
-          transition={{ duration: 0.3 }}
-          className="w-8 h-8 rounded-full border"
-          style={{ borderColor: color }}
-        />
-      </motion.div>
-    </>
+        transition={{ duration: 0.15 }}
+        className="w-2.5 h-2.5 rounded-full"
+        style={{ backgroundColor: color }}
+      />
+    </motion.div>
   );
 }

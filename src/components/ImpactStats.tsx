@@ -7,47 +7,54 @@ function LiveCounter({ baseValue }: { baseValue: number }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: '-50px' });
 
-  // Count up animation
+  // Smooth count up with throttled updates
   useEffect(() => {
     if (!inView || isComplete) return;
 
-    let startTime: number;
-    let animationId: number;
+    const duration = 4000;
+    const startTime = performance.now();
+    const easeOutQuint = (t: number) => 1 - Math.pow(1 - t, 5);
 
-    const animateIn = (currentTime: number) => {
-      if (!startTime) startTime = currentTime;
+    let lastUpdate = 0;
+    const updateInterval = 50; // Only update every 50ms for smoother look
+
+    const animate = (currentTime: number) => {
       const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / 2500, 1);
-      const eased = 1 - Math.pow(1 - progress, 4);
-      setDisplayValue(Math.floor(eased * baseValue));
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Only update display at intervals
+      if (currentTime - lastUpdate >= updateInterval) {
+        const eased = easeOutQuint(progress);
+        setDisplayValue(Math.round(eased * baseValue));
+        lastUpdate = currentTime;
+      }
 
       if (progress < 1) {
-        animationId = requestAnimationFrame(animateIn);
+        requestAnimationFrame(animate);
       } else {
+        setDisplayValue(baseValue);
         setIsComplete(true);
       }
     };
 
-    animationId = requestAnimationFrame(animateIn);
-    return () => cancelAnimationFrame(animationId);
+    requestAnimationFrame(animate);
   }, [inView, baseValue, isComplete]);
 
-  // Continuous increment after complete - +1 every 0.5-2 seconds
+  // Continuous increment after complete
   useEffect(() => {
     if (!isComplete) return;
 
     const tick = () => {
       setDisplayValue(prev => prev + 1);
-      const nextDelay = 500 + Math.random() * 1500;
-      timeoutId = setTimeout(tick, nextDelay);
+      timeoutId = setTimeout(tick, 3000 + Math.random() * 2000);
     };
 
-    let timeoutId = setTimeout(tick, 500 + Math.random() * 1500);
+    let timeoutId = setTimeout(tick, 3000 + Math.random() * 2000);
     return () => clearTimeout(timeoutId);
   }, [isComplete]);
 
   return (
-    <span ref={ref} className="text-[#a5b4fc] tabular-nums">
+    <span ref={ref} className="text-[#a78bfa] tabular-nums font-medium">
       {displayValue.toLocaleString()}
     </span>
   );
@@ -56,6 +63,16 @@ function LiveCounter({ baseValue }: { baseValue: number }) {
 export default function ImpactStats() {
   return (
     <section id="numbers" className="snap-section px-4 sm:px-6 relative overflow-hidden">
+      {/* Purple nebula glow - same vibe as hero */}
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+        style={{
+          width: '600px',
+          height: '600px',
+          background: 'radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, rgba(139, 92, 246, 0.04) 40%, transparent 70%)',
+          filter: 'blur(60px)',
+        }}
+      />
       <div className="max-w-5xl mx-auto w-full text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

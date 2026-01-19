@@ -8,27 +8,29 @@ import { VenturesPage } from './pages/VenturesPage';
 import { VentureDetailPage } from './pages/VentureDetailPage';
 import { PartnersPage } from './pages/PartnersPage';
 import { ExpensesPage } from './pages/ExpensesPage';
+import { IdeasPage } from './pages/IdeasPage';
+import { IdeaDetailPage } from './pages/IdeaDetailPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { PartnerDashboard } from './pages/PartnerDashboard';
 import { PartnerPayouts } from './pages/PartnerPayouts';
 import { PartnerContract } from './pages/PartnerContract';
-import { ChatPage } from './pages/ChatPage';
 import { AddVentureModal } from './modals/AddVentureModal';
 import { EditVentureModal } from './modals/EditVentureModal';
 import { AddPartnerModal } from './modals/AddPartnerModal';
 import { EditPartnerModal } from './modals/EditPartnerModal';
 import { AddExpenseModal } from './modals/AddExpenseModal';
+import { AddIdeaModal } from './modals/AddIdeaModal';
 import { useAuth, useUsers } from '../../hooks/platform/useAuth';
 import { useVentures } from '../../hooks/platform/useVentures';
 import { useExpenses } from '../../hooks/platform/useExpenses';
+import { useIdeas } from '../../hooks/platform/useIdeas';
 import {
   getSettings,
   saveSettings,
   initializeData,
 } from '../../utils/platform/storage';
-import { filterByDateRange } from '../../utils/platform/format';
-import type { Venture, User, Settings } from '../../utils/platform/types';
-import type { VentureState, VentureType, ExpenseCategory } from '../../utils/platform/constants';
+import type { Venture, User, Settings, Idea, IdeaCategory } from '../../utils/platform/types';
+import type { VentureState, VentureType, ExpenseCategory, IdeaStatus } from '../../utils/platform/constants';
 
 function PlatformContent() {
   const { showToast } = useToast();
@@ -51,12 +53,23 @@ function PlatformContent() {
     getMonthlyTotal: getMonthlyExpenseTotal,
     refresh: refreshExpenses,
   } = useExpenses();
+  const {
+    ideas,
+    addIdea,
+    updateIdea,
+    updateIdeaStatus,
+    markAsConverted,
+    deleteIdea,
+    refresh: refreshIdeas,
+  } = useIdeas();
 
   // UI State
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
   const [dateRange, setDateRange] = useState<number | 'all'>(7);
   const [currentVenture, setCurrentVenture] = useState<Venture | null>(null);
+  const [currentIdea, setCurrentIdea] = useState<Idea | null>(null);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editingIdea, setEditingIdea] = useState<Idea | null>(null);
   const [settings, setSettings] = useState<Settings>({});
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -66,7 +79,9 @@ function PlatformContent() {
   const [showAddPartnerModal, setShowAddPartnerModal] = useState(false);
   const [showEditPartnerModal, setShowEditPartnerModal] = useState(false);
   const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
+  const [showAddIdeaModal, setShowAddIdeaModal] = useState(false);
   const [expenseType, setExpenseType] = useState<'venture' | 'studio'>('venture');
+  const [ideaCategory, setIdeaCategory] = useState<IdeaCategory>('idea');
 
   // Initialize
   useEffect(() => {
@@ -95,10 +110,21 @@ function PlatformContent() {
     }
   }, [ventures, currentVenture]);
 
+  // Keep currentIdea in sync with ideas array
+  useEffect(() => {
+    if (currentIdea) {
+      const updated = ideas.find(i => i.id === currentIdea.id);
+      if (updated && JSON.stringify(updated) !== JSON.stringify(currentIdea)) {
+        setCurrentIdea(updated);
+      }
+    }
+  }, [ideas, currentIdea]);
+
   // Navigation
   const handleNavigate = useCallback((page: Page) => {
     setCurrentPage(page);
     setCurrentVenture(null);
+    setCurrentIdea(null);
   }, []);
 
   const handleViewVenture = useCallback((id: string) => {
@@ -108,6 +134,11 @@ function PlatformContent() {
       setCurrentPage(isAdmin ? 'ventureDetail' : 'partnerVentureDetail');
     }
   }, [ventures, isAdmin]);
+
+  const handleViewIdea = useCallback((idea: Idea) => {
+    setCurrentIdea(idea);
+    setCurrentPage('ideaDetail');
+  }, []);
 
   // Venture handlers
   const handleAddVenture = useCallback((ventureData: {
@@ -189,6 +220,58 @@ function PlatformContent() {
     }
   }, [currentVenture, deleteVentureExpense, showToast]);
 
+  // Idea handlers
+  const handleSaveIdea = useCallback((ideaData: Omit<Idea, 'id' | 'createdAt'>) => {
+    if (editingIdea) {
+      updateIdea(editingIdea.id, ideaData);
+      showToast('Idea updated');
+      setEditingIdea(null);
+    } else {
+      addIdea(ideaData);
+      showToast('Idea added');
+    }
+  }, [editingIdea, addIdea, updateIdea, showToast]);
+
+  const handleDeleteIdea = useCallback((id: string) => {
+    deleteIdea(id);
+    showToast('Idea deleted');
+    if (currentIdea?.id === id) {
+      setCurrentIdea(null);
+      setCurrentPage('ideas');
+    }
+  }, [deleteIdea, showToast, currentIdea]);
+
+  const handleUpdateIdeaStatus = useCallback((status: IdeaStatus) => {
+    if (currentIdea) {
+      updateIdeaStatus(currentIdea.id, status);
+      showToast(`Status updated to ${status}`);
+    }
+  }, [currentIdea, updateIdeaStatus, showToast]);
+
+  const handleConvertToVenture = useCallback((ventureData: {
+    name: string;
+    type: VentureType;
+    state: VentureState;
+  }) => {
+    if (!currentIdea) return;
+
+    // Create the venture
+    const newVenture = addVenture({
+      ...ventureData,
+      revenue: 0,
+      studioEquity: 100,
+    });
+
+    // Mark the idea as converted
+    markAsConverted(currentIdea.id, newVenture.id);
+
+    showToast('Idea converted to venture!');
+
+    // Navigate to the new venture
+    setCurrentVenture(newVenture);
+    setCurrentPage('ventureDetail');
+  }, [currentIdea, addVenture, markAsConverted, showToast]);
+
   // Settings handlers
   const handleSaveSettings = useCallback((newSettings: Settings) => {
     saveSettings(newSettings);
@@ -218,24 +301,20 @@ function PlatformContent() {
     }
   }, [settings.applovinApiKey, showToast]);
 
-  // Sync handlers
-  const handleSync = useCallback(async () => {
-    showToast('Syncing data from APIs...');
-    // In a real app, this would fetch from APIs
-    setTimeout(() => {
-      refreshVentures();
-      showToast('Data synced successfully');
-    }, 1000);
-  }, [refreshVentures, showToast]);
+  // Sync handlers - refresh data from localStorage
+  const handleSync = useCallback(() => {
+    refreshVentures();
+    refreshExpenses();
+    refreshUsers();
+    refreshIdeas();
+    showToast('Data refreshed');
+  }, [refreshVentures, refreshExpenses, refreshUsers, refreshIdeas, showToast]);
 
-  const handleSyncVenture = useCallback(async () => {
+  const handleSyncVenture = useCallback(() => {
     if (!currentVenture) return;
-    showToast('Syncing venture data...');
-    // In a real app, this would fetch from APIs
-    setTimeout(() => {
-      showToast('Venture synced successfully');
-    }, 1000);
-  }, [currentVenture, showToast]);
+    refreshVentures();
+    showToast('Venture data refreshed');
+  }, [currentVenture, refreshVentures, showToast]);
 
   // Loading state
   if (authLoading) {
@@ -276,9 +355,12 @@ function PlatformContent() {
           />
         );
       case 'ventureDetail':
-        return currentVenture ? (
+        if (!currentVenture) return null;
+        const ventureIdeas = ideas.filter(i => i.ventureId === currentVenture.id || i.convertedToVentureId === currentVenture.id);
+        return (
           <VentureDetailPage
             venture={currentVenture}
+            ideas={ventureIdeas}
             onBack={() => setCurrentPage('ventures')}
             onEdit={() => setShowEditVentureModal(true)}
             onAddExpense={() => {
@@ -287,8 +369,14 @@ function PlatformContent() {
             }}
             onDeleteExpense={handleDeleteVentureExpense}
             onSync={handleSyncVenture}
+            onViewIdea={handleViewIdea}
+            onAddIdea={() => {
+              setIdeaCategory('idea');
+              setEditingIdea(null);
+              setShowAddIdeaModal(true);
+            }}
           />
-        ) : null;
+        );
       case 'partners':
         return (
           <PartnersPage
@@ -320,8 +408,52 @@ function PlatformContent() {
             }}
           />
         );
-      case 'chat':
-        return <ChatPage />;
+      case 'ideas':
+        return (
+          <IdeasPage
+            ideas={ideas}
+            ventures={ventures}
+            onAddIdea={(category) => {
+              setIdeaCategory(category);
+              setEditingIdea(null);
+              setShowAddIdeaModal(true);
+            }}
+            onViewIdea={handleViewIdea}
+            onEditIdea={(idea) => {
+              setEditingIdea(idea);
+              setIdeaCategory(idea.category);
+              setShowAddIdeaModal(true);
+            }}
+            onDeleteIdea={handleDeleteIdea}
+          />
+        );
+      case 'ideaDetail':
+        if (!currentIdea) return null;
+        // Get related ideas (same venture or linked to this idea)
+        const relatedIdeas = ideas.filter(i =>
+          i.id !== currentIdea.id &&
+          (
+            (currentIdea.ventureId && i.ventureId === currentIdea.ventureId) ||
+            (currentIdea.convertedToVentureId && i.ventureId === currentIdea.convertedToVentureId)
+          )
+        );
+        return (
+          <IdeaDetailPage
+            idea={currentIdea}
+            relatedIdeas={relatedIdeas}
+            ventures={ventures}
+            onBack={() => setCurrentPage('ideas')}
+            onEdit={() => {
+              setEditingIdea(currentIdea);
+              setIdeaCategory(currentIdea.category);
+              setShowAddIdeaModal(true);
+            }}
+            onDelete={() => handleDeleteIdea(currentIdea.id)}
+            onUpdateStatus={handleUpdateIdeaStatus}
+            onConvertToVenture={handleConvertToVenture}
+            onViewRelatedIdea={handleViewIdea}
+          />
+        );
       case 'settings':
         return (
           <SettingsPage
@@ -390,7 +522,7 @@ function PlatformContent() {
         <div className="h-[calc(100vh-65px)] lg:h-screen overflow-y-auto p-4 lg:p-6">
           <AnimatePresence mode="wait">
             <motion.div
-              key={currentPage + (currentVenture?.id || '')}
+              key={currentPage + (currentVenture?.id || '') + (currentIdea?.id || '')}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
@@ -435,6 +567,17 @@ function PlatformContent() {
         onClose={() => setShowAddExpenseModal(false)}
         type={expenseType}
         onAdd={handleAddExpense}
+      />
+      <AddIdeaModal
+        isOpen={showAddIdeaModal}
+        onClose={() => {
+          setShowAddIdeaModal(false);
+          setEditingIdea(null);
+        }}
+        onSave={handleSaveIdea}
+        ventures={ventures}
+        initialCategory={ideaCategory}
+        editingIdea={editingIdea}
       />
     </div>
   );

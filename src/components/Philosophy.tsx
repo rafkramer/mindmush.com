@@ -197,8 +197,8 @@ export default function Philosophy() {
       setActiveTab('creators');
       setVisitedTabs(new Set());
 
-      // Relaxed animation - 1200ms between messages
-      runTypingAnimation(conversations[0].messages.length, 1200, () => {
+      // Faster animation - 700ms between messages
+      runTypingAnimation(conversations[0].messages.length, 700, () => {
         setTimeout(() => {
           setVisitedTabs(new Set(['creators']));
           setPhase('complete');
@@ -224,8 +224,8 @@ export default function Philosophy() {
     if (!visitedTabs.has(id)) {
       const conv = conversations.find(c => c.id === id);
       if (conv) {
-        // Same speed for all - 1200ms
-        runTypingAnimation(conv.messages.length, 1200, () => {
+        // Faster - 700ms between messages
+        runTypingAnimation(conv.messages.length, 700, () => {
           setVisitedTabs(prev => new Set([...prev, id]));
         }, conv.messages);
       }
@@ -320,7 +320,7 @@ export default function Philosophy() {
                   })}
                 </div>
 
-                {/* Call Button */}
+                {/* Call Button - TESTIMONIALS HIDDEN FOR NOW
                 <AnimatePresence>
                   {showUI && (
                     <motion.button
@@ -342,6 +342,7 @@ export default function Philosophy() {
                     </motion.button>
                   )}
                 </AnimatePresence>
+                */}
               </div>
             </div>
 
@@ -457,7 +458,7 @@ export default function Philosophy() {
         </motion.div>
       </div>
 
-      {/* Call Popup - Fixed position next to chat */}
+      {/* TESTIMONIALS POPUP - HIDDEN FOR NOW
       <AnimatePresence>
         {showTestimonials && (
           <motion.div
@@ -468,7 +469,6 @@ export default function Philosophy() {
             className="fixed top-1/2 -translate-y-1/2 right-4 sm:right-8 lg:right-[calc(50%-380px)] z-50 hidden sm:block"
           >
             <div className="relative p-4 rounded-2xl bg-[#0d0d0f] border border-white/[0.08] w-[260px] shadow-2xl">
-              {/* Call Header */}
               <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/[0.06]">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -483,8 +483,6 @@ export default function Philosophy() {
                   </svg>
                 </button>
               </div>
-
-              {/* Caller Info */}
               <AnimatePresence mode="wait">
                 <motion.div
                   key={testimonialIndex}
@@ -494,7 +492,6 @@ export default function Philosophy() {
                   transition={{ duration: 0.3 }}
                   className="flex flex-col items-center text-center"
                 >
-                  {/* Avatar */}
                   <div className="relative mb-4">
                     <div className="w-16 h-16 rounded-full overflow-hidden ring-2 ring-emerald-500/30 ring-offset-2 ring-offset-[#0d0d0f]">
                       <img
@@ -503,7 +500,6 @@ export default function Philosophy() {
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    {/* Speaking indicator */}
                     <motion.div
                       animate={{ scale: [1, 1.2, 1] }}
                       transition={{ duration: 1.5, repeat: Infinity }}
@@ -515,19 +511,13 @@ export default function Philosophy() {
                       </svg>
                     </motion.div>
                   </div>
-
-                  {/* Name & Role */}
                   <h4 className="text-white font-medium text-sm mb-0.5">{testimonials[testimonialIndex].name}</h4>
                   <p className="text-white/40 text-[11px] mb-3">{testimonials[testimonialIndex].role}</p>
-
-                  {/* Quote */}
                   <p className="text-white/60 text-xs leading-relaxed">
                     "{testimonials[testimonialIndex].quote}"
                   </p>
                 </motion.div>
               </AnimatePresence>
-
-              {/* Navigation */}
               <div className="flex items-center justify-between mt-4 pt-3 border-t border-white/[0.06]">
                 <div className="flex gap-1.5">
                   {testimonials.map((_, i) => (
@@ -565,6 +555,7 @@ export default function Philosophy() {
           </motion.div>
         )}
       </AnimatePresence>
+      */}
     </section>
   );
 }

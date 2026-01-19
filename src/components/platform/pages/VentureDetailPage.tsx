@@ -6,24 +6,31 @@ import { StatCard } from '../ui/StatCard';
 import { StateBadge, TypeBadge } from '../ui/Badge';
 import { formatCurrency, formatDate } from '../../../utils/platform/format';
 import { getSettings, getUsers } from '../../../utils/platform/storage';
-import type { Venture } from '../../../utils/platform/types';
+import { IDEA_CATEGORY_CONFIG } from '../../../utils/platform/constants';
+import type { Venture, Idea } from '../../../utils/platform/types';
 
 interface VentureDetailPageProps {
   venture: Venture;
+  ideas?: Idea[];
   onBack: () => void;
   onEdit: () => void;
   onAddExpense: () => void;
   onDeleteExpense: (expenseId: string) => void;
   onSync: () => void;
+  onViewIdea?: (idea: Idea) => void;
+  onAddIdea?: () => void;
 }
 
 export function VentureDetailPage({
   venture,
+  ideas = [],
   onBack,
   onEdit,
   onAddExpense,
   onDeleteExpense,
   onSync,
+  onViewIdea,
+  onAddIdea,
 }: VentureDetailPageProps) {
   const chartRef = useRef<HTMLCanvasElement>(null);
   const [chart, setChart] = useState<any>(null);
@@ -341,6 +348,58 @@ export function VentureDetailPage({
           )}
         </Card>
       </div>
+
+      {/* Ideas Board */}
+      {onViewIdea && (
+        <Card>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xs font-medium text-white/50 uppercase tracking-wide">Ideas & Research</h3>
+            {onAddIdea && (
+              <Button variant="ghost" size="sm" onClick={onAddIdea}>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Add
+              </Button>
+            )}
+          </div>
+          {ideas.length === 0 ? (
+            <p className="text-sm text-white/40 text-center py-6">No ideas linked to this venture.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {ideas.map((idea) => {
+                const categoryConfig = IDEA_CATEGORY_CONFIG[idea.category];
+                return (
+                  <motion.button
+                    key={idea.id}
+                    onClick={() => onViewIdea(idea)}
+                    className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors text-left"
+                    whileHover={{ x: 4 }}
+                  >
+                    {idea.image ? (
+                      <img src={idea.image} alt="" className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
+                    ) : (
+                      <div
+                        className="w-10 h-10 rounded-lg flex items-center justify-center text-lg flex-shrink-0"
+                        style={{ backgroundColor: categoryConfig.bg }}
+                      >
+                        {categoryConfig.icon}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-white truncate">{idea.title}</p>
+                      <p className="text-xs text-white/40">{categoryConfig.label.slice(0, -1)}</p>
+                    </div>
+                    <svg className="w-4 h-4 text-white/20 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                  </motion.button>
+                );
+              })}
+            </div>
+          )}
+        </Card>
+      )}
     </div>
   );
 }

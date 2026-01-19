@@ -3,6 +3,17 @@ import { motion } from 'framer-motion';
 export default function Contact() {
   return (
     <section id="contact" className="snap-section px-4 sm:px-6 relative">
+      {/* Pink nebula glow */}
+      <div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+        style={{
+          width: '500px',
+          height: '500px',
+          background: 'radial-gradient(circle, rgba(236, 72, 153, 0.08) 0%, rgba(236, 72, 153, 0.02) 40%, transparent 70%)',
+          filter: 'blur(60px)',
+        }}
+      />
+
       {/* Center Content */}
       <div className="h-full flex items-center justify-center pb-24 md:pb-0">
         <motion.div
@@ -10,22 +21,22 @@ export default function Contact() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center"
+          className="text-center relative z-10"
         >
-          <h2 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-semibold text-white mb-6 sm:mb-10">
-            Talented? <span className="text-pink-400">Let's talk.</span>
-          </h2>
+          <p className="text-sm sm:text-base text-white/40 mb-3 sm:mb-4 tracking-wide">
+            Get in touch
+          </p>
           <a
             href="mailto:contact@mindmush.com"
-            className="group relative inline-block"
+            className="group inline-block"
           >
-            <div className="absolute -inset-4 bg-pink-500/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-70 transition-opacity duration-500" />
-            <div className="relative px-4 sm:px-8 py-3 sm:py-4 rounded-xl bg-white/[0.03] border border-white/[0.08] group-hover:border-pink-500/30 transition-all duration-300">
-              <span className="text-sm sm:text-xl md:text-2xl font-medium text-white/70 group-hover:text-pink-400 transition-colors duration-300">
-                contact@mindmush.com
-              </span>
-            </div>
+            <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold text-white group-hover:text-pink-400 transition-colors duration-300">
+              contact@mindmush.com
+            </h2>
           </a>
+          <p className="text-sm sm:text-base text-white/30 mt-6 sm:mt-8">
+            We respond within 24 hours
+          </p>
         </motion.div>
       </div>
 

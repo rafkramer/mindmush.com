@@ -1,4 +1,4 @@
-import type { VentureState, VentureType, ExpenseCategory } from './constants';
+import type { VentureState, VentureType, ExpenseCategory, IdeaStatus } from './constants';
 
 export interface User {
   id: number;
@@ -69,4 +69,22 @@ export interface Document {
   signedAt?: string;
   expiresAt?: string;
   url?: string;
+}
+
+// Ideas types
+export type IdeaCategory = 'idea' | 'competitor' | 'inspiration' | 'niche';
+
+export interface Idea {
+  id: string;
+  category: IdeaCategory;
+  status: IdeaStatus;
+  title: string;
+  description?: string;
+  url?: string;
+  image?: string;
+  tags: string[];
+  ventureId?: string; // linked venture (after conversion or manual link)
+  convertedToVentureId?: string; // if this idea was converted to a venture
+  createdAt: string;
+  updatedAt?: string;
 }

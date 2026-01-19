@@ -1,6 +1,13 @@
 import { useScroll } from 'framer-motion';
 import { useEffect, useState, useRef } from 'react';
 
+// ===== TWEAK THESE VALUES =====
+const HERO_ARC_PEAK_PX = 210;        // Arc peak position from top on hero (px)
+const SCROLLED_TOP_PERCENT = 45;     // Orbit center position on 10M page (% of viewport)
+const SCROLLED_RADIUS = 550;         // Orbit radius on 10M page (px) - smaller = more space on sides
+const SIDE_PADDING = 80;             // Minimum padding from screen edges (px)
+// ==============================
+
 const APP_ICONS = [
   // Main app icons
   '/icons/debloat_ai_icon.png',
@@ -24,20 +31,21 @@ const APP_ICONS = [
   '/icons/app-icons  temp/telegram.png',
   '/icons/app-icons  temp/uber.png',
   '/icons/app-icons  temp/airbnb.png',
-  '/icons/app-icons  temp/cash-app.png',
   '/icons/app-icons  temp/venmo.png',
-  '/icons/app-icons  temp/robinhood.png',
-  '/icons/app-icons  temp/coinbase.png',
   '/icons/app-icons  temp/shazam.png',
   '/icons/app-icons  temp/notion.png',
+  '/icons/app-icons  temp/doordash.png',
+  '/icons/app-icons  temp/lyft.png',
+  '/icons/app-icons  temp/pinterest.png',
 ];
 
 export default function ScrollIconOrbit() {
   const { scrollY } = useScroll();
   const [windowHeight, setWindowHeight] = useState(800);
+  const [windowWidth, setWindowWidth] = useState(1200);
   const [animatedValues, setAnimatedValues] = useState({
     size: 1200,
-    top: 128,
+    top: 145,
     rotateX: 0,
     opacity: 1,
     scale: 1,
@@ -45,10 +53,18 @@ export default function ScrollIconOrbit() {
   const animationRef = useRef<number>();
 
   useEffect(() => {
-    setWindowHeight(window.innerHeight);
-    const handleResize = () => setWindowHeight(window.innerHeight);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    const updateDimensions = () => {
+      const h = window.innerHeight;
+      const w = window.innerWidth;
+      setWindowHeight(h);
+      setWindowWidth(w);
+      // Set initial top based on viewport - arc peak position
+      const initialTop = ((HERO_ARC_PEAK_PX + 1200) / h) * 100;
+      setAnimatedValues(prev => ({ ...prev, top: initialTop }));
+    };
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
   // Smooth animation using lerp
@@ -56,8 +72,16 @@ export default function ScrollIconOrbit() {
     const unsubscribe = scrollY.on('change', (scrollValue) => {
       const progress = Math.min(Math.max(scrollValue / windowHeight, 0), 1);
 
-      const targetSize = 1200 - (1200 - 630) * progress;
-      const targetTop = 128 - (128 - 40) * progress;
+      // Calculate max radius that fits screen with padding
+      const maxRadiusForScreen = (windowWidth / 2) - SIDE_PADDING;
+      const finalSize = Math.min(SCROLLED_RADIUS, maxRadiusForScreen);
+
+      // Arc peak position on hero, orbit center on 10M page
+      const initialTopPercent = ((HERO_ARC_PEAK_PX + 1200) / windowHeight) * 100;
+
+      // For scrolled state (10M page), center vertically
+      const targetSize = 1200 - (1200 - finalSize) * progress;
+      const targetTop = initialTopPercent - (initialTopPercent - SCROLLED_TOP_PERCENT) * progress;
       const targetRotateX = 60 * progress;
 
       // Start fading right after numbers, complete before showcase
@@ -106,7 +130,7 @@ export default function ScrollIconOrbit() {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [scrollY, windowHeight]);
+  }, [scrollY, windowHeight, windowWidth]);
 
   const { size, top, rotateX, opacity, scale } = animatedValues;
 

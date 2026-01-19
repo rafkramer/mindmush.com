@@ -25,7 +25,7 @@ interface ShootingStar {
 // Section color themes - vivid and distinct
 const sectionColors = [
   { r: 147, g: 51, b: 234 },   // Hero - vivid purple
-  { r: 100, g: 120, b: 255 },  // Stats - vibrant blue/indigo
+  { r: 147, g: 51, b: 234 },   // Stats - same purple as hero
   { r: 6, g: 182, b: 212 },    // Portfolio - cyan
   { r: 16, g: 185, b: 129 },   // Philosophy - emerald
   { r: 236, g: 72, b: 153 },   // Contact - pink
