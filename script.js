@@ -37,7 +37,6 @@ function drawGrid() {
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, width, height);
 
-    // Responsive grid - bigger tiles on mobile
     const isMobile = width < 768;
     const cols = isMobile ? 30 : 100;
     const rows = isMobile ? 40 : 100;
@@ -49,7 +48,6 @@ function drawGrid() {
     const rotationX = (mouse.y - 0.5) * 0.15;
     const rotationY = (mouse.x - 0.5) * 0.15;
 
-    // Calculate 3D points
     const points = [];
     for (let y = 0; y <= rows; y++) {
         points[y] = [];
@@ -62,18 +60,15 @@ function drawGrid() {
                         Math.sin(x * 0.1 - time) * Math.sin(y * 0.1 + time * 0.5) * 30;
             pz += wave;
 
-            // Mouse influence - ripple effect
             const normalizedX = (x / cols);
             const normalizedY = (y / rows);
             const mouseDx = mouse.x - normalizedX;
             const mouseDy = mouse.y - normalizedY;
             const distToMouse = Math.sqrt(mouseDx ** 2 + mouseDy ** 2);
 
-            // Main bulge
             const bulge = Math.max(0, 1 - distToMouse / 0.25) ** 2;
             pz += bulge * 150;
 
-            // Ripple rings around cursor
             const ripple = Math.sin(distToMouse * 30 - time * 4) * Math.max(0, 1 - distToMouse / 0.4) * 20;
             pz += ripple;
 
@@ -96,7 +91,6 @@ function drawGrid() {
         }
     }
 
-    // Draw grid lines
     ctx.lineCap = 'round';
 
     for (let y = 0; y <= rows; y++) {
@@ -139,7 +133,6 @@ function drawGrid() {
         }
     }
 
-    // Glow at mouse position
     const glowX = mouse.x * width;
     const glowY = mouse.y * height;
     const glow = ctx.createRadialGradient(glowX, glowY, 0, glowX, glowY, 300);
@@ -149,7 +142,6 @@ function drawGrid() {
     ctx.fillStyle = glow;
     ctx.fillRect(0, 0, width, height);
 
-    // Edge fades - subtle for text readability
     const edgeFade = 120;
 
     const topGrad = ctx.createLinearGradient(0, 0, 0, edgeFade);
@@ -184,7 +176,7 @@ window.addEventListener('resize', resize);
 drawGrid();
 
 // ===== WORD CYCLE =====
-const words = ['build', 'launch', 'scale', 'acquire'];
+const words = ['building', 'scaling', 'marketing', 'validating', 'buying', 'selling'];
 const wordEl = document.querySelector('.word');
 let wordIndex = 0;
 let charIndex = 0;
