@@ -39,7 +39,9 @@
         const s = document.documentElement.style;
         s.setProperty('--bg', f.bg);
         s.setProperty('--ink', f.ink);
+        s.setProperty('--j0', f.jelly[0]);
         s.setProperty('--j1', f.jelly[1]);
+        s.setProperty('--j2', f.jelly[2]);
         s.setProperty('--shade', f.shade);
         s.setProperty('--next', FLAVORS[(flavor + 1) % FLAVORS.length].jelly[1]);
         flavorName.textContent = f.name;
@@ -129,8 +131,9 @@
     });
 
     // ===== WEBGL =====
-    const gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: true });
-    if (!gl) return;
+    // Created on boot, not at load: context + shader compile is a long task on a slow phone.
+    let gl = null;
+    let loc = null;
 
     const VS = `
 attribute vec3 a_p;
@@ -166,25 +169,30 @@ void main() {
         gl.compileShader(s);
         return s;
     }
-    const prog = gl.createProgram();
-    gl.attachShader(prog, shader(gl.VERTEX_SHADER, VS));
-    gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, FS));
-    gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
-    gl.useProgram(prog);
-    const loc = {
-        p: gl.getAttribLocation(prog, 'a_p'),
-        uv: gl.getAttribLocation(prog, 'a_uv'),
-        res: gl.getUniformLocation(prog, 'u_res'),
-        off: gl.getUniformLocation(prog, 'u_off'),
-        tint: gl.getUniformLocation(prog, 'u_tint'),
-        shadow: gl.getUniformLocation(prog, 'u_shadow'),
-    };
-    gl.enableVertexAttribArray(loc.p);
-    gl.enableVertexAttribArray(loc.uv);
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+    function initGL() {
+        gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: true });
+        if (!gl) return false;
+        const prog = gl.createProgram();
+        gl.attachShader(prog, shader(gl.VERTEX_SHADER, VS));
+        gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, FS));
+        gl.linkProgram(prog);
+        if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return false;
+        gl.useProgram(prog);
+        loc = {
+            p: gl.getAttribLocation(prog, 'a_p'),
+            uv: gl.getAttribLocation(prog, 'a_uv'),
+            res: gl.getUniformLocation(prog, 'u_res'),
+            off: gl.getUniformLocation(prog, 'u_off'),
+            tint: gl.getUniformLocation(prog, 'u_tint'),
+            shadow: gl.getUniformLocation(prog, 'u_shadow'),
+        };
+        gl.enableVertexAttribArray(loc.p);
+        gl.enableVertexAttribArray(loc.uv);
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+        return true;
+    }
 
     // ===== PHYSICS =====
     const P = {
@@ -703,6 +711,7 @@ void main() {
         raf = requestAnimationFrame(frame);
     }
     function wake() {
+        if (!gl) return;
         if (!raf) raf = requestAnimationFrame(frame);
     }
 
@@ -830,25 +839,42 @@ void main() {
         return img.decode ? img.decode().catch(() => {}) : Promise.resolve();
     }));
 
-    // The HTML wordmark paints first; the jelly takes over once the page has loaded and the main thread is free.
+    // The HTML wordmark (same gummy colours) is what loads. The jelly boots on the first sign of a person (mouse,
+    // touch, key, scroll), and drops in; otherwise it quietly takes over once the page has been idle for a while.
     const pageLoaded = new Promise((r) => (document.readyState === 'complete' ? r() : window.addEventListener('load', r, { once: true })));
-    const idleNow = () => new Promise((r) => (window.requestIdleCallback ? requestIdleCallback(r, { timeout: 1200 }) : setTimeout(r, 200)));
-    Promise.all([fontReady, imagesReady, pageLoaded]).then(idleNow).then(() => {
-        const r0 = stage.getBoundingClientRect();
-        let size = [r0.width, r0.height];
-        build(true);
-        setTimeout(idle, 4000);
-        let rt = 0;
-        new ResizeObserver(() => {
-            clearTimeout(rt);
-            rt = setTimeout(() => {
-                const r = stage.getBoundingClientRect();
-                if (Math.abs(r.width - size[0]) < 1 && Math.abs(r.height - size[1]) < 1) return;
-                size = [r.width, r.height];
-                build(false);
-            }, 120);
-        }).observe(stage);
-    });
+    const idleNow = () => new Promise((r) => (window.requestIdleCallback ? requestIdleCallback(r, { timeout: 2000 }) : setTimeout(r, 200)));
+    const ready = Promise.all([fontReady, imagesReady, pageLoaded]);
+    const WAKE = ['pointermove', 'pointerdown', 'touchstart', 'keydown', 'wheel', 'scroll'];
+    const wakeOpts = { passive: true, capture: true };
+    let booted = false;
+    const kick = () => boot(true);
+    WAKE.forEach((t) => window.addEventListener(t, kick, wakeOpts));
+    ready.then(() => setTimeout(() => idleNow().then(() => boot(false)), 6000));
+
+    function boot(entrance) {
+        if (booted) return;
+        booted = true;
+        WAKE.forEach((t) => window.removeEventListener(t, kick, wakeOpts));
+        ready.then(async () => {
+            if (!initGL()) return;
+            await tick();
+            const r0 = stage.getBoundingClientRect();
+            let size = [r0.width, r0.height];
+            await build(entrance);
+            if (!entrance && !calm.matches) wave(0.6, 0.05);
+            setTimeout(idle, 4000);
+            let rt = 0;
+            new ResizeObserver(() => {
+                clearTimeout(rt);
+                rt = setTimeout(() => {
+                    const r = stage.getBoundingClientRect();
+                    if (Math.abs(r.width - size[0]) < 1 && Math.abs(r.height - size[1]) < 1) return;
+                    size = [r.width, r.height];
+                    build(false);
+                }, 120);
+            }).observe(stage);
+        });
+    }
 
     canvas.addEventListener('webglcontextlost', (e) => {
         e.preventDefault();

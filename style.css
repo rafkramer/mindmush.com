@@ -8,7 +8,9 @@
 :root {
     --bg: #D4F53C;
     --ink: #17200A;
+    --j0: #FF9BCB;
     --j1: #FF2F86;
+    --j2: #C80B5C;
     --shade: #AECB1E;
     --next: #8A4DFF;
     --mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
@@ -182,11 +184,18 @@ a { color: inherit; }
     text-align: center;
     white-space: nowrap;
     color: var(--j1);
-    text-shadow: 0 0.05em 0 var(--shade);
+    filter: drop-shadow(0 0.055em 0 var(--shade));
     cursor: grab;
     touch-action: none;
     -webkit-user-select: none;
     user-select: none;
+}
+
+.word span {
+    background: linear-gradient(180deg, var(--j0) 8%, var(--j1) 52%, var(--j2) 92%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .games {
@@ -229,7 +238,8 @@ a.game { cursor: pointer; }
 span.game { cursor: grab; }
 
 /* The jelly is drawn: hide the HTML stand-ins but keep them for layout and screen readers. */
-.live .word { color: transparent; text-shadow: none; }
+.live .word { filter: none; }
+.live .word span { background: none; }
 .live .game img { opacity: 0; }
 
 /* ===== FOOT ===== */
