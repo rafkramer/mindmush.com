@@ -36,6 +36,15 @@ body {
 
 a { color: inherit; }
 
+.sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
 /* One screen. The canvas covers it; the HTML underneath sets the layout and is the fallback. */
 .stage {
     position: relative;
@@ -265,7 +274,7 @@ span.game { cursor: grab; }
 }
 
 @media (max-width: 370px) {
-    .flavor span { display: none; }
+    .flavor #flavor-name { display: none; }
     .flavor { padding: 0 7px; }
 }
 

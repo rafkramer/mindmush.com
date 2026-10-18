@@ -10,15 +10,15 @@
     <meta property="og:url" content="https://www.mindmush.com/">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="preload" href="assets/sniglet-800.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="style.css?v=jelly1">
+    <link rel="stylesheet" href="style.css?v=jelly2">
 </head>
 <body>
     <div class="stage" id="stage">
         <canvas id="jelly" aria-hidden="true"></canvas>
 
         <header class="bar">
-            <button class="flavor" id="flavor" type="button" aria-label="Change flavor">
-                <i aria-hidden="true"></i><span id="flavor-name">strawberry</span>
+            <button class="flavor" id="flavor" type="button">
+                <i aria-hidden="true"></i><span class="sr">Flavor: </span><span id="flavor-name">strawberry</span>
             </button>
             <div class="bar-r">
                 <button class="snd" id="sound" type="button" aria-label="Sound" aria-pressed="true">
@@ -48,6 +48,6 @@
         </footer>
     </div>
 
-    <script src="script.js?v=jelly1" defer></script>
+    <script src="script.js?v=jelly2" defer></script>
 </body>
 </html>

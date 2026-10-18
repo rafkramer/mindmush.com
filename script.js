@@ -192,13 +192,12 @@ void main() {
         C: 1100,  // neighbour coupling (makes waves travel through the jelly)
         D: 5.2,   // damping
         G: 2600,  // grab pull
-        dt: 1 / 240,
+        dt: 1 / 120,
     };
 
     let objs = [];
     let W = 0, H = 0, dpr = 1, em = 200;
     let grab = null;
-    let sleeping = false;
     let lastInput = 0;
     let suppressClick = false;
 
@@ -210,19 +209,38 @@ void main() {
         return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
     }
 
-    // Draws a soft inner edge: a blurred stroke of the glyph, shifted, kept only inside the glyph (source-atop).
+    // Gummy shading without canvas blur (too slow on phones): draw the glyph small, scale it back up (that is the
+    // blur), shift it, and keep the colour only where the shifted glyph is not, inside the real glyph (source-atop).
     // Shift down lights the top edges; shift up darkens the bottom edges.
-    function innerEdge(g, ch, ox, oy, blur, width, color) {
-        const FAR = 5000;
+    const work = document.createElement('canvas');
+    const soft = document.createElement('canvas');
+    function innerEdge(g, o, ox, oy, blur, color) {
+        const c = o.tex.canvas;
+        const k = Math.max(1, blur * dpr);
+        soft.width = Math.max(1, Math.ceil(c.width / k));
+        soft.height = Math.max(1, Math.ceil(c.height / k));
+        const sg = soft.getContext('2d');
+        sg.setTransform(dpr / k, 0, 0, dpr / k, (o.ox + ox) * dpr / k, (o.oy + oy) * dpr / k);
+        sg.font = FONT(em);
+        sg.fillStyle = '#000';
+        sg.fillText(o.ch, 0, 0);
+        if (work.width !== c.width || work.height !== c.height) {
+            work.width = c.width;
+            work.height = c.height;
+        }
+        const wg = work.getContext('2d');
+        wg.globalCompositeOperation = 'source-over';
+        wg.clearRect(0, 0, c.width, c.height);
+        wg.fillStyle = color;
+        wg.fillRect(0, 0, c.width, c.height);
+        wg.globalCompositeOperation = 'destination-out';
+        wg.imageSmoothingEnabled = true;
+        wg.imageSmoothingQuality = 'high';
+        wg.drawImage(soft, 0, 0, soft.width * k, soft.height * k);
         g.save();
-        g.shadowColor = color;
-        g.shadowBlur = blur * dpr;
-        g.shadowOffsetX = (FAR + ox) * dpr;
-        g.shadowOffsetY = oy * dpr;
-        g.lineWidth = width;
-        g.lineJoin = 'round';
-        g.strokeStyle = '#000';
-        g.strokeText(ch, -FAR, 0);
+        g.setTransform(1, 0, 0, 1, 0, 0);
+        g.globalCompositeOperation = 'source-atop';
+        g.drawImage(work, 0, 0);
         g.restore();
     }
 
@@ -240,11 +258,9 @@ void main() {
         grad.addColorStop(1, f.jelly[2]);
         g.fillStyle = grad;
         g.fillText(o.ch, 0, 0);
-        g.globalCompositeOperation = 'source-atop';
-        innerEdge(g, o.ch, 0, -em * 0.07, em * 0.07, em * 0.07, f.jelly[2]);
-        innerEdge(g, o.ch, 0, em * 0.05, em * 0.06, em * 0.05, 'rgba(255,255,255,0.22)');
-        innerEdge(g, o.ch, em * 0.012, em * 0.026, em * 0.008, em * 0.026, 'rgba(255,255,255,0.92)');
-        g.globalCompositeOperation = 'source-over';
+        innerEdge(g, o, 0, -em * 0.075, em * 0.06, f.jelly[2]);
+        innerEdge(g, o, 0, em * 0.06, em * 0.05, 'rgba(255,255,255,0.2)');
+        innerEdge(g, o, em * 0.01, em * 0.024, em * 0.012, 'rgba(255,255,255,0.9)');
     }
 
     function paintTile(o) {
@@ -332,13 +348,23 @@ void main() {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, o.tex.canvas);
-        // A coarse alpha mask (about 1 per 3 CSS px) for hit testing.
+        // A coarse alpha mask (about 1 per 3 CSS px) for hit testing, drawn straight at that size: reading the
+        // texture canvas back would stall on the GPU.
         const mw = Math.max(1, Math.round(o.w / 3)), mh = Math.max(1, Math.round(o.h / 3));
         const m = document.createElement('canvas');
         m.width = mw;
         m.height = mh;
         const mg = m.getContext('2d', { willReadFrequently: true });
-        mg.drawImage(o.tex.canvas, 0, 0, mw, mh);
+        mg.setTransform(mw / o.w, 0, 0, mh / o.h, (o.ox * mw) / o.w, (o.oy * mh) / o.h);
+        mg.fillStyle = '#000';
+        if (o.kind === 'letter') {
+            mg.font = FONT(em);
+            mg.fillText(o.ch, 0, 0);
+        } else {
+            mg.beginPath();
+            mg.roundRect(0, 0, o.size, o.size, o.size * 0.23);
+            mg.fill();
+        }
         try {
             const d = mg.getImageData(0, 0, mw, mh).data;
             o.mask = new Uint8Array(mw * mh);
@@ -356,24 +382,22 @@ void main() {
     }
 
     // ===== LAYOUT: read the HTML, build a mesh over every letter and icon =====
-    function build(entrance) {
+    // Measures synchronously, then paints one body per task so the page never stalls; swaps in when all are ready.
+    let buildGen = 0;
+    const tick = () => (window.scheduler && scheduler.yield ? scheduler.yield() : new Promise((r) => setTimeout(r, 0)));
+    async function build(entrance) {
+        const gen = ++buildGen;
         const sr = stage.getBoundingClientRect();
-        W = sr.width;
-        H = sr.height;
+        const nextW = sr.width, nextH = sr.height;
         dpr = Math.min(window.devicePixelRatio || 1, 2);
-        canvas.width = Math.round(W * dpr);
-        canvas.height = Math.round(H * dpr);
-        gl.viewport(0, 0, canvas.width, canvas.height);
-        objs.forEach(dispose);
-        objs = [];
-        grab = null;
+        const jobs = [];
 
         em = parseFloat(getComputedStyle(word).fontSize);
         scratch.font = FONT(em);
         const fm = scratch.measureText('m');
         const fontAsc = fm.fontBoundingBoxAscent ?? em * 0.95;
         const pad = em * 0.1;
-        const cell = Math.max(6, em / 15);
+        const cell = Math.max(7, em / 12);
         const range = document.createRange();
         const walker = document.createTreeWalker(word, NodeFilter.SHOW_TEXT);
         let order = 0;
@@ -390,11 +414,13 @@ void main() {
                 const L = m.actualBoundingBoxLeft, R = m.actualBoundingBoxRight;
                 const A = m.actualBoundingBoxAscent, D = m.actualBoundingBoxDescent;
                 const x = penX - L - pad, y = base - A - pad;
-                const o = makeObj('letter', x, y, L + R + pad * 2, A + D + pad * 2, cell);
-                Object.assign(o, { ch, asc: A, desc: D, ox: L + pad, oy: A + pad, order: order++, sx: em * 0.055 });
-                paintLetter(o);
-                upload(o);
-                objs.push(o);
+                const ord = order++;
+                jobs.push(() => {
+                    const o = makeObj('letter', x, y, L + R + pad * 2, A + D + pad * 2, cell);
+                    Object.assign(o, { ch, asc: A, desc: D, ox: L + pad, oy: A + pad, order: ord, sx: em * 0.055 });
+                    paintLetter(o);
+                    return o;
+                });
             }
         }
 
@@ -403,12 +429,35 @@ void main() {
             const r = img.getBoundingClientRect();
             const s = r.width;
             const p = s * 0.04;
-            const o = makeObj('tile', r.left - sr.left - p, r.top - sr.top - p, s + p * 2, s + p * 2, Math.max(6, s / 11));
-            Object.assign(o, { img, el, size: s, ox: p, oy: p, order: order++, sx: s * 0.06 });
-            paintTile(o);
-            upload(o);
-            objs.push(o);
+            const x = r.left - sr.left - p, y = r.top - sr.top - p;
+            const ord = order++;
+            jobs.push(() => {
+                const o = makeObj('tile', x, y, s + p * 2, s + p * 2, Math.max(7, s / 9));
+                Object.assign(o, { img, el, size: s, ox: p, oy: p, order: ord, sx: s * 0.06 });
+                paintTile(o);
+                return o;
+            });
         });
+
+        const next = [];
+        for (const job of jobs) {
+            await tick();
+            if (gen !== buildGen) { next.forEach(dispose); return; }
+            const o = job();
+            upload(o);
+            next.push(o);
+        }
+        await tick();
+        if (gen !== buildGen) { next.forEach(dispose); return; }
+
+        objs.forEach(dispose);
+        objs = next;
+        grab = null;
+        W = nextW;
+        H = nextH;
+        canvas.width = Math.round(W * dpr);
+        canvas.height = Math.round(H * dpr);
+        gl.viewport(0, 0, canvas.width, canvas.height);
 
         if (entrance && !calm.matches) {
             const letters = objs.filter((o) => o.kind === 'letter');
@@ -420,6 +469,7 @@ void main() {
                 o.delay = o.kind === 'letter' ? 0.12 + o.order * 0.075 : 0.12 + letters.length * 0.075 + 0.18 + (o.order - letters.length) * 0.11;
             });
         }
+        objs.forEach((o) => { o.awake = true; o.moved = true; });
         stage.classList.add('live');
         wake();
     }
@@ -428,6 +478,7 @@ void main() {
     // Splat: the top of the body keeps going, the bottom stops and spreads.
     function splat(o, v) {
         const bottom = o.y + o.h, cx = o.x + o.w / 2;
+        o.awake = true;
         for (let k = 0; k < o.n; k++) {
             const hf = (bottom - o.py[k]) / o.h;
             o.vy[k] += v * 0.24 * hf;
@@ -440,6 +491,7 @@ void main() {
         const A = em * 3.4 * strength;
         objs.forEach((o) => {
             if (x < o.x - R || x > o.x + o.w + R || y < o.y + o.off - R || y > o.y + o.off + o.h + R) return;
+            o.awake = true;
             for (let k = 0; k < o.n; k++) {
                 const ex = o.px[k] + o.dx[k] - x, ey = o.py[k] + o.dy[k] + o.off - y;
                 const d = Math.hypot(ex, ey);
@@ -469,6 +521,7 @@ void main() {
                     const f = (1 - d / R) ** 2 * 0.3;
                     o.vx[k] += vx * f;
                     o.vy[k] += vy * f;
+                    o.awake = true;
                     touched = true;
                 }
             });
@@ -582,6 +635,8 @@ void main() {
         const list = grab ? objs.filter((o) => o !== grab.o).concat(grab.o) : objs;
 
         for (const o of list) {
+            if (!o.moved) continue;
+            o.moved = false;
             const { cols, nx, ny, buf, px, py, dx, dy } = o;
             const span = 2 * o.cw;
             for (let j = 0; j <= ny; j++) {
@@ -625,20 +680,22 @@ void main() {
         const dt = Math.min(1 / 30, lastT ? (t - lastT) / 1000 : 1 / 60);
         lastT = t;
         acc += dt;
-        let energy = 0;
-        let settled = true;
+        // Only bodies that are moving get stepped; a still one goes to sleep until something touches it.
         let n = 0;
-        while (acc >= P.dt && n < 12) {
+        while (acc >= P.dt && n < 4) {
             for (const o of objs) {
-                if (!fall(o, P.dt)) settled = false;
-                energy = Math.max(energy, step(o, P.dt));
+                if (o.falling) { o.awake = true; fall(o, P.dt); }
+                if (!o.awake) continue;
+                const e = step(o, P.dt);
+                o.moved = true;
+                if (e < 0.04 && !o.falling && !(grab && grab.o === o)) o.awake = false;
             }
             acc -= P.dt;
             n++;
         }
+        if (n === 4) acc = 0;
         draw();
-        if (settled && !grab && energy < 0.04) {
-            sleeping = true;
+        if (!objs.some((o) => o.awake || o.falling) && !grab) {
             lastT = 0;
             acc = 0;
             return;
@@ -646,7 +703,6 @@ void main() {
         raf = requestAnimationFrame(frame);
     }
     function wake() {
-        sleeping = false;
         if (!raf) raf = requestAnimationFrame(frame);
     }
 
@@ -673,6 +729,7 @@ void main() {
                 o.wt[k] = Math.exp(-(ddx * ddx + ddy * ddy) / (2 * sig * sig)) * base;
             }
             const k0 = clamp(Math.round((h.r.y - o.y) / o.ch_), 0, o.ny) * o.cols + clamp(Math.round((h.r.x - o.x) / o.cw), 0, o.nx);
+            o.awake = true;
             grab = { o, id: e.pointerId, sx: p.x, sy: p.y, bx: o.dx[k0], by: o.dy[k0], tx: o.dx[k0], ty: o.dy[k0], moved: false, k: 0, p };
             stage.classList.add('grabbing');
             sfx.squish();
@@ -773,11 +830,15 @@ void main() {
         return img.decode ? img.decode().catch(() => {}) : Promise.resolve();
     }));
 
-    Promise.all([fontReady, imagesReady]).then(() => {
+    // The HTML wordmark paints first; the jelly takes over once the page has loaded and the main thread is free.
+    const pageLoaded = new Promise((r) => (document.readyState === 'complete' ? r() : window.addEventListener('load', r, { once: true })));
+    const idleNow = () => new Promise((r) => (window.requestIdleCallback ? requestIdleCallback(r, { timeout: 1200 }) : setTimeout(r, 200)));
+    Promise.all([fontReady, imagesReady, pageLoaded]).then(idleNow).then(() => {
+        const r0 = stage.getBoundingClientRect();
+        let size = [r0.width, r0.height];
         build(true);
-        setTimeout(idle, 3000);
+        setTimeout(idle, 4000);
         let rt = 0;
-        let size = [W, H];
         new ResizeObserver(() => {
             clearTimeout(rt);
             rt = setTimeout(() => {
