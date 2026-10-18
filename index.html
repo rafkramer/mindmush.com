@@ -2,41 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mindmush</title>
-    <meta name="description" content="Venture studio. 50+ apps. 10M+ downloads. Zürich.">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Mindmush</title>
+    <meta name="description" content="Mindmush. Obama Run, Photo Impostor, DaGame.">
+    <meta name="theme-color" content="#D4F53C">
+    <meta property="og:title" content="Mindmush">
+    <meta property="og:url" content="https://www.mindmush.com/">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="preload" href="assets/sniglet-800.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <canvas id="grid"></canvas>
+    <div class="stage" id="stage">
+        <canvas id="jelly" aria-hidden="true"></canvas>
 
-    <div class="layout">
-        <header>
-            <span class="company">MINDMUSH LLC</span>
-            <span class="location">ZH, Switzerland</span>
+        <header class="bar">
+            <button class="flavor" id="flavor" type="button" aria-label="Change flavor">
+                <i aria-hidden="true"></i><span id="flavor-name">strawberry</span>
+            </button>
+            <div class="bar-r">
+                <button class="snd" id="sound" type="button" aria-label="Sound" aria-pressed="true">
+                    <svg class="on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.2L12 5.6v12.8l-4.8-3.9H4z"/><path class="w" d="M15.5 9a4.2 4.2 0 0 1 0 6M18.3 6.6a7.6 7.6 0 0 1 0 10.8"/></svg>
+                    <svg class="off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.2L12 5.6v12.8l-4.8-3.9H4z"/><path class="w" d="M16 9.5l5 5M21 9.5l-5 5"/></svg>
+                </button>
+                <a class="hi" href="mailto:contact@mindmush.com">contact@mindmush.com</a>
+            </div>
         </header>
 
-        <main>
-            <h1 class="logo">mindmush</h1>
-            <p class="tagline">Venture studio <span class="word"></span><span class="cursor">_</span> mobile apps.</p>
+        <main class="hero">
+            <h1 class="word" id="word" aria-label="Mindmush"><span>mind</span><span>mush</span></h1>
+            <ul class="games">
+                <li><a class="game" data-game href="https://apps.apple.com/app/id1576515186" draggable="false"><img src="assets/obamarun.jpg" alt="" width="360" height="360" draggable="false"><span>Obama Run</span></a></li>
+                <li><span class="game" data-game><img src="assets/photoimpostor.jpg" alt="" width="360" height="360" draggable="false"><span>Photo Impostor</span></span></li>
+                <li><a class="game" data-game href="https://apps.apple.com/app/id1562587737" draggable="false"><img src="assets/dagame.jpg" alt="" width="360" height="360" draggable="false"><span>DaGame</span></a></li>
+            </ul>
         </main>
 
-        <footer>
-            <div class="links">
+        <footer class="foot">
+            <nav>
                 <a href="platform.html">Platform</a>
                 <a href="terms.html">Terms</a>
                 <a href="privacy.html">Privacy</a>
-            </div>
-
-            <a href="mailto:contact@mindmush.com" class="email-link">contact@mindmush.com</a>
+            </nav>
+            <a href="https://kramer.llc">A Kramer Ventures company</a>
         </footer>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
